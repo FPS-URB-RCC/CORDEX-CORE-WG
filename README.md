@@ -1,3 +1,5 @@
+[![MyBinder badge](https://img.shields.io/badge/MyBinder-Jupyter%20Lab-E66581.svg)](https://mybinder.org/v2/gh/jesusff/pyclimenv/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252FFPS-URB-RCC%252FCORDEX-CORE-WG%26urlpath%3Dlab%252Ftree%252FCORDEX-CORE-WG%252F%26branch%3Dmain)
+
 # CORDEX-CORE-WG
 
 This repository is dedicated to the CORDEX-CORE data analysis WG
