@@ -1,0 +1,49 @@
+cordex_core_analysis:
+  # AFR
+  - Cairo        # Bwh INLAND
+  - Lagos        # Aw COASTAL smaller but monsoon
+  - Johannesburg # Cwb INLAND
+  - Luanda       # BSh COASTAL
+  - Khartoum     # BWh INLAND
+  # AUS
+  - Sydney    # Cfa COASTAL
+  - Melbourne # Cfb COASTAL To replace Brisbane, as Melbourne is bigger & has flux tower
+  # CAM
+  - Mexico City # INLAND
+  # CAS
+  - Moscow   # Dfb INLAND
+  - Tashkent # Csa INLAND close to domain center
+  - Tehran   # BSk INLAND
+  - Dhaka    # Aw COASTAL INLAND Floodplain / Delta
+  # EAS
+  - Beijing # Cwa INLAND
+  - Tokyo   # Cfa COASTAL
+  - Chengdu # Cwa INLAND
+  - Seoul   # Dwa COASTAL
+  - Shanghai # Cfa COASTAL Big city, and largest Pop. and GDP in China. Observations available.
+  # EUR
+  - Paris    # Cfb INLAND FPS URB-RCC core city
+  - London   # Cfb INLAND 
+  - Istanbul # Csa COASTAL
+  - Berlin   # Cfb INLAND
+  - Naples   # CsB COASTAL
+  # NAM
+  - New York    # Cfa COASTAL
+  - Chicago     # Dfa INLAND Largest by size. Close to great lakes
+  - Los Angeles # Csb COASTAL Largest by pop. West coast
+  - Montreal    # Dfb INLAND
+  # SAM
+  - Buenos Aires # Cfa COASTAL
+  - Lima         # ET COASTAL MOUNTAIN Coast and mountains
+  - São Paulo    # Cfb COASTAL
+  - Santiago     # Csb COASTAL MOUNTAIN To replace Fortaleza (too small), and ensure balance in L-America
+  - Bogota       # Cfb INLAND MOUNTAIN
+  # SEA
+  - Jakarta              # Af COASTAL
+  - Quezon City [Manila] # Am COASTAL
+  - Singapore            # Af COASTAL Tropical city, lots of ongoing urban research and data, island state. Has flux tower data
+  # WAS
+  - Mumbai # Am COASTAL
+  - Riyadh # BWh INLAND
+  - Delhi [New Delhi] # BSh INLAND MOUNTAIN Close to mountain
+  - Baghdad # BWh INLAND

@@ -9,10 +9,10 @@ The WG aims to investigate available CORDEX-CORE (0.22°) data for large urban a
 
 Files:
 
-| Notebook | Description |
+| File | Description |
 |----------|-------------|
 | [selected_cities.yaml](./selected_cities.yaml) | List of selected cities for the analysis |
-| [city_info.csv](./city_info_out.csv) | Information (area, population, density, gp022, coordinates, Köppen climate type, ...) on cities reasonably represented in 0.22 deg. resolution CORDEX-CORE simulations. This is created from GHSL data by [`city_population_area.ipynb`](./city_population_area.ipynb) |
+| [city_info.csv](./city_info.csv) | Information (area, population, density, gp022, coordinates, Köppen climate type, ...) on cities reasonably represented in 0.22 deg. resolution CORDEX-CORE simulations. This is created from GHSL data by [`city_population_area.ipynb`](./city_population_area.ipynb) |
 
 Notebooks:
 
