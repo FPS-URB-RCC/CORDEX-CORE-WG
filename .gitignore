@@ -1,0 +1,7 @@
+.ipynb_checkpoints
+*.png
+data/*.pdf
+data/*.gpkg
+data/koppen_1901-2010.tsv
+data/koppen_README.txt
+data/*.zip

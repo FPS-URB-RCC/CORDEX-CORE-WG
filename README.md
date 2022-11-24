@@ -19,3 +19,4 @@ Notebooks:
 | Notebook | Description |
 |----------|-------------|
 | [city_population_area.ipynb](./city_population_area.ipynb) | Displays a map of selected cities by population and area |
+| [city_scatter.ipynb](./city_scatter.ipynb) | Displays area vs population scatterplots by Köppen climate |
