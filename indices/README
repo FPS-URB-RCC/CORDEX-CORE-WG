@@ -1,0 +1,19 @@
+CORDEX FPS - URBAN RCC
+
+Computation of indices using python - Fortran codes
+L. Fita, CIMA, UBA-CONICET, CNRS IRL 3351 IFAECI, IRD
+
+* Code to compute 1D indices from 3-rank data combining python and Fortran
+Python is not that good when looping, Fortran does.
+
+Thus, this suite combines both languages. Python will acces the data, and the computation of 1D index over the space for multiple grid points (implygin loops) will be done by Fortran
+
+= Compilation =
+Compilation is done via a Makfile
+
+* Reqisits
+  - Fortran compiler
+  - python 3.*
+  - f2py
+  
+

@@ -1,0 +1,79 @@
+# Makefile for the computation of 1D indices with Fortran
+# Compilation on a Debian 11 using gcc compilers
+
+FC 	= gfortran
+FCF 	= -c
+LIB_INC = 
+RM 	= rm -f
+F2PY    = /usr/bin/f2py3.9
+F2PYF	= 
+DBGFLAGS = #-g -Wall -Wextra -Warray-temporaries -Wconversion -fimplicit-none -fbacktrace -ffree-line-length-0 -fcheck=all -ffpe-trap=zero,overflow,underflow -finit-real=nan
+DBGFLAGS = 
+NCLIBFOLD	= /usr/lib/x86_64-linux-gnu
+NCINCFOLD	= /usr/include
+NCLIBFFOLD	= /usr/lib/x86_64-linux-gnu
+NCINCFFOLD	= /usr/include
+LIB_NETCDF	= -L$(NCLIBFOLD) -L$(NCLIBFFOLD) -lnetcdff -lnetcdf -I$(NCINCFOLD) -I$(NCINCFFOLD)
+
+FCFLAGS = $(FCF) $(DBGFLAGS)
+
+# Sources for f2py
+srcs = module_definitions.f90 module_generic.f90
+indsrcs = module_definitions.f90 module_basic.f90 module_FortranIndices.f90
+bassrcs = module_definitions.f90 module_basic.f90
+defsrcs = module_definitions.f90
+
+####### ###### ##### #### ### ## #
+
+MODULES = \
+	module_definitions.o \
+	module_basic.o \
+	module_FortranIndices.o
+	
+FEXECMODULES = \
+	module_definitions.o \
+	module_basic.o \
+	module_FortranIndices.o
+	
+all : \
+	pybasmods.o \
+	pydefmods.o \
+	pyForIndex1Dmods.o
+	
+formods : \
+	module_definitions.o \
+	module_basic.o \
+	module_FortranIndices.o
+
+pymods : \
+	pydefmods.o \
+	pygenmods.o \
+	pyForIndex1Dmods.o
+
+clean :
+	$(RM) *.mod *.o module_ForBas*.so module_ForDef*.so module_ForIndex1D
+
+########    #######
+##
+    ########
+
+module_definitions.o:
+	$(FC) $(FCFLAGS) module_definitions.f90
+
+module_basic.o: module_definitions.o
+	$(FC) $(FCFLAGS) module_basic.f90
+
+module_FortranIndices.o: module_definitions.o module_basic.o
+	$(FC) $(FCFLAGS) $(LIB_INC) module_FortranIndices.f90
+
+###### Python bindings
+
+pybasmods.o:
+	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForBas $(bassrcs) -L$(NCLIBFOLD)
+
+pydefmods.o:
+	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForDef $(defsrcs) -L$(NCLIBFOLD)
+
+pyForIndex1Dmods.o:
+	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForIndex1D $(indsrcs) -L$(NCLIBFOLD)
+
