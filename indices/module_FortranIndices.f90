@@ -2,11 +2,56 @@ MODULE module_FortranIndices
 ! Module to compute 1D Indices using Fortran
 
 !!!!!!!! Contents
+! Indices
+! hcwi:
+
+! Structure
+! index1D_from3D_d3: Subroutine to compute 1D indices using 3rd dimension from 3D arrays producing 2D arrays
 
   USE module_definitions
   USE module_basic
 
   CONTAINS
+
+!! Indices
+  REAL FUNCTION hcwi(dt, tempv, missv, typehcwi)
+  !  Heat and Cold Wave Index (HCWI), which is implemented in the Copernicus European Drought 
+  !    Observatory (EDO)
+  ! FROM: https://edo.jrc.ec.europa.eu/documents/factsheets/factsheet_heatColdWaveIndex.pdf
+  
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(in)                                  :: dt
+    REAl, INTENT(in)                                     :: missv
+    REAL, DIMENSION(dimt), INTENT(in)                    :: tempv
+    CHARACTER(len=*), INTENT(in)                         :: typehcwi
+    
+    ! Local
+    INTEGER                                              :: it
+    CHARACTER(len=Sm)                                    :: fname
+    
+!!!!!!! Variables
+! dt: amound time-steps to use
+! tempv: temperature value
+! missv: missing value
+! typehcwi: type of HCWI to compute ('cold', 'hot')
+
+    fname = 'hcwi'
+    
+    IF (TRIM(hcwi) == 'cold') THEN
+    
+    
+    ELSE IF (TRIM(hcwi) == 'hot') THEN
+    
+    
+    END IF
+    
+    RETURN
+  
+  END FUNCTION hcwvi
+
+  
+!! STRUCTURE -- structure 
 
   SUBROUTINE index1D_from3D_d3(d1, d2, d3, indexn, matv, missv, indexv)
   ! Subroutine to compute 1D indices using 3rd dimension from 3D arrays producing 2D arrays
