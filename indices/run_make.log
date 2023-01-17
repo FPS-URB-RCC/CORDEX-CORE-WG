@@ -1,1 +1,1 @@
-bash: mke: command not found
+gfortran -o  test module_definitions.o module_basic.o module_FortranIndices.o  test.f90
