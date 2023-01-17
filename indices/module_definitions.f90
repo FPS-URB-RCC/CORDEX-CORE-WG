@@ -20,5 +20,9 @@ MODULE module_definitions
   
   ! Real FillValue
   REAL, PARAMETER                                        :: fillValueR = 1.e20
+  
+  ! Amount of percentiles
+  ! For minval, 5 to 95%, maxval
+  INTEGER, PARAMETER                                     :: Npercents = 21
 
 END MODULE module_definitions 
