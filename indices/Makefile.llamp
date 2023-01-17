@@ -3,6 +3,7 @@
 
 FC 	= gfortran
 FCF 	= -c
+FEF 	= -o
 LIB_INC = 
 RM 	= rm -f
 F2PY    = /usr/bin/f2py3.9
@@ -16,6 +17,7 @@ NCINCFFOLD	= /usr/include
 LIB_NETCDF	= -L$(NCLIBFOLD) -L$(NCLIBFFOLD) -lnetcdff -lnetcdf -I$(NCINCFOLD) -I$(NCINCFFOLD)
 
 FCFLAGS = $(FCF) $(DBGFLAGS)
+FEXECFLAGS = $(FEF) $(DBGFLAGS)
 
 # Sources for f2py
 srcs = module_definitions.f90 module_generic.f90
@@ -36,9 +38,10 @@ FEXECMODULES = \
 	module_FortranIndices.o
 	
 all : \
-	pybasmods.o \
 	pydefmods.o \
-	pyForIndex1Dmods.o
+	pybasmods.o \
+	pyForIndex1Dmods.o \
+	test
 	
 formods : \
 	module_definitions.o \
@@ -51,7 +54,7 @@ pymods : \
 	pyForIndex1Dmods.o
 
 clean :
-	$(RM) *.mod *.o module_ForBas*.so module_ForDef*.so module_ForIndex1D
+	$(RM) *.mod *.o module_ForBas*.so module_ForDef*.so module_ForIndex1D test
 
 ########    #######
 ##
@@ -61,19 +64,22 @@ module_definitions.o:
 	$(FC) $(FCFLAGS) module_definitions.f90
 
 module_basic.o: module_definitions.o
-	$(FC) $(FCFLAGS) module_basic.f90
+	$(FC) $(FCFLAGS) module_definitions.o module_basic.f90
 
 module_FortranIndices.o: module_definitions.o module_basic.o
-	$(FC) $(FCFLAGS) $(LIB_INC) module_FortranIndices.f90
+	$(FC) $(FCFLAGS) module_definitions.o module_basic.o $(LIB_INC) module_FortranIndices.f90
+
+test: module_definitions.o module_basic.o module_FortranIndices.o
+	$(FC) $(FEXECFLAGS) test module_definitions.o module_basic.o module_FortranIndices.o $(LIB_INC) test.f90
 
 ###### Python bindings
 
-pybasmods.o:
-	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForBas $(bassrcs) -L$(NCLIBFOLD)
-
-pydefmods.o:
+pydefmods.o: module_definitions.o
 	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForDef $(defsrcs) -L$(NCLIBFOLD)
 
-pyForIndex1Dmods.o:
+pybasmods.o: module_definitions.o module_basic.o
+	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForBas $(bassrcs) -L$(NCLIBFOLD)
+
+pyForIndex1Dmods.o: module_definitions.o module_basic.o module_FortranIndices.o
 	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForIndex1D $(indsrcs) -L$(NCLIBFOLD)
 
