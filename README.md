@@ -26,7 +26,8 @@ Notebooks:
 
 ## Including the data
 
-Since the datasets are too big to be stored on GitHub, they are currently stored on RUB's geocloud, see [here](https://geo-cloud.geographie.ruhr-uni-bochum.de/index.php/s/jfNy2xkPktKqzR6).
+Since the datasets are too big to be stored on GitHub, they are currently stored on RUB's geocloud, see [here](https://geo-cloud.geographie.ruhr-uni-bochum.de/index.php/s/jfNy2xkPktKqzR6). This folder is password-protected. In case you are interested to have access, please reach out to [Matthias Demuzere via email](mailto:matthias.demuzere@rub.de?subject=[GitHub]%CORDEX%CORE%DataRequest).
+
 
 1. Either download the data or setup a Nextcloud-sync
 1. While in the repo run the following command to create a symbolic link to have the data folder
