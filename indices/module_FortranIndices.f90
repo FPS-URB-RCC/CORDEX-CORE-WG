@@ -1,5 +1,7 @@
 MODULE module_FortranIndices
-! Module to compute 1D Indices using Fortran
+! Module with the instructions for the computation of 1D indices using Fortran
+!   Using developments from PyNCplot (https://git.cima.fcen.uba.ar/lluis.fita/pyncplot/-/wikis/home)
+!
 
 !!!!!!!! Contents
 ! Indices
@@ -19,7 +21,7 @@ MODULE module_FortranIndices
   CONTAINS
 
 !! Indices
-  REAL FUNCTION hcwi_hot(dt, tasn, tasx, tasnq90, tasxq90, missv)
+  SUBROUTINE hcwi_hot(dt, tasn, tasx, tasnq90, tasxq90, missv, Nheatwaves, heatwaves)
   !  Heat Wave Index (from HCWI), which is implemented in the Copernicus European Drought 
   !    Observatory (EDO)
   ! FROM: https://edo.jrc.ec.europa.eu/documents/factsheets/factsheet_heatColdWaveIndex.pdf
@@ -30,9 +32,14 @@ MODULE module_FortranIndices
     REAl, INTENT(in)                                     :: missv
     REAL, INTENT(in)                                     :: tasnq90, tasxq90
     REAL, DIMENSION(dt), INTENT(in)                      :: tasn, tasx
+    INTEGER, INTENT(out)                                 :: Nheatwaves
+    INTEGER, DIMENSION(dt,2)                             :: heatwaves
     
     ! Local
     INTEGER                                              :: it
+    INTEGER                                              :: Nheatwaves0
+    INTEGER, DIMENSION(dt,2)                             :: heatwaves0
+    LOGICAL, DIMENSION(dt)                               :: hotday
     CHARACTER(len=Sm)                                    :: fname
     
 !!!!!!! Variables
@@ -44,7 +51,61 @@ MODULE module_FortranIndices
 ! missv: missing value
 
     fname = 'hcwi_hot'
-        
+    
+    ! Hot wave as: there are at least three consecutive days with both Tmin and Tmax above (for 
+    !   heatwaves) or below (for cold waves) their daily threshold values (defined as described 
+    !   previously). When two successive heat or cold waves are separated in time by one day, these 
+    !   are considered to be mutually dependent events, and so are merged (“pooled”) as a single event.
+    hotday = .FALSE.
+    DO it=1, dt
+      IF (tasn(it) > tasnq90 .AND. tasx(it) > tasxq90) THEN
+        hotday(it) = .TRUE.
+      END IF
+    END DO
+    
+    Nheatwaves0 = 0
+    heatwaves0 = -1
+    ! index beginning heat-wave
+    ih = -1
+    ! index ending heat-wave
+    eh = -1
+    ! Look for heatwaves
+    DO it=1, dt
+      IF (hotday(it)) THEN
+        IF (ih == -1) THEN
+          ih = it
+        ELSE
+          eh = it
+        END IF
+      ELSE
+        ! Heat wave if consecutive days >= 3
+        IF (ih /= -1 .AND. eh /= -1 .AND. eh - ih >= 2) THEN
+          Nheatwaves0 = Nheatwaves0 + 1
+          heatwaves0(Nheatwaves,1) = ih
+          heatwaves0(Nheatwaves,2) = eh
+          ih = -1
+          eh = -1
+        END IF
+      END IF
+    END DO        
+
+    ! Pooling Heat waves
+    Nheatwaves = 0
+    heatwaves = -1
+    DO it=1, Nheatwaves-1
+      ! Should be checked if the it+2, ..., it+N also should be pooled?
+      IF (heatwaves(it+1,1) - heatwaves(it,2) == 1) THEN
+        Nheatwaves = Nheatwaves + 1
+        heatwaves(Nheatwaves,1) = heatwaves(it,1)
+        heatwaves(Nheatwaves,2) = heatwaves(it+1,2)        
+      ELSE
+        Nheatwaves = Nheatwaves + 1
+        heatwaves(Nheatwaves,1) = heatwaves(it,1)
+        heatwaves(Nheatwaves,2) = heatwaves(it,2)      
+      END IF
+    
+    END DO
+
     RETURN
   
   END FUNCTION hcwi_hot
@@ -149,6 +210,8 @@ MODULE module_FortranIndices
     INTEGER                                              :: Navailindexn
     INTEGER                                              :: Ia
     CHARACTER(len=Sm), DIMENSION(:), ALLOCATABLE         :: availindexn
+    REAL, DIMENSION(:,:), ALLOCATABLE                    :: R2Da, R2Db
+    REAL, DIMENSION(:,:,:), ALLOCATABLE                  :: R2Da, R2Db
     CHARACTER(len=Sm)                                    :: fname
     
 !!!!!!! Variables
@@ -172,8 +235,44 @@ MODULE module_FortranIndices
   
   SELECT CASE (TRIM(indexn))
   
-    CASE ('mean')
+    CASE ('hcwi_hot')
+      ! Heat wave
+      !   Necessary variables: tasn, tasx, tasn11drunq90, tasx11drunq90
+      !   to be assumed to be: maskv, optmatv3Da, optmatv2Da, optmatv2Db
+
+      IF (.NOT.PRESENT(optmatv3Da)) THEN
+        msg = "To compute '" // TRIM(indexn) // "' is necessary at least 'daily tas max', tasmax"
+        CALL StopRun(msg, fname)
+      END IF
     
+      IF (ALLOCATED(R2Da)) DEALLOCATE(R2Da)
+      ALLOCATE(R2Da(d1,d2))
+      IF (ALLOCATED(R2Db)) DEALLOCATE(R2Db)
+      ALLOCATE(R2Db(d1,d2))
+      ! Computing tasmin90 [30-year baseline period (1981-2010)]
+      ! 90th percentile ('Q90') of the 330 respective temperature values in an 11-day window centred 
+      !   on that day, for all years in the baseline period
+      IF (.NOT.PRESENT(optmatv2Da)) THEN
+        IF (ALLOCATED(R3Da)) DEALLOCATE(R3Da)
+        ALLOCATE(R3Da(d1,d2,Npercents))
+        
+        CALL stats1D_from3D_d3(d1, d2, d3, 'percentiles', matv, maskv, missv, R2Da, R3Da)
+        R2Da = R3Da(:,:,19)
+      ELSE
+        R2Da = optmatv2Da
+      END IF
+    
+      ! Computing tasmax90
+      IF (.NOT.PRESENT(optmatv2Da)) THEN
+        IF (ALLOCATED(R3Da)) DEALLOCATE(R3Da)
+        ALLOCATE(R3Da(d1,d2,Npercents))
+        
+        CALL stats1D_from3D_d3(d1, d2, d3, 'percentiles', matv, maskv, missv, R2Da, R3Da)
+        R2Db = R3Da(:,:,19)
+      ELSE
+        R2Db = optmatv2Db
+      END IF
+
       indexv = 0.
       ! Amount of values
       Ia = 0
@@ -181,14 +280,7 @@ MODULE module_FortranIndices
       DO i=1, d1
         DO j=1, d2
           IF (.NOT.maskv(i,j)) THEN
-            Ia = 0
-            DO k=1, d3
-              IF (matv(i,j,k) /= missv) THEN
-                indexv(i,j) = indexv(i,j) + matv(i,j,k)
-                Ia = Ia + 1
-              END IF
-            END DO
-            indexv(i,j) = indexv(i,j) / Ia
+            indexv(i,j) = hcwi_hot(d3, matv, optmatv3Da, R2Da, R2Db, missv)
           END IF
         END DO
       END DO

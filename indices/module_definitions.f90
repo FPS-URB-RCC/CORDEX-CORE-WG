@@ -1,4 +1,7 @@
 MODULE module_definitions
+! Module with the definitions for the computation of 1D indices using Fortran
+!   Using developments from PyNCplot (https://git.cima.fcen.uba.ar/lluis.fita/pyncplot/-/wikis/home)
+!
 
   IMPLICIT NONE
   

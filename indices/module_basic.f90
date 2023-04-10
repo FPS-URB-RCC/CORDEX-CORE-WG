@@ -1,5 +1,8 @@
 MODULE module_basic
-! Module with the basic instructions
+! Module with the basic instructions for the computation of 1D indices using Fortran
+!   Using developments from PyNCplot (https://git.cima.fcen.uba.ar/lluis.fita/pyncplot/-/wikis/home)
+!
+
 
 ! Content
 
