@@ -4,10 +4,16 @@ errormsg = 'ERROR -- error -- ERROR -- error'
 warnmsg = 'WARNING -- warning -- WARNING -- warning'
 
 ####### Content
+# Text
 # check_arguments: Function to check the number of arguments if they are coincident
 # files_folder_HMT: Function to retrieve a list of files from a folder [fold] and 
 #   files named [head]*[middle]*[tail]
 # Str_Bool: Function to transform from a String value to a boolean one
+# str_list: Function to obtain a list from a string giving a split character
+# str_list_kinds: Function to obtain a list of types of values from a string giving a 
+#   split character and a list of kinds of values
+# stringS_dictvar: Function to provide a dictionary from a String which list of DVs 
+#   separated [key] [value] couples
 
 def files_folder_HMT(folder='.',head='',middle='',tail='', rmfolder=True):
     """ Function to retrieve a list of files from a folder [fold] and files named 
@@ -123,4 +129,120 @@ def check_arguments(funcname, args, expectargs, char):
 
     return
 
+# Section: Text
+
+def str_list(string, cdiv, empty=False):
+    """ Function to obtain a list from a string giving a split character
+      string= String from which to obtain a list ('None' for None)
+      cdiv= character to use to split the string
+      empty= whether empty values should be retained (False, default)
+        ....)
+    >>> str_list('d01 1995-01-10_00:00:00  alloc_space_field: domain  ' + 
+      '          2 ,               4281600  bytes allocated', ' ')
+    ['d01', '1995-01-10_00:00:00', 'alloc_space_field:', 'domain', '2', ',', 
+     '4281600', 'bytes', 'allocated']
+    """
+    fname = 'str_list_k'
+
+    if string.find(cdiv) != -1:
+        listv = string.split(cdiv)
+    else:
+        if string == 'None':
+            listv = None
+        else:
+            listv = [string]
+
+    if listv is not None:
+        finalist = []
+        if not empty:
+            for lv in listv:
+                if len(lv) > 0: finalist.append(lv)
+        else:
+            finalist = list(listv)
+    else:
+        finalist = None
+
+    return finalist
+
+def str_list_kinds(string, cdiv, kinds):
+    """ Function to obtain a list of types of values from a string giving a split 
+        character and a list of kinds of values
+      string= String from which to obtain a list ('None' for None)
+      cdiv= character to use to split the string
+      kinds= list of kind of desired type of values (as string like: 'np.float', 
+        'int', 'np.float64', ....)
+    >>> str_list_kinds('1:@#:$:56', ':', ['I', 'S', 'S', 'F'])
+    [1, '@#', '$', 56.0]
+    >>> str_list_kinds('1:3.4:12.3', ':', ['I', 'np.float64', 'F'])
+    [1, 3.4, 12.3]
+    """
+    fname = 'str_list_kinds'
+
+    if string.count(cdiv) != 0:
+        listv = string.split(cdiv)
+    else:
+        if string == 'None':
+            listv = None
+        else:
+            listv = [string]
+
+    Nv = len(listv)
+    newlist = []
+    # Checking for 0-length values
+    for il in range(Nv):
+        if len(listv[il]) > 0: newlist.append(listv[il])
+    Nv = len(newlist)
+    listv = list(newlist)
+   
+    Nk = len(kinds)
+    if Nv != Nk:
+        print (errormsg)
+        print ('  ' + fname + ": the amount of values", Nv, "and the amount of " +   \
+          "kinds", Nk, 'do not coincide !!')
+        print ('  String of values:', string)
+        print ('    i value kind _______')
+        if Nv > Nk:
+            for iv in range(Nk):
+                print ('   ', iv, listv[iv], kinds[iv])
+            print ('  exceess of values:', listv[Nk:Nv])
+        else:
+            for iv in range(Nv):
+                print ('   ', iv, listv[iv], kinds[iv])
+            print ('  exceess of kinds:', kinds[Nv:Nk])
+        quit(-1)
+            
+    if listv is not None:
+        finalist = []
+        iv = 0
+        for lv in listv:
+            finalist.append(typemod(lv, kinds[iv]))
+            iv = iv + 1
+    else:
+        finalist = None
+
+    return finalist
+
+def stringS_dictvar(stringv, Dc=',', DVs=':'):
+    """ Function to provide a dictionary from a String which list of DVs separated 
+          [key] [value] couples
+      stringv: String with a dictionary content as [key1][DVs][val1][Dc][key2][DVs][Val2][Dc]...
+      Sc: character to separate key values
+      DVs: character to separate key-value couples
+    >>> stringS_dictvar('i:1,iv:4,vii:7',',',':')
+    {'i': '1', 'vii': '7', 'iv': '4'}
+    """
+    fname = 'stringS_dictvar'
+
+    if stringv.count(Dc) != 0:
+        strvv = stringv.split(Dc)
+    else:
+        strvv = [stringv]
+
+    dictv = {}
+    for Svals in strvv:
+        keyn = Svals.split(DVs)[0]
+        valn = Svals.split(DVs)[1]
+        dictv[keyn] = valn
+
+    return dictv
 
