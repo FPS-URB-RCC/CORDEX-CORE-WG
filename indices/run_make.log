@@ -1,1 +1,446 @@
-gfortran -o  test module_definitions.o module_basic.o module_FortranIndices.o  test.f90
+/usr/bin/f2py3.9 -c  -I/usr/include -m module_ForDef module_definitions.f90 -L/usr/lib/x86_64-linux-gnu
+running build
+running config_cc
+unifing config_cc, config, build_clib, build_ext, build commands --compiler options
+running config_fc
+unifing config_fc, config, build_clib, build_ext, build commands --fcompiler options
+running build_src
+build_src
+building extension "module_ForDef" sources
+f2py options: []
+f2py:> /tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDefmodule.c
+creating /tmp/tmplux5tx4n/src.linux-x86_64-3.9
+Reading fortran codes...
+	Reading file 'module_definitions.f90' (format:free)
+Post-processing...
+	Block: module_ForDef
+			Block: module_definitions
+Post-processing (stage 2)...
+	Block: module_ForDef
+		Block: unknown_interface
+			Block: module_definitions
+Building modules...
+	Building module "module_ForDef"...
+		Constructing F90 module support for "module_definitions"...
+		  Variables: sh sl sm st su errormsg msg fillvaluer npercents
+	Wrote C/API module "module_ForDef" to file "/tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDefmodule.c"
+	Fortran 90 wrappers are saved to "/tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDef-f2pywrappers2.f90"
+  adding '/tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.c' to sources.
+  adding '/tmp/tmplux5tx4n/src.linux-x86_64-3.9' to include_dirs.
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.c -> /tmp/tmplux5tx4n/src.linux-x86_64-3.9
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.h -> /tmp/tmplux5tx4n/src.linux-x86_64-3.9
+  adding '/tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDef-f2pywrappers2.f90' to sources.
+build_src: building npy-pkg config files
+running build_ext
+customize UnixCCompiler
+customize UnixCCompiler using build_ext
+get_default_fcompiler: matching types: '['gnu95', 'intel', 'lahey', 'pg', 'nv', 'absoft', 'nag', 'vast', 'compaq', 'intele', 'intelem', 'gnu', 'g95', 'pathf95', 'nagfor']'
+customize Gnu95FCompiler
+Found executable /usr/bin/gfortran
+customize Gnu95FCompiler
+customize Gnu95FCompiler using build_ext
+building 'module_ForDef' extension
+compiling C sources
+C compiler: x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC
+
+creating /tmp/tmplux5tx4n/tmp
+creating /tmp/tmplux5tx4n/tmp/tmplux5tx4n
+creating /tmp/tmplux5tx4n/tmp/tmplux5tx4n/src.linux-x86_64-3.9
+compile options: '-I/usr/include -I/tmp/tmplux5tx4n/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+x86_64-linux-gnu-gcc: /tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDefmodule.c
+x86_64-linux-gnu-gcc: /tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.c
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDefmodule.c:15:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.c:2:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+compiling Fortran 90 module sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmplux5tx4n/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmplux5tx4n/ -I/tmp/tmplux5tx4n/'
+gfortran:f90: module_definitions.f90
+compiling Fortran sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmplux5tx4n/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmplux5tx4n/ -I/tmp/tmplux5tx4n/'
+gfortran:f90: /tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDef-f2pywrappers2.f90
+/usr/bin/gfortran -Wall -g -Wall -g -shared /tmp/tmplux5tx4n/tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDefmodule.o /tmp/tmplux5tx4n/tmp/tmplux5tx4n/src.linux-x86_64-3.9/fortranobject.o /tmp/tmplux5tx4n/module_definitions.o /tmp/tmplux5tx4n/tmp/tmplux5tx4n/src.linux-x86_64-3.9/module_ForDef-f2pywrappers2.o -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10 -lgfortran -o ./module_ForDef.cpython-39-x86_64-linux-gnu.so
+Removing build directory /tmp/tmplux5tx4n
+/usr/bin/f2py3.9 -c  -I/usr/include -m module_ForBas module_definitions.f90 module_basic.f90 -L/usr/lib/x86_64-linux-gnu
+running build
+running config_cc
+unifing config_cc, config, build_clib, build_ext, build commands --compiler options
+running config_fc
+unifing config_fc, config, build_clib, build_ext, build commands --fcompiler options
+running build_src
+build_src
+building extension "module_ForBas" sources
+f2py options: []
+f2py:> /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.c
+creating /tmp/tmpwpupk1ow/src.linux-x86_64-3.9
+rmbadname1: Replacing "string" with "string_bn".
+rmbadname1: Replacing "string" with "string_bn".
+analyzevars: charselector={'len': '*'} unhandled.getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+Reading fortran codes...
+	Reading file 'module_definitions.f90' (format:free)
+	Reading file 'module_basic.f90' (format:free)
+Post-processing...
+	Block: module_ForBas
+			Block: module_definitions
+			Block: module_basic
+				Block: findminimumr
+				Block: swapr
+				Block: sortr
+				Block: removenonnum
+				Block: itos
+				Block: stoprunavail
+				Block: stoprun
+Post-processing (stage 2)...
+	Block: module_ForBas
+		Block: unknown_interface
+			Block: module_definitions
+			Block: module_basic
+				Block: findminimumr
+				Block: swapr
+				Block: sortr
+				Block: removenonnum
+				Block: itos
+				Block: stoprunavail
+				Block: stoprun
+Building modules...
+	Building module "module_ForBas"...
+		Constructing F90 module support for "module_definitions"...
+		  Variables: sh sl sm st su errormsg msg fillvaluer npercents
+		Constructing F90 module support for "module_basic"...
+		Creating wrapper for Fortran function "findminimumr"("findminimumr")...
+			Constructing wrapper function "module_basic.findminimumr"...
+			  findminimumr = findminimumr(x,startv,endv,missv,[dsize])
+			Constructing wrapper function "module_basic.swapr"...
+			  swapr(a,b)
+			Constructing wrapper function "module_basic.sortr"...
+			  sortr(x,missv,[nx])
+			Constructing wrapper function "module_basic.removenonnum"...
+			  newstring = removenonnum(string_bn)
+		Creating wrapper for Fortran function "itos"("itos")...
+			Constructing wrapper function "module_basic.itos"...
+			  itos = itos(ival)
+			Constructing wrapper function "module_basic.stoprunavail"...
+			  stoprunavail(msg,fname,avail,[navail])
+			Constructing wrapper function "module_basic.stoprun"...
+			  stoprun(msg,funcn,errn)
+	Wrote C/API module "module_ForBas" to file "/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.c"
+	Fortran 90 wrappers are saved to "/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBas-f2pywrappers2.f90"
+  adding '/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.c' to sources.
+  adding '/tmp/tmpwpupk1ow/src.linux-x86_64-3.9' to include_dirs.
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.c -> /tmp/tmpwpupk1ow/src.linux-x86_64-3.9
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.h -> /tmp/tmpwpupk1ow/src.linux-x86_64-3.9
+  adding '/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBas-f2pywrappers2.f90' to sources.
+build_src: building npy-pkg config files
+running build_ext
+customize UnixCCompiler
+customize UnixCCompiler using build_ext
+get_default_fcompiler: matching types: '['gnu95', 'intel', 'lahey', 'pg', 'nv', 'absoft', 'nag', 'vast', 'compaq', 'intele', 'intelem', 'gnu', 'g95', 'pathf95', 'nagfor']'
+customize Gnu95FCompiler
+Found executable /usr/bin/gfortran
+customize Gnu95FCompiler
+customize Gnu95FCompiler using build_ext
+building 'module_ForBas' extension
+compiling C sources
+C compiler: x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC
+
+creating /tmp/tmpwpupk1ow/tmp
+creating /tmp/tmpwpupk1ow/tmp/tmpwpupk1ow
+creating /tmp/tmpwpupk1ow/tmp/tmpwpupk1ow/src.linux-x86_64-3.9
+compile options: '-I/usr/include -I/tmp/tmpwpupk1ow/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+x86_64-linux-gnu-gcc: /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.c
+x86_64-linux-gnu-gcc: /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.c
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.c:16:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.c:2:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.c:221:12: warning: ‘f2py_size’ defined but not used [-Wunused-function]
+  221 | static int f2py_size(PyArrayObject* var, ...)
+      |            ^~~~~~~~~
+compiling Fortran 90 module sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmpwpupk1ow/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmpwpupk1ow/ -I/tmp/tmpwpupk1ow/'
+gfortran:f90: module_definitions.f90
+gfortran:f90: module_basic.f90
+module_basic.f90:162:77:
+
+  162 |     CHARACTER(LEN=50)                                      :: errmsg, warnmsg
+      |                                                                             1
+Warning: Unused variable ‘warnmsg’ declared at (1) [-Wunused-variable]
+compiling Fortran sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmpwpupk1ow/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmpwpupk1ow/ -I/tmp/tmpwpupk1ow/'
+gfortran:f90: /tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBas-f2pywrappers2.f90
+/usr/bin/gfortran -Wall -g -Wall -g -shared /tmp/tmpwpupk1ow/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBasmodule.o /tmp/tmpwpupk1ow/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/fortranobject.o /tmp/tmpwpupk1ow/module_definitions.o /tmp/tmpwpupk1ow/module_basic.o /tmp/tmpwpupk1ow/tmp/tmpwpupk1ow/src.linux-x86_64-3.9/module_ForBas-f2pywrappers2.o -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10 -lgfortran -o ./module_ForBas.cpython-39-x86_64-linux-gnu.so
+Removing build directory /tmp/tmpwpupk1ow
+/usr/bin/f2py3.9 -c  -I/usr/include -m module_ForIndex1D module_definitions.f90 module_basic.f90 module_FortranIndices1D.f90 module_FortranIndices.f90 -L/usr/lib/x86_64-linux-gnu
+running build
+running config_cc
+unifing config_cc, config, build_clib, build_ext, build commands --compiler options
+running config_fc
+unifing config_fc, config, build_clib, build_ext, build commands --fcompiler options
+running build_src
+build_src
+building extension "module_ForIndex1D" sources
+f2py options: []
+f2py:> /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.c
+creating /tmp/tmpg78hpu5h/src.linux-x86_64-3.9
+rmbadname1: Replacing "string" with "string_bn".
+rmbadname1: Replacing "string" with "string_bn".
+analyzevars: charselector={'len': '*'} unhandled.analyzevars: charselector={'len': '50'} unhandled.analyzevars: charselector={'len': '50'} unhandled.getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+getstrlength:intent(hide): expected a string with defined length but got: {'typespec': 'character', 'charselector': {'*': '(*)'}, 'attrspec': [], 'intent': ['out']}
+Reading fortran codes...
+	Reading file 'module_definitions.f90' (format:free)
+	Reading file 'module_basic.f90' (format:free)
+	Reading file 'module_FortranIndices1D.f90' (format:free)
+	Reading file 'module_FortranIndices.f90' (format:free)
+Post-processing...
+	Block: module_ForIndex1D
+			Block: module_definitions
+			Block: module_basic
+				Block: findminimumr
+				Block: swapr
+				Block: sortr
+				Block: removenonnum
+				Block: itos
+				Block: stoprunavail
+				Block: stoprun
+			Block: module_fortranindices1d
+				Block: hcwi_hot
+				Block: percentilesr
+			Block: module_fortranindices
+				Block: index1d_from3d_d3
+				Block: stats1d_from3d_d3
+Post-processing (stage 2)...
+	Block: module_ForIndex1D
+		Block: unknown_interface
+			Block: module_definitions
+			Block: module_basic
+				Block: findminimumr
+				Block: swapr
+				Block: sortr
+				Block: removenonnum
+				Block: itos
+				Block: stoprunavail
+				Block: stoprun
+			Block: module_fortranindices1d
+				Block: hcwi_hot
+				Block: percentilesr
+			Block: module_fortranindices
+				Block: index1d_from3d_d3
+				Block: stats1d_from3d_d3
+Building modules...
+	Building module "module_ForIndex1D"...
+		Constructing F90 module support for "module_definitions"...
+		  Variables: sh sl sm st su errormsg msg fillvaluer npercents
+		Constructing F90 module support for "module_basic"...
+		Creating wrapper for Fortran function "findminimumr"("findminimumr")...
+			Constructing wrapper function "module_basic.findminimumr"...
+			  findminimumr = findminimumr(x,startv,endv,missv,[dsize])
+			Constructing wrapper function "module_basic.swapr"...
+			  swapr(a,b)
+			Constructing wrapper function "module_basic.sortr"...
+			  sortr(x,missv,[nx])
+			Constructing wrapper function "module_basic.removenonnum"...
+			  newstring = removenonnum(string_bn)
+		Creating wrapper for Fortran function "itos"("itos")...
+			Constructing wrapper function "module_basic.itos"...
+			  itos = itos(ival)
+			Constructing wrapper function "module_basic.stoprunavail"...
+			  stoprunavail(msg,fname,avail,[navail])
+			Constructing wrapper function "module_basic.stoprun"...
+			  stoprun(msg,funcn,errn)
+		Constructing F90 module support for "module_fortranindices1d"...
+			Constructing wrapper function "module_fortranindices1d.hcwi_hot"...
+			  nheatwaves = hcwi_hot(tasn,tasx,tasnq90,tasxq90,missv,heatwaves,[dt])
+			Constructing wrapper function "module_fortranindices1d.percentilesr"...
+			  percents = percentilesr(vals,missv,npercents,[nvals,optypepercent])
+		Constructing F90 module support for "module_fortranindices"...
+			Constructing wrapper function "module_fortranindices.index1d_from3d_d3"...
+			  indexv,op2diindexa,op2diindexb,op2diindexc,op2drindexa,op2drindexb,op3diindexa,op3diindexb,op3diindexc,op3drindexa,op3drindexb = index1d_from3d_d3(indexn,matv,maskv,missv,[d1,d2,d3,opmatv2da,opmatv2db,opmatv2dc,opmatv3da,opmatv3db,opmatv3dc])
+			Constructing wrapper function "module_fortranindices.stats1d_from3d_d3"...
+			  statv,percents = stats1d_from3d_d3(statn,matv,maskv,missv,[d1,d2,d3])
+	Wrote C/API module "module_ForIndex1D" to file "/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.c"
+	Fortran 90 wrappers are saved to "/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1D-f2pywrappers2.f90"
+  adding '/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.c' to sources.
+  adding '/tmp/tmpg78hpu5h/src.linux-x86_64-3.9' to include_dirs.
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.c -> /tmp/tmpg78hpu5h/src.linux-x86_64-3.9
+copying /usr/lib/python3/dist-packages/numpy/f2py/src/fortranobject.h -> /tmp/tmpg78hpu5h/src.linux-x86_64-3.9
+  adding '/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1D-f2pywrappers2.f90' to sources.
+build_src: building npy-pkg config files
+running build_ext
+customize UnixCCompiler
+customize UnixCCompiler using build_ext
+get_default_fcompiler: matching types: '['gnu95', 'intel', 'lahey', 'pg', 'nv', 'absoft', 'nag', 'vast', 'compaq', 'intele', 'intelem', 'gnu', 'g95', 'pathf95', 'nagfor']'
+customize Gnu95FCompiler
+Found executable /usr/bin/gfortran
+customize Gnu95FCompiler
+customize Gnu95FCompiler using build_ext
+building 'module_ForIndex1D' extension
+compiling C sources
+C compiler: x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -g -ffile-prefix-map=/build/python3.9-RNBry6/python3.9-3.9.2=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC
+
+creating /tmp/tmpg78hpu5h/tmp
+creating /tmp/tmpg78hpu5h/tmp/tmpg78hpu5h
+creating /tmp/tmpg78hpu5h/tmp/tmpg78hpu5h/src.linux-x86_64-3.9
+compile options: '-I/usr/include -I/tmp/tmpg78hpu5h/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+x86_64-linux-gnu-gcc: /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.c
+x86_64-linux-gnu-gcc: /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.c
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.c:2:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+In file included from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /usr/lib/python3/dist-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.h:13,
+                 from /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.c:16:
+/usr/lib/python3/dist-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+   17 | #warning "Using deprecated NumPy API, disable it with " \
+      |  ^~~~~~~
+/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.c:221:12: warning: ‘f2py_size’ defined but not used [-Wunused-function]
+  221 | static int f2py_size(PyArrayObject* var, ...)
+      |            ^~~~~~~~~
+compiling Fortran 90 module sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmpg78hpu5h/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmpg78hpu5h/ -I/tmp/tmpg78hpu5h/'
+gfortran:f90: module_definitions.f90
+gfortran:f90: module_basic.f90
+module_basic.f90:162:77:
+
+  162 |     CHARACTER(LEN=50)                                      :: errmsg, warnmsg
+      |                                                                             1
+Warning: Unused variable ‘warnmsg’ declared at (1) [-Wunused-variable]
+gfortran:f90: module_FortranIndices1D.f90
+module_FortranIndices1D.f90:18:61:
+
+   18 |   SUBROUTINE hcwi_hot(dt, tasn, tasx, tasnq90, tasxq90, missv, Nheatwaves, heatwaves)
+      |                                                             1
+Warning: Unused dummy argument ‘missv’ at (1) [-Wunused-dummy-argument]
+gfortran:f90: module_FortranIndices.f90
+module_FortranIndices.f90:45:62:
+
+   45 |     INTEGER                                              :: Ia
+      |                                                              1
+Warning: Unused variable ‘ia’ declared at (1) [-Wunused-variable]
+module_FortranIndices.f90:43:67:
+
+   43 |     INTEGER                                              :: i, j, k
+      |                                                                   1
+Warning: Unused variable ‘k’ declared at (1) [-Wunused-variable]
+module_FortranIndices.f90:23:80:
+
+   23 |     opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+      |                                                                                1
+Warning: Dummy argument ‘op2diindexb’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:23:93:
+
+   23 |     opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+      |                                                                                             1
+Warning: Dummy argument ‘op2diindexc’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:24:15:
+
+   24 |     op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
+      |               1
+Warning: Dummy argument ‘op2drindexa’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:24:28:
+
+   24 |     op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
+      |                            1
+Warning: Dummy argument ‘op2drindexb’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:24:67:
+
+   24 |     op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
+      |                                                                   1
+Warning: Dummy argument ‘op3diindexc’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:24:80:
+
+   24 |     op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
+      |                                                                                1
+Warning: Dummy argument ‘op3drindexa’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:24:93:
+
+   24 |     op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
+      |                                                                                             1
+Warning: Dummy argument ‘op3drindexb’ at (1) was declared INTENT(OUT) but was not set [-Wunused-dummy-argument]
+module_FortranIndices.f90:23:13:
+
+   23 |     opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+      |             1
+Warning: Unused dummy argument ‘opmatv2dc’ at (1) [-Wunused-dummy-argument]
+module_FortranIndices.f90:23:35:
+
+   23 |     opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+      |                                   1
+Warning: Unused dummy argument ‘opmatv3db’ at (1) [-Wunused-dummy-argument]
+module_FortranIndices.f90:23:46:
+
+   23 |     opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+      |                                              1
+Warning: Unused dummy argument ‘opmatv3dc’ at (1) [-Wunused-dummy-argument]
+module_FortranIndices.f90:288:49:
+
+  288 |                 Rb = Rb + matv(i,j,k)*matv(i,j,k)
+      |                                                 ^
+Warning: ‘rb’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+module_FortranIndices.f90:287:37:
+
+  287 |                 Ra = Ra + matv(i,j,k)
+      |                                     ^
+Warning: ‘ra’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+compiling Fortran sources
+Fortran f77 compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -g -ffixed-form -fno-second-underscore -Wall -g -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/usr/include -I/tmp/tmpg78hpu5h/src.linux-x86_64-3.9 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/include/python3.9 -c'
+extra options: '-J/tmp/tmpg78hpu5h/ -I/tmp/tmpg78hpu5h/'
+gfortran:f90: /tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1D-f2pywrappers2.f90
+/usr/bin/gfortran -Wall -g -Wall -g -shared /tmp/tmpg78hpu5h/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1Dmodule.o /tmp/tmpg78hpu5h/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/fortranobject.o /tmp/tmpg78hpu5h/module_definitions.o /tmp/tmpg78hpu5h/module_basic.o /tmp/tmpg78hpu5h/module_FortranIndices1D.o /tmp/tmpg78hpu5h/module_FortranIndices.o /tmp/tmpg78hpu5h/tmp/tmpg78hpu5h/src.linux-x86_64-3.9/module_ForIndex1D-f2pywrappers2.o -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10 -lgfortran -o ./module_ForIndex1D.cpython-39-x86_64-linux-gnu.so
+Removing build directory /tmp/tmpg78hpu5h
