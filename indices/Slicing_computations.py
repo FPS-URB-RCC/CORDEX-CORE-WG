@@ -119,6 +119,8 @@ if opts.slice is None:
 else
     slicev = opts.slice + ''
 
+# Getting the files
 files = gen.files_folder_HMT(folder=opts.fold, head=header, middle=middle, tail=tail,\
   rmfolder=False)
+
 
