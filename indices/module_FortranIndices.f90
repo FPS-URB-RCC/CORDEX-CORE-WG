@@ -13,13 +13,15 @@ MODULE module_FortranIndices
 
   USE module_definitions
   USE module_basic
+  USE module_fortranindices1d
 
   CONTAINS
   
 !! STRUCTURE -- structure 
 
   SUBROUTINE index1D_from3D_d3(d1, d2, d3, indexn, matv, maskv, missv, opmatv2Da, opmatv2Db,          &
-    opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv)
+    opmatv2Dc, opmatv3Da, opmatv3Db, opmatv3Dc, indexv, op2DIindexa, op2DIindexb, op2DIindexc,        &
+    op2DRindexa, op2DRindexb, op3DIindexa, op3DIindexb, op3DIindexc, op3DRindexa, op3DRindexb)
   ! Subroutine to compute 1D indices using 3rd dimension from 3D arrays producing 2D arrays
   
     IMPLICIT NONE
@@ -32,12 +34,18 @@ MODULE module_FortranIndices
     REAL, DIMENSION(d1,d2,d3), OPTIONAL, INTENT(in)      :: opmatv3Da, opmatv3Db, opmatv3Dc
     LOGICAL, DIMENSION(d1,d2), INTENT(in)                :: maskv
     REAL, DIMENSION(d1,d2), INTENT(out)                  :: indexv
+    INTEGER, DIMENSION(d1,d2), OPTIONAL, INTENT(out)     :: op2DIindexa, op2DIindexb, op2DIindexc
+    REAL, DIMENSION(d1,d2), OPTIONAL, INTENT(out)        :: op2DRindexa, op2DRindexb
+    INTEGER, DIMENSION(d1,d2,d3), OPTIONAL, INTENT(out)  :: op3DIindexa, op3DIindexb, op3DIindexc
+    REAL, DIMENSION(d1,d2,d3), OPTIONAL, INTENT(out)     :: op3DRindexa, op3DRindexb
 
     ! Local
     INTEGER                                              :: i, j, k
     INTEGER                                              :: Navailindexn
     INTEGER                                              :: Ia
     CHARACTER(len=Sm), DIMENSION(:), ALLOCATABLE         :: availindexn
+    INTEGER, DIMENSION(:), ALLOCATABLE                   :: I1Da, I1Db
+    INTEGER, DIMENSION(:,:), ALLOCATABLE                 :: I2Da, I2Db
     REAL, DIMENSION(:,:), ALLOCATABLE                    :: R2Da, R2Db
     REAL, DIMENSION(:,:,:), ALLOCATABLE                  :: R3Da, R3Db
     CHARACTER(len=Sm)                                    :: fname
@@ -103,12 +111,16 @@ MODULE module_FortranIndices
 
       indexv = 0.
       ! Amount of values
-      Ia = 0
+      ALLOCATE(I2Da(d3,2))
+      op2DIindexa = 0
     
       DO i=1, d1
         DO j=1, d2
           IF (.NOT.maskv(i,j)) THEN
-            CALL hcwi_hot(d3, matv, opmatv3Da(i,j,:), R2Da, R2Db, missv, indexv(i,j))
+            CALL hcwi_hot(d3, matv(i,j,:), opmatv3Da(i,j,:), R2Da(i,j), R2Db(i,j), missv,             &
+              op2DIindexa(i,j), I2Da)
+            op3DIindexa(i,j,1:op2DIindexa(i,j)) = I2Da(1:op2DIindexa(i,j),1)
+            op3DIindexb(i,j,1:op2DIindexa(i,j)) = I2Da(1:op2DIindexa(i,j),2)
           END IF
         END DO
       END DO
@@ -122,6 +134,14 @@ MODULE module_FortranIndices
     END SELECT
 
     DEALLOCATE(availindexn)
+    IF (ALLOCATED(I1Da)) DEALLOCATE(I1Da)
+    IF (ALLOCATED(I1Db)) DEALLOCATE(I1Db)
+    IF (ALLOCATED(I2Da)) DEALLOCATE(I2Da)
+    IF (ALLOCATED(I2Db)) DEALLOCATE(I2Db)
+    IF (ALLOCATED(R2Da)) DEALLOCATE(R2Da)
+    IF (ALLOCATED(R2Db)) DEALLOCATE(R2Db)
+    IF (ALLOCATED(R3Da)) DEALLOCATE(R3Da)
+    IF (ALLOCATED(R3Db)) DEALLOCATE(R3Db)
 
     RETURN
 

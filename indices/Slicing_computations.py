@@ -25,7 +25,7 @@ import gen_tools as gen
 
 # Importing Fortran modules and the others
 import module_ForDef as fdef
-import module_ForDiag as fdiag
+import module_ForBas as fbas
 import module_ForGen as fgen
 import module_ForSci as fsci
 

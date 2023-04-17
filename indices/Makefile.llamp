@@ -21,7 +21,7 @@ FEXECFLAGS = $(FEF) $(DBGFLAGS)
 
 # Sources for f2py
 srcs = module_definitions.f90 module_generic.f90
-indsrcs = module_definitions.f90 module_basic.f90 module_FortranIndices.f90
+indsrcs = module_definitions.f90 module_basic.f90 module_FortranIndices1D.f90 module_FortranIndices.f90
 bassrcs = module_definitions.f90 module_basic.f90
 defsrcs = module_definitions.f90
 
@@ -30,11 +30,13 @@ defsrcs = module_definitions.f90
 MODULES = \
 	module_definitions.o \
 	module_basic.o \
+	module_FortranIndices1D.o \
 	module_FortranIndices.o
 	
 FEXECMODULES = \
 	module_definitions.o \
 	module_basic.o \
+	module_FortranIndices1D.o \
 	module_FortranIndices.o
 	
 all : \
@@ -46,6 +48,7 @@ all : \
 formods : \
 	module_definitions.o \
 	module_basic.o \
+	module_FortranIndices1D.o \
 	module_FortranIndices.o
 
 pymods : \
@@ -66,11 +69,14 @@ module_definitions.o:
 module_basic.o: module_definitions.o
 	$(FC) $(FCFLAGS) module_definitions.o module_basic.f90
 
-module_FortranIndices.o: module_definitions.o module_basic.o
-	$(FC) $(FCFLAGS) module_definitions.o module_basic.o $(LIB_INC) module_FortranIndices.f90
+module_FortranIndices1D.o: module_definitions.o module_basic.o
+	$(FC) $(FCFLAGS) module_definitions.o module_basic.o $(LIB_INC) module_FortranIndices1D.f90
+
+module_FortranIndices.o: module_definitions.o module_basic.o module_FortranIndices1D.o
+	$(FC) $(FCFLAGS) module_definitions.o module_basic.o module_FortranIndices1D.o $(LIB_INC) module_FortranIndices.f90
 
 test: module_definitions.o module_basic.o module_FortranIndices.o
-	$(FC) $(FEXECFLAGS) test module_definitions.o module_basic.o module_FortranIndices.o $(LIB_INC) test.f90
+	$(FC) $(FEXECFLAGS) test module_definitions.o module_basic.o module_FortranIndices1D.o module_FortranIndices.o $(LIB_INC) test.f90
 
 ###### Python bindings
 
@@ -80,6 +86,6 @@ pydefmods.o: module_definitions.o
 pybasmods.o: module_definitions.o module_basic.o
 	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForBas $(bassrcs) -L$(NCLIBFOLD)
 
-pyForIndex1Dmods.o: module_definitions.o module_basic.o module_FortranIndices.o
+pyForIndex1Dmods.o: module_definitions.o module_basic.o module_FortranIndices1D.o module_FortranIndices.o
 	$(F2PY) -c $(F2PYF) -I$(NCINCFOLD) -m module_ForIndex1D $(indsrcs) -L$(NCLIBFOLD)
 
