@@ -123,4 +123,5 @@ else
 files = gen.files_folder_HMT(folder=opts.fold, head=header, middle=middle, tail=tail,\
   rmfolder=False)
 
-
+# Getting the slice
+varslice = gen.str_list_kinds(opts.slice, )
