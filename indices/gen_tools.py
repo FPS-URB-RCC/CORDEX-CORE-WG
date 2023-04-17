@@ -4,8 +4,10 @@ errormsg = 'ERROR -- error -- ERROR -- error'
 warnmsg = 'WARNING -- warning -- WARNING -- warning'
 
 ####### Content
+# check_arguments: Function to check the number of arguments if they are coincident
 # files_folder_HMT: Function to retrieve a list of files from a folder [fold] and 
 #   files named [head]*[middle]*[tail]
+# Str_Bool: Function to transform from a String value to a boolean one
 
 def files_folder_HMT(folder='.',head='',middle='',tail='', rmfolder=True):
     """ Function to retrieve a list of files from a folder [fold] and files named 
@@ -18,8 +20,7 @@ def files_folder_HMT(folder='.',head='',middle='',tail='', rmfolder=True):
         (True, default)
     >>> files_folder_HMT('.','t','wrf','mean.nc')
     ['clt_wrfout_tmean.nc', 'tas_wrfout_tmean.nc', 'ta_wrfout_xmean.nc']
-    >>> files_folder_HMT(folder='/home/lluis/etudes/WRF_LMDZ/WaquaL_highres/tests/model_graphics/WRF/current', \
-      head='hfls', tail='.nc')
+    >>> files_folder_HMT(folder='/WRF/current', head='hfls', tail='.nc')
     ['hfls_wrfout.nc', 'hfls_wrfout_tmean.nc']
     """
     fname = 'files_folder_HMT'
@@ -85,4 +86,41 @@ def Str_Bool(val):
         quit(-1)
 
     return boolv
+
+def check_arguments(funcname, args, expectargs, char):
+    """ Function to check the number of arguments if they are coincident
+    check_arguments(funcname,Nargs,args,char)
+      funcname= name of the function/program to check
+      args= passed arguments
+      expectargs= expected arguments
+      char= character used to split the arguments
+    """
+    fname = 'check_arguments'
+
+    Nvals = len(args.split(char))
+    Nargs = len(expectargs.split(char))
+
+    if Nvals != Nargs:
+        print (errormsg)
+        print ('  '+fname + ': wrong number of arguments:', Nvals, " passed to  '",  \
+          funcname, "' which requires:", Nargs, '!!')
+        print ("    passed string: '" + args + "'")
+        print ("    expected string: '" + expectargs + "'")
+        print ('     # given expected _______')
+        Nmax = np.max([Nvals, Nargs])
+        for ia in range(Nmax):
+            if ia > Nvals-1:
+                aval = ' '
+            else:
+                aval = args.split(char)[ia]
+            if ia > Nargs-1:
+                aexp = ' '
+            else:
+                aexp = expectargs.split(char)[ia]
+
+            print ('    ', ia, aval, aexp)
+        quit(-1)
+
+    return
+
 

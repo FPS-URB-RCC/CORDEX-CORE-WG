@@ -52,7 +52,7 @@ parser.add_option("-f", "--Folder", dest="fold", help="Folder with data",
   metavar="LABEL")
 parser.add_option("-g", "--Debug", dest="debug", help="debug mode", 
   metavar="VALUE")
-parser.add_option("-HMT", "--HeaderMiddleTile", dest="hmt", 
+parser.add_option("-H", "--HeaderMiddleTile", dest="hmt", 
   help="',' separated sections of [Header],[Middle],[Taile] of the names of the files as [fold]/[Header]*[Middle]*[Tail]", 
   metavar="LABELS")
 parser.add_option("-r", "--RunSlice", dest="runslice", help=sliceexp, metavar="VALUES")
@@ -65,6 +65,20 @@ mainn = 'Slicing_computations.py'
 #######    #######
 ## MAIN
     #######
+    
+# Diagnostic
+if opts.diag is None:
+    print (errormsg)
+    print ('  ' + mainn + ": no diagnostic provided !!")
+    print ("     a gicvn diagnostic must be provided as -d [diag]")
+    quit(-1)
+    
+# Folder
+if opts.fold is None:
+    print (errormsg)
+    print ('  ' + mainn + ": no folder provided !!")
+    print ("     a given folder must be provided as -f [folder]")
+    quit(-1)
 
 # Debug
 if opts.debug is None:
@@ -72,6 +86,39 @@ if opts.debug is None:
     print ('  ' + mainn + ": no debug value is given, assuming no debugging !!")
     debug = False
 else:
-    debug = Str_Bool(opts.debug)
+    debug = gen.Str_Bool(opts.debug)
+    
+# HMT
+if opts.hmt is None:
+    print (errormsg)
+    print ('  ' + mainn + ": no header, middle and tail part for files to process " +\
+      "provided !!")
+    print ("     strings must be provided as -H [Header],[Middle],[Tail]")
+    quit(-1)
+else
+    epxa = '[Header],[Middle],[Tail]'
+    gen.check_arguments(mainn, opts.hmt, expa, ',')
+    header = opts.hmt.split(',')[0]
+    middle = opts.hmt.split(',')[1]
+    tail = opts.hmt.split(',')[2]
 
-files_folder_HMT(folder='.',head='',middle='',tail='', rmfolder=True)
+# runslice
+if opts.runslice is None:
+    print (warnmsg)
+    print ('  ' + mainn + ": no runnig slice to avoid memory issues is given, " +    \
+      "assuming to process all the data at once!!")
+    runslice = None
+else
+    runslice = opts.runslice + ''
+
+# slice
+if opts.slice is None:
+    print (warnmsg)
+    print ('  ' + mainn + ": no slice to data is given processing all data")
+    slicev = None
+else
+    slicev = opts.slice + ''
+
+files = gen.files_folder_HMT(folder=opts.fold, head=header, middle=middle, tail=tail,\
+  rmfolder=False)
+
