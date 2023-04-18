@@ -9,6 +9,7 @@ warnmsg = 'WARNING -- warning -- WARNING -- warning'
 # files_folder_HMT: Function to retrieve a list of files from a folder [fold] and 
 #   files named [head]*[middle]*[tail]
 # Str_Bool: Function to transform from a String value to a boolean one
+# # Str_DicSlice: Function to provide an slice-dictionary from one string
 # str_list: Function to obtain a list from a string giving a split character
 # str_list_kinds: Function to obtain a list of types of values from a string giving a 
 #   split character and a list of kinds of values
@@ -245,4 +246,30 @@ def stringS_dictvar(stringv, Dc=',', DVs=':'):
         dictv[keyn] = valn
 
     return dictv
+
+def Str_DicSlice(Str, ck='|', cv=':'):
+    """ Function to provide an slice-dictionary from one string
+      Str: [dimn][cv][dimv][ck].... '[ck]' separated list of [dimn][cv][dimv] pairs
+        of name of dimension and slice value
+          [dimv] = -1, all the values
+          [dimv] = -9, last values
+          [dimv] = int, a single value
+          [dimv] = [beg]@[end]@[frq], from a beginning to an end with a given frequency
+      ck: character used to separate dimensions (default value '|')
+      cv: character used to separate [dimn] and [dimv]  (default value ':')
+    >>> Str_DicSlice('dimx|-1,dimy|-1,dimt|0@48@3,dimz|-1', ',', '|')
+    {'dimx': -1, 'dimy': -1, 'dimt': [0, 48, 3], 'dimz': -1}
+    """
+    fname = 'Str_DicSlice'
+    
+    SliceDic = stringS_dictvar(Str, ck, cv)
+    
+    for dimn in SliceDic.keys():
+        dicv = SliceDic[dimn]
+        if dicv.count('@') == 0:
+            SliceDic[dimn] = int(dicv)
+        else:
+            SliceDic[dimn] = str_list_k(dicv, '@', 'I')
+        
+    return SliceDic
 
