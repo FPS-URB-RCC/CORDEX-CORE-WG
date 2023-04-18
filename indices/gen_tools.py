@@ -9,7 +9,7 @@ warnmsg = 'WARNING -- warning -- WARNING -- warning'
 # files_folder_HMT: Function to retrieve a list of files from a folder [fold] and 
 #   files named [head]*[middle]*[tail]
 # Str_Bool: Function to transform from a String value to a boolean one
-# # Str_DicSlice: Function to provide an slice-dictionary from one string
+# Str_DicSlice: Function to provide an slice-dictionary from one string
 # str_list: Function to obtain a list from a string giving a split character
 # str_list_kinds: Function to obtain a list of types of values from a string giving a 
 #   split character and a list of kinds of values

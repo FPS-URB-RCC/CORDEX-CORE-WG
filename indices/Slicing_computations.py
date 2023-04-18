@@ -29,15 +29,13 @@ import module_ForBas as fbas
 import module_ForGen as fgen
 import module_ForSci as fsci
 
-diagexp = """Diagnostic to compute as
-  [laplace],[dimn1],[dimn2]: laplacian along dimensions named [dimn1] and [dimn2]
+diagexp = """Diagnostic to compute as [diagn],[value1],[value2],...
+  [laplace],[varn],[dimn1],[dimn2]: laplacian of [varn] along dimensions named [dimn1] and [dimn2]
   """
+availdiag = ['[laplace],[varn],[dimn1],[dimn2]']
 
 runsliceexp = """',' separated values of the slice as [dimn]|[slicev]
-  [value] = -1, all the values
-  [value] = -9, last values
-  [value] = int, a single value
-  [value] = [beg, end, frq], from a beginning to an end with a given frequency"""
+  [slicev]: chunks to process from dimension [dimn]"""
 
 sliceexp = """',' separated values of the running slice to perform the analysis as [dimn]|[slicev]
   [value] = -1, all the values
@@ -72,6 +70,8 @@ if opts.diag is None:
     print ('  ' + mainn + ": no diagnostic provided !!")
     print ("     a gicvn diagnostic must be provided as -d [diag]")
     quit(-1)
+else:
+    diag = opts.diag.split(',')
     
 # Folder
 if opts.fold is None:
@@ -124,4 +124,28 @@ files = gen.files_folder_HMT(folder=opts.fold, head=header, middle=middle, tail=
   rmfolder=False)
 
 # Getting the slice
-varslice = gen.str_list_kinds(opts.slice, )
+varslice = gen.Str_DicSlice(opts.slice, ',', '|')
+
+# Including the running dimension
+runslice = stringS_dictvar(opts.runslice, ',', '|')
+
+for dimn in runslice.keys():
+    rdicv = runslice[dimn]
+    if dimn in varslice:
+        dicv = varslice[dimn]
+        if type(dicv) == type(1):
+            if dicv == -1:
+                varslice[dimn] = [0,dicv,rdicv]
+    else:
+        varslice[dimn] = [0, -1, rdicv]
+
+if diag[0] == 'laplace':
+    
+
+
+else:
+    print (errormsg)
+    print ('  ' + mainn + ": diagnostic '" + diag[0] + "' not ready !!")
+    print ('    available ones:', availdiag)
+    quit(-1)
+
