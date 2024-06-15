@@ -11,7 +11,7 @@ var_map = {
 }
 
 def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN, 
-                     valid_stations = None, time_series=None):
+                     valid_stations = None, time_series = None, city = None):
     """
     Plot the climatological data.
 
@@ -25,7 +25,7 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
         matplotlib.figure.Figure: The generated figure.
     """
     ds_var_period_mean = ds.mean('time').compute()
-    rural_mean = ds_var_period_mean[variable].where(urban_vicinity['urban_area'] == 0).mean().compute()
+    rural_mean = ds_var_period_mean[variable].where(urban_vicinity['urmask'] == 0).mean().compute()
     data = ds_var_period_mean[variable] - rural_mean
 
     proj = ccrs.PlateCarree()
@@ -54,12 +54,14 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
                     vmin = - max_abs_value, 
                     vmax = max_abs_value)
     
-    plt.colorbar(im1, ax = ax)
+    cbar = fig.colorbar(im1, ax = ax)
+    cbar.set_label('°C', rotation = 90, fontsize = 14)
     
     ucdb_city.plot(ax=ax, facecolor="none", transform=proj, edgecolor="Green", linewidth=2, zorder = 1000)
     
     ax.coastlines()
-    ax.set_title(f"{variable} Annomaly (°C) respect to not urban cells mean", fontsize = 14)
+    if variable == 'tasmin':
+        ax.set_title(f"Minimum temperature anomaly for {city}", fontsize = 14)
 
     # Overlay the cell borders and handle NaNs
     URBAN.plot_urban_borders(urban_vicinity, ax)
@@ -69,8 +71,8 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
     return fig
 
 def plot_time_series(ds_var, variable, urban_vicinity, 
-                     time_series=None, valid_stations=None, data_squares=False,
-                     percentile=80,var_map=var_map):
+                     time_series = None, valid_stations = None, data_squares = False,
+                     percentile = 100, var_map = var_map, city = None):
     '''
     Plot time series data with optional urban area overlay and additional time series overlay.
 
@@ -84,11 +86,11 @@ def plot_time_series(ds_var, variable, urban_vicinity,
     Returns:
     matplotlib.figure.Figure: The plotted figure.
     '''
-    rural = ds_var[variable].where(urban_vicinity['urban_area'] == 0).groupby('time.month')
+    rural = ds_var[variable].where(urban_vicinity['urmask'] == 0).groupby('time.month')
     rural_mean = rural.mean(dim=[ds_var.cf['Y'].name, 
                                  ds_var.cf['X'].name,'time']).compute()
 
-    urban = ds_var[variable].where(urban_vicinity['urban_area'] == 1).groupby('time.month')
+    urban = ds_var[variable].where(urban_vicinity['urmask'] == 1).groupby('time.month')
     urban_mean = urban.mean(dim=[ds_var.cf['Y'].name, 
                                  ds_var.cf['X'].name,'time']).compute()
                          
@@ -101,7 +103,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                                      linewidth = 4, label='Urban mean')
                          
     (rural_mean-rural_mean).plot(ax=ax,  color = 'b', linestyle='-', 
-                                 linewidth = 4, label='Not urban mean')
+                                 linewidth = 4, label='Vicinity mean')
 
     # Plot individual data squares for urban and rural areas if requested
     if data_squares == True:
@@ -110,7 +112,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
         
         # Fill with the percentil
         # Rural
-        not_urban_data = ds_annomaly.where(urban_vicinity['urban_area'] == 0)
+        not_urban_data = ds_annomaly.where(urban_vicinity['urmask'] == 0)
         
         lower_percentile_not_urban = np.nanpercentile(
             not_urban_data, percentile, 
@@ -125,7 +127,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                         lower_percentile_not_urban, 
                         upper_percentile_not_urban, color='blue', alpha=0.1)
         # Urban
-        urban_data = ds_annomaly.where(urban_vicinity['urban_area'] == 1)
+        urban_data = ds_annomaly.where(urban_vicinity['urmask'] == 1)
         
         lower_percentile_urban = np.nanpercentile(
             urban_data, percentile, 
@@ -141,7 +143,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
         
         # Plot cell annual cicle
         for i, j in product(ds_annomaly.cf['X'].values, ds_annomaly.cf['Y'].values):
-            if urban_vicinity['urban_area'].sel(
+            if urban_vicinity['urmask'].sel(
                 {urban_vicinity.cf['X'].name: i, 
                  urban_vicinity.cf['Y'].name: j}) == 1:
                      
@@ -149,7 +151,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                                       ds_var.cf['Y'].name:j}).plot(ax=ax, color='red', linewidth=0.5)
                      urban_area_legend = True
                      
-            elif urban_vicinity['urban_area'].sel(
+            elif urban_vicinity['urmask'].sel(
                 {urban_vicinity.cf['X'].name: i, 
                  urban_vicinity.cf['Y'].name: j}) == 0:
                      
@@ -158,18 +160,23 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                      not_urban_area_legend=True
                          
         #Add manually the legend
-        if urban_area_legend==True:
-            ax.plot([], [], color='red', linewidth=0.5, label = 'Urban Area')
-        if not_urban_area_legend==True:
-            ax.plot([], [], color='blue', linewidth=0.5, label = 'Not Urban Area')
+        #if urban_area_legend==True:
+        #    ax.plot([], [], color='r', linewidth=0.5, label = 'Urban Area')
+        #if not_urban_area_legend==True:
+        #    ax.plot([], [], color='b', linewidth=0.5, label = 'Vicinity Area')
     
     #Plot the observation if requested
+    obs_urban, obs_vicinity, obs_not_sected = [], [], []
     if time_series is not None:
         urban_obs_legend = False
         not_urban_obs_legend = False
         not_obs_legend = False
         var = var_map.get(variable, None)
-        obs_monthly_change_mean = [0] * 12
+        #obs_monthly_change_mean = [0] * 12
+        obs_monthly_change_mean_urban = [0] * 12
+        obs_monthly_change_mean_vicinity = [0] * 12
+        obs_monthly_change_mean_not_sected = [0] * 12
+
         for index, obs in valid_stations.iterrows():
             obs_lon = obs['lon']
             obs_lat = obs['lat']
@@ -180,21 +187,24 @@ def plot_time_series(ds_var, variable, urban_vicinity,
             min_dist_idx = np.unravel_index(np.argmin(dist.values, axis=None), dist.shape)
             
             # Select the urban mask value at the nearest grid point
-            selected_value = urban_vicinity['urban_area'].isel({
+            selected_value = urban_vicinity['urmask'].isel({
                 urban_vicinity.cf['Y'].name : min_dist_idx[0],
                 urban_vicinity.cf['X'].name : min_dist_idx[1]}).values
             urban_mask_value = selected_value.item()
             if selected_value.item()==1:
-                color_obs='red'
+                color_obs='k'
                 urban_obs_legend=True
+                obs_urban.append(obs)
             elif selected_value.item()==0:
-                color_obs='blue'
+                color_obs='g'
                 not_urban_obs_legend=True
+                obs_vicinity.append(obs)
             else:
                 color_obs='grey'
                 not_obs_legend=True
+                obs_not_sected.append(obs)
             for item in time_series:
-                if item['code'] == obs['code']:
+                if item['code'] == obs['code']:                   
                     time_series_df = pd.DataFrame(item['data'])
                     time_series_df.index = pd.to_datetime(time_series_df.index)
                     time_series_df['month'] = time_series_df.index.month
@@ -204,33 +214,50 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                         rural_data = rural_mean[i-1].values
                         monthly_change = monthly_data[var] - rural_data
                         obs_monthly_change.append(monthly_change)
-                        obs_monthly_change_mean[i-1] += monthly_change
+                        #obs_monthly_change_mean[i-1] += monthly_change
+                        
+                        if color_obs == 'k':
+                            obs_monthly_change_mean_urban[i-1] += monthly_change
+                        if color_obs == 'g':
+                            obs_monthly_change_mean_vicinity[i-1] += monthly_change
+                        if color_obs == 'grey':
+                            obs_monthly_change_mean_not_sected[i-1] += monthly_change
+                        
                     plt.plot(range(1, 13), obs_monthly_change, marker='o', color=color_obs, 
-                             linestyle='--', linewidth=0.5)
+                             linestyle='--', linewidth = 2)
+                    
+                    
         #Add manually the legend
         if urban_obs_legend==True:
-            ax.plot([], [], color='red', marker='o',  linewidth=0.5, label='Urban Observations')
+            ax.plot([], [], color='k', marker='o',  linewidth=0.5, label='Urban obs.')
         if not_urban_obs_legend==True:
-            ax.plot([], [], color='blue', marker='o',  linewidth=0.5, label='Not Urban Observations')
+            ax.plot([], [], color='g', marker='o',  linewidth=0.5, label='Vicinity obs.')
         if not_obs_legend==True:
             ax.plot([], [], color='grey', marker='o',  linewidth=0.5, 
                     label='Not Selected Area Observations')
 
-    
-        total_elements = len(time_series)
-        if total_elements > 1:
-            obs_monthly_change_mean = [x / total_elements for x in obs_monthly_change_mean]
+        
+        if len(obs_urban) > 0:
+            obs_monthly_change_mean = [x / len(obs_urban) for x in obs_monthly_change_mean_urban]
             plt.plot(range(1, 13), obs_monthly_change_mean, 
-                     marker='o', color='black', linestyle='-', linewidth = 4, label='Mean observations') 
+                     color='k', linestyle='-', linewidth = 4, label='Urban obs. mean') 
+        if len(obs_vicinity) > 0:
+            obs_monthly_change_mean = [x / len(obs_vicinity) for x in obs_monthly_change_mean_vicinity]
+            plt.plot(range(1, 13), obs_monthly_change_mean, 
+                     color='g', linestyle='-', linewidth = 4, label='Vicinity obs. mean') 
     
     # Add legend to the plot
     ax.legend(fontsize = 14)
     
     # Customize the plot
-    ax.set_title(f"{variable} Annomaly (°C) respect to not urban cells mean", fontsize = 14)
-    ax.set_xlabel('Month')
-    ax.set_ylabel(f"{variable} annomaly ($^\circ$C)", fontsize = 14)
+    #ax.set_xlabel('Month', fontsize = 18)
+    if variable == 'tasmin':
+        ax.set_title(f"Minimum temperature anomaly for {city}", fontsize = 18)
+        ax.set_ylabel(f"Minimum temperature anomaly (°C)", fontsize = 18)
     ax.set_xticks(np.arange(1, 13))
     ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 
-                        'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+                        'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], fontsize = 18)
+    ax.tick_params(axis='y', labelsize=18)
+    #plt.grid(axis='y', linestyle='--', color='gray', alpha=0.7)
+    
     return fig

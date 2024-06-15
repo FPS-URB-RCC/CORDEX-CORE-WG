@@ -20,6 +20,7 @@ def load_ghcnd_stations(lon, lat, radious = 0.5):
     gpd.GeoDataFrame: Geospatial DataFrame of nearby GHCND stations.
     '''
     ghcnd_stations_url = 'https://www.ncei.noaa.gov/data/global-historical-climatology-network-daily/doc/ghcnd-stations.txt'
+    ghcnd_stations_url = '/lustre/gmeteo/WORK/diezsj/research/cordex-fps-urb-rcc/old/CORDEX-CORE_WG_delete/ghcnd-stations.txt'
     ghcnd_stations_column_names = ['code', 'lat', 'lon', 'elev', 'name', 'net', 'numcode']
     ghcnd_stations_column_widths = [   11,     9,    10,      7,     34,     4,       10 ]
     df = pd.read_fwf(ghcnd_stations_url, header = 0, widths = ghcnd_stations_column_widths, names = ghcnd_stations_column_names)
@@ -83,11 +84,11 @@ def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_thre
             continue
         availvars = available_vars(stn_data)
         if var in availvars:
-          valid_records = stn_data[var].loc[period].notna().sum()/ndays
-          if valid_records > valid_threshold:
-            print(f'{city} -- {stn_data.NAME[0]} - {var} has {100*valid_records:.1f}% valid records in {idate} to {fdate}')
-            valid_codes.append(stn_code)
-            valid_time_series.append({'data':stn_data[var].loc[period]/10.0,'code':stn_code})
+            valid_records = stn_data[var].loc[period].notna().sum()/ndays
+            if valid_records > valid_threshold:
+                print(f'{city} -- {stn_data.NAME[0]} - {var} has {100*valid_records:.1f}% valid records in {idate} to {fdate}')
+                valid_codes.append(stn_code)
+                valid_time_series.append({'data':stn_data[var].loc[period]/10.0,'code':stn_code})
   
     return(stations[stations.code.isin(valid_codes)], valid_time_series, ds_var_period)
 

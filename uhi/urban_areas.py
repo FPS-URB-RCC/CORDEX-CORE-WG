@@ -9,13 +9,20 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.morphology import dilation, square
 from itertools import product
 import geopandas as gpd
+import os
 
 from utils import (
     RCM_DICT,
     MODEL_DICT,
 )
 
-def load_variable(root_esgf, variable, domain, model, scenario):
+def traverseDir(root):
+    for (dirpath, dirnames, filenames) in os.walk(root):
+        for file in filenames:
+            if file.endswith(('.nc')):
+                yield os.path.join(dirpath, file)
+
+def load_variable(root_esgf, root_nextcloud, variable, domain, model, scenario):
     """
     Load variable data from multiple NetCDF files.
 
@@ -32,6 +39,11 @@ def load_variable(root_esgf, variable, domain, model, scenario):
     files_var = glob.glob(
         f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/*/{scenario}/*/{RCM_DICT[domain][model].split('_')[1]}/*/day/{variable}/*/{variable}_*.nc" 
     )
+    if domain == 'NAM-22':
+        root_nextcloud = '/lustre/gmeteo/WORK/DATA/CORDEX-FPS-URB-RCC/'
+        files = list(traverseDir(f"{root_nextcloud}{variable}/"))
+        files_var = np.sort([file for file in files if (domain in file) and (model in file)])
+        
     datasets = [xr.open_dataset(f) for f in np.sort(files_var)]
     ds_var = xr.concat(datasets, dim='time')
     ds_var = fix_360_longitudes(ds_var)
@@ -91,6 +103,8 @@ def load_ucdb_city(root, city):
     ucdb_city = ucdb_info.query(f'UC_NM_MN =="{city}"').to_crs(crs='EPSG:4326')
     if city == 'London':
         ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'United Kingdom']
+    if city == 'Santiago':
+        ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'Chile']
     return ucdb_city
 
 
@@ -128,8 +142,12 @@ def fix_sftuf(
         # longitud and latitud for ds_sftuf does not match with orog/sftlf
         ds_sftuf['lon'][:] = ds_orog['lon']
         ds_sftuf['lat'][:] = ds_orog['lat']
-    elif (model == "RegCM") and (domain in ["EUR-11", "CAM-22", "SAM-22", "AUS-22", "AFR-22"]):
+    elif (model == "RegCM") and (domain in ["EUR-11", "CAM-22", "SAM-22", "AUS-22", "AFR-22", "SEA-22", "WAS-22", "EAS-22"]):
         ds_sftuf = ds_sftuf.assign_coords(x=ds_orog.x, y=ds_orog.y)
+        
+    elif (model == "RegCM") and (domain == "NAM-22"):
+        ds_sftuf = ds_sftuf.assign_coords(x=ds_orog.x, y=ds_orog.y)
+        ds_sftuf = ds_sftuf.assign_coords(lon=ds_orog.lon, lat=ds_orog.lat)
     
     # select time = 0
     if 'time' in ds_sftuf.dims:
@@ -157,12 +175,21 @@ def load_fixed_variables(domain, model, root_esgf, root_nextcloud):
     file_sftuf = glob.glob(
             f"{root_nextcloud}{model}/urbanfraction/{MODEL_DICT[model]['sftuf']}/{domain}*.nc" 
     )
-    file_orog = glob.glob(
-        f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/ECMWF-ERAINT/evaluation/*/{RCM_DICT[domain][model].split('_')[1]}/*/fx/orog/*/orog_*.nc" 
-    )
-    file_sftlf = glob.glob(
-        f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/ECMWF-ERAINT/evaluation/*/{RCM_DICT[domain][model].split('_')[1]}/*/fx/sftlf/*/sftlf_*.nc" 
-    )
+    
+    if domain in ["NAM-22", "EAS-22"]: #nextcloud
+    
+        file_orog = glob.glob(f"{root_nextcloud}{model}/orography/orog_{domain}*.nc")
+        file_sftlf = glob.glob(f"{root_nextcloud}{model}/land-sea-mask/sftlf_{domain}*.nc")
+        
+    else: #esgf
+        
+        file_orog = glob.glob(
+            f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/ECMWF-ERAINT/evaluation/*/{RCM_DICT[domain][model].split('_')[1]}/*/fx/orog/*/orog_*.nc" 
+        )
+        file_sftlf = glob.glob(
+            f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/ECMWF-ERAINT/evaluation/*/{RCM_DICT[domain][model].split('_')[1]}/*/fx/sftlf/*/sftlf_*.nc" 
+        )
+
     
     # load fixed variables
     sftuf = xr.open_dataset(file_sftuf[0])
@@ -179,18 +206,20 @@ def load_fixed_variables(domain, model, root_esgf, root_nextcloud):
 class Urban_vicinity:
     def __init__(self, urban_th = 0.1, urban_sur_th = 0.1, orog_diff = 100, sftlf_th = 70,
                  scale = 4, lon_city = None, lat_city = None, 
-                 lon_lim = None, lat_lim = None):
+                 lon_lim = None, lat_lim = None,
+                 model = None, domain = None):
                      
         self.urban_th = urban_th
         self.urban_sur_th = urban_sur_th
         self.orog_diff = orog_diff
         self.sftlf_th = sftlf_th
-        self.lon_city = sftlf_th
         self.scale = scale
         self.lon_city = lon_city
         self.lat_city = lat_city
         self.lon_lim = lon_lim
         self.lat_lim = lat_lim
+        self.model = model
+        self.domain = domain
 
     def crop_area_city(
         self, 
@@ -253,12 +282,12 @@ class Urban_vicinity:
         -------
         sftuf_mask : xarray.DataArray 
             Binary mask indicating urban areas with 1 and 0 for the rest.
+        sftuf_sur_mask : xarray.DataArray 
+            Binary mask indicating non-urban areas with 1 and 0 for the rest.
         orog_mask : xarray.DataArray
             Binary mask indicating of orography with .
         sftlf_mask : xarray.DataArray
             Binary mask indicating sea areas.
-        sftuf_mask : xarray.DataArray 
-            Binary mask indicating non-urban areas with 1 and 0 for the rest.
         """
         # sftuf
         ds_sftuf = ds_sftuf["sftuf"]
@@ -320,12 +349,12 @@ class Urban_vicinity:
         if scale is None:
             scale = self.scale
         
-        data_array = xr.DataArray((~sftuf_sur_mask).astype(int))
+        data_array = xr.DataArray((~sftuf_sur_mask)*(sftlf_mask)).astype(int)
         kernel = np.array([[0, 1, 0],
                            [1, 1, 1],
                            [0, 1, 0]])
                 
-        urban_cells = np.sum(sftuf_mask)
+        urban_cells = np.sum(sftuf_mask).values
         non_urban_cells = 0
         counter = 0
         while non_urban_cells <= urban_cells * scale:
@@ -338,7 +367,7 @@ class Urban_vicinity:
             if np.sum(dilated_data) - urban_cells == non_urban_cells:
                 print(f"Warning: No more non-urban cells can be found in iteration number {counter}")
                 break
-            non_urban_cells = np.sum(dilated_data) - urban_cells
+            non_urban_cells = (np.sum(dilated_data) - urban_cells).values
             counter += 1
                                 
         # select surroundings cells (not rural)
@@ -347,7 +376,7 @@ class Urban_vicinity:
         non_urban_mask = xr.DataArray(dilated_data.where(~sftuf_mask).fillna(0))*sur
         urban_area = sftuf_mask.astype(int).where(sftuf_mask.astype(int) == 1, np.nan)
         urban_area = urban_area.where(non_urban_mask.astype(int) == 0, 0)
-        urban_area = urban_area.to_dataset(name='urban_area')
+        urban_area = urban_area.to_dataset(name='urmask')
         # Add attributes
         urban_area = Urban_vicinity.netcdf_attrs(self, urban_area)
         
@@ -365,15 +394,15 @@ class Urban_vicinity:
         lon2d = ds.lon.values
         lat2d = ds.lat.values
         # Overlay the cell borders and handle NaNs
-        for i in range(len(ds.lat) - 1):
-            for j in range(len(ds.lat) - 1):
+        for i in range(len(ds.lat)-1):
+            for j in range(len(ds.lon)-1):
                 lons = [lon2d[i, j], lon2d[i, j+1], lon2d[i+1, j+1], lon2d[i+1, j], lon2d[i, j]]
                 lats = [lat2d[i, j], lat2d[i, j+1], lat2d[i+1, j+1], lat2d[i+1, j], lat2d[i, j]]
 
                 lons = lons - abs(lon2d[i, j] - lon2d[i, j+1])/2                
                 lats = lats - abs(lat2d[i, j] - lat2d[i+1, j])/2
                 
-                data_cell = ds['urban_area'].values[i, j]
+                data_cell = ds['urmask'].values[i, j]
 
                 if data_cell == 1:
                     ax.plot(lons, lats, color='red', zorder = 100, linewidth=2)
@@ -486,12 +515,13 @@ class Urban_vicinity:
             Binary mask indicating urban areas (1), non-urban (vicinity) areas (0) and NaN for the rest.
         """
         # add attribtes
-        ds['urban_area'].attrs['long_name'] = 'Urban vs. vicinity. 1 corresponds to urban areas and 0 to the surrounding areas'
+        ds['urmask'].attrs['long_name'] = 'Urban vs. vicinity. 1 corresponds to urban areas and 0 to the surrounding areas'
         
         attrs_list = ["urban_th", "urban_sur_th", "orog_diff", "sftlf_th", "sftlf_th", "scale", 
-                    "lon_city", "lat_city", "lon_lim", "lat_lim"]
+                    "lon_city", "lat_city", "lon_lim", "lat_lim", "model", "domain"]
         
         for attr in attrs_list:
-            ds['urban_area'].attrs[attr] = getattr(self, attr)
+            if getattr(self, attr):
+                ds['urmask'].attrs[attr] = getattr(self, attr)
             
         return ds
