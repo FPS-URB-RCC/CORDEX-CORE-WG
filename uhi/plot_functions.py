@@ -234,17 +234,17 @@ def plot_time_series(ds_var, variable, urban_vicinity,
             ax.plot([], [], color='g', marker='o',  linewidth=0.5, label='Vicinity obs.')
         if not_obs_legend==True:
             ax.plot([], [], color='grey', marker='o',  linewidth=0.5, 
-                    label='Not Selected Area Observations')
+                    label='Outside study area obs.')
 
         
         if len(obs_urban) > 0:
             obs_monthly_change_mean = [x / len(obs_urban) for x in obs_monthly_change_mean_urban]
             plt.plot(range(1, 13), obs_monthly_change_mean, 
-                     color='k', linestyle='-', linewidth = 4, label='Urban obs. mean') 
+                     color='k', linestyle='-', linewidth = 4, label='Urban obs. mean', zorder = 2000) 
         if len(obs_vicinity) > 0:
             obs_monthly_change_mean = [x / len(obs_vicinity) for x in obs_monthly_change_mean_vicinity]
             plt.plot(range(1, 13), obs_monthly_change_mean, 
-                     color='g', linestyle='-', linewidth = 4, label='Vicinity obs. mean') 
+                     color='g', linestyle='-', linewidth = 4, label='Vicinity obs. mean', zorder = 2000) 
     
     # Add legend to the plot
     ax.legend(fontsize = 14)

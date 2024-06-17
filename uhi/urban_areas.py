@@ -105,6 +105,12 @@ def load_ucdb_city(root, city):
         ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'United Kingdom']
     if city == 'Santiago':
         ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'Chile']
+    if city == 'Barcelona':
+        ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'Spain']
+    if city == 'Dhaka':
+        ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'Bangladesh']
+    if city == 'Naples':
+        ucdb_city = ucdb_city[ucdb_city['CTR_MN_NM'] == 'Italy']
     return ucdb_city
 
 
@@ -349,7 +355,8 @@ class Urban_vicinity:
         if scale is None:
             scale = self.scale
         
-        data_array = xr.DataArray((~sftuf_sur_mask)*(sftlf_mask)).astype(int)
+        #data_array = xr.DataArray((~sftuf_sur_mask)*(sftlf_mask)).astype(int)
+        data_array = xr.DataArray(sftuf_mask).astype(int)
         kernel = np.array([[0, 1, 0],
                            [1, 1, 1],
                            [0, 1, 0]])
@@ -362,6 +369,7 @@ class Urban_vicinity:
             dilated_data = xr.apply_ufunc(dilation, 
                                           data_array if non_urban_cells == 0 else dilated_data, 
                                           kwargs={'footprint': kernel})
+            
             #Delete fixed variables
             dilated_data = (dilated_data * orog_mask * sftlf_mask).astype(int)
             if np.sum(dilated_data) - urban_cells == non_urban_cells:
