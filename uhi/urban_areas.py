@@ -163,9 +163,9 @@ def fix_sftuf(
         
     return ds_sftuf
 
-def load_fixed_variables(domain, model, root_esgf, root_nextcloud):
+def load_fix_variables(domain, model, root_esgf, root_nextcloud):
     """
-    Load fixed variable data files for a specific domain and model from given root directories.
+    Load fix variable data files for a specific domain and model from given root directories.
 
     Parameters:
     domain (str): The domain of the data (e.g., 'Europe').
@@ -416,11 +416,11 @@ class Urban_vicinity:
                 elif data_cell == 0:
                     ax.plot(lons, lats, color='b', zorder = 1, linewidth=2)
 
-    def plot_fixed_variables(self, ds_sftuf, ds_orog, ds_sftlf,
+    def plot_fix_variables(self, ds_sftuf, ds_orog, ds_sftlf,
                              sftuf_mask, orog_mask, sftlf_mask, urban_areas = None,
                             ):
         """
-        Plot fixed variables including urban fraction, orography, and land-sea mask.
+        Plot fix variables including urban fraction, orography, and land-sea mask.
     
         Parameters:
         ds_sftuf (xr.Dataset): Dataset containing urban fraction data.
@@ -436,6 +436,7 @@ class Urban_vicinity:
         matplotlib.figure.Figure: The generated figure.
         """
         colors = ['#7C5B49', '#92716B', '#A89080', '#C0B49E', '#DACCB9', '#F5F5DC']
+        colors = ['#278908', '#faf998', '#66473b']
         custom_cmap = LinearSegmentedColormap.from_list("custom_terrain", colors)
         
         proj = ccrs.PlateCarree()
@@ -443,9 +444,7 @@ class Urban_vicinity:
         
         im1 = axes[0, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
                                     ds_sftuf["sftuf"].values,
-                                    cmap='binary',
-                                    vmin = np.nanmin(ds_sftuf["sftuf"]), 
-                                    vmax = np.nanmax(ds_sftuf["sftuf"]))
+                                    cmap='binary', vmin = 0, vmax = 0.6)
         fig.colorbar(im1, ax=axes[0, 0], orientation='vertical')
         axes[0, 0].set_title('Urban Fraction')
         axes[0, 0].coastlines()
@@ -462,9 +461,7 @@ class Urban_vicinity:
         
         im3 = axes[0, 2].pcolormesh(ds_sftlf.lon, ds_sftlf.lat,
                                     ds_sftlf["sftlf"],
-                                    cmap='winter',
-                                    vmin = np.nanmin(ds_sftlf["sftlf"]), 
-                                    vmax = np.nanmax(ds_sftlf["sftlf"]))
+                                    cmap='winter', vmin = 0, vmax = 100)
         fig.colorbar(im3, ax=axes[0, 2], orientation='vertical')
         axes[0, 2].set_title('Land-sea')
         axes[0, 2].coastlines()
@@ -472,9 +469,7 @@ class Urban_vicinity:
         # masks
         im1 = axes[1, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
                                     ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan),
-                                    cmap='binary',
-                                    vmin = np.nanmin(ds_sftuf["sftuf"]), 
-                                    vmax = np.nanmax(ds_sftuf["sftuf"]))
+                                    cmap='binary', vmin = 0, vmax = 0.6)
         fig.colorbar(im1, ax=axes[1, 0], orientation='vertical')
         if not urban_areas:
             axes[1, 0].set_title('Urban Fraction\n(sftuf >' +  str(self.urban_th) + ')')
@@ -491,16 +486,14 @@ class Urban_vicinity:
         )
         fig.colorbar(im2, ax=axes[1, 1], orientation='vertical')
         axes[1, 1].set_title('Orography\n(' + str(int(self.urban_elev_min) - self.orog_diff) + 
-                             ' m < orog > ' +  
+                             ' m < orog < ' +  
                              str(int(self.urban_elev_max) + self.orog_diff) + ' m)'
                             )
         axes[1, 1].coastlines()
         
         im3 = axes[1, 2].pcolormesh(ds_sftlf.lon, ds_sftlf.lat,
                                     ds_sftlf["sftlf"].where(sftlf_mask == 1, np.nan),
-                                    cmap='winter',
-                                    vmin = np.nanmin(ds_sftlf["sftlf"]), 
-                                    vmax = np.nanmax(ds_sftlf["sftlf"]))
+                                    cmap='winter', vmin = 0, vmax = 100)
         fig.colorbar(im3, ax=axes[1, 2], orientation='vertical')
         axes[1, 2].set_title('Land-sea\n(sftlf >' + str(self.sftlf_th) + '%)')
         axes[1, 2].coastlines()
