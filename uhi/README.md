@@ -3,8 +3,6 @@
 
 This repository is dedicated to investigating the UHI effect using CORDEX-CORE (0.22°) data.
 
-
-
 It includes functionalities to identify urban a rural cells and assess UHI in large urban areas across the globe. 
 
 ## Repository Overview
@@ -20,5 +18,5 @@ It includes functionalities to identify urban a rural cells and assess UHI in la
     - tasmin: Minimum temperature.
     - tasmax: Maximum temperature.
 
-3. **Cities.ipynb Notebook**: This Jupyter Notebook allows users to explore different cities and analyze the UHI effect in those areas.
+3. **urban_area_selection.ipynb Notebook**: This Jupyter Notebook allows users to explore urban vs. rural areas for different cities and analyze the UHI effect in those areas.
 

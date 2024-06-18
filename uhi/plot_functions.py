@@ -29,7 +29,7 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
     data = ds_var_period_mean[variable] - rural_mean
 
     proj = ccrs.PlateCarree()
-    fig, ax = plt.subplots(subplot_kw={'projection': proj}, figsize=(20, 10))
+    fig, ax = plt.subplots(subplot_kw={'projection': proj}, figsize=(12, 6))
     
     # Compute the maximum absolute value
     max_abs_value = abs(data).max().item()
@@ -112,7 +112,7 @@ def plot_time_series(ds_var, variable, urban_vicinity,
     )).to_netcdf(cache)
                          
     # Plot mean annual cycle (urban and rural)
-    fig, ax = plt.subplots(figsize=(20, 10)) 
+    fig, ax = plt.subplots(figsize=(15, 7)) 
     (urban_mean-rural_mean).plot(ax=ax,  color = 'r', linestyle='-', 
                                      linewidth = 4, label='Urban mean')
                          
