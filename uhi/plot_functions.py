@@ -72,7 +72,7 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
 
 def plot_time_series(ds_var, variable, urban_vicinity, 
                      time_series = None, valid_stations = None, data_squares = False,
-                     percentile = 100, var_map = var_map, city = None):
+                     percentile = 100, var_map = var_map, city = None, cache = ''):
     '''
     Plot time series data with optional urban area overlay and additional time series overlay.
 
@@ -86,16 +86,30 @@ def plot_time_series(ds_var, variable, urban_vicinity,
     Returns:
     matplotlib.figure.Figure: The plotted figure.
     '''
-    rural = ds_var[variable].where(urban_vicinity['urmask'] == 0).groupby('time.month')
-    rural_mean = rural.mean(dim=[ds_var.cf['Y'].name, 
-                                 ds_var.cf['X'].name,'time']).compute()
-
-    urban = ds_var[variable].where(urban_vicinity['urmask'] == 1).groupby('time.month')
+    urban_area_legend = False
+    not_urban_area_legend = False
+    is_rural = urban_vicinity['urmask'] == 0
+    is_urban = urban_vicinity['urmask'] == 1
+    rural_mean = (ds_var[variable]
+        .where(is_rural)
+        .groupby('time.month')
+        .mean(dim = [ds_var.cf['Y'].name, ds_var.cf['X'].name, 'time'])
+        .compute()
+    )
+    urban = ds_var[variable].where(is_urban).groupby('time.month')
     urban_mean = urban.mean(dim=[ds_var.cf['Y'].name, 
                                  ds_var.cf['X'].name,'time']).compute()
                          
     ds_var_period_mean = ds_var.groupby('time.month').mean('time')                  
     ds_annomaly = ds_var_period_mean[variable] - rural_mean
+    rural_anomaly = ds_annomaly.where(is_rural)
+    urban_anomaly = ds_annomaly.where(is_urban)
+    xr.Dataset(dict(
+        rural_anomaly = rural_anomaly,
+        urban_anomaly = urban_anomaly,
+        rural_mean = rural_mean,
+        urban_mean = urban_mean
+    )).to_netcdf(cache)
                          
     # Plot mean annual cycle (urban and rural)
     fig, ax = plt.subplots(figsize=(20, 10)) 
@@ -104,60 +118,28 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                          
     (rural_mean-rural_mean).plot(ax=ax,  color = 'b', linestyle='-', 
                                  linewidth = 4, label='Vicinity mean')
-
+    #
     # Plot individual data squares for urban and rural areas if requested
-    if data_squares == True:
-        urban_area_legend = False
-        not_urban_area_legend = False
-        
-        # Fill with the percentil
-        # Rural
-        not_urban_data = ds_annomaly.where(urban_vicinity['urmask'] == 0)
-        
-        lower_percentile_not_urban = np.nanpercentile(
-            not_urban_data, percentile, 
-            axis=[not_urban_data.get_axis_num(not_urban_data.cf['X'].name),
-                  not_urban_data.get_axis_num(not_urban_data.cf['Y'].name)])
-        upper_percentile_not_urban = np.nanpercentile(
-            not_urban_data, 100-percentile,
-            axis=[not_urban_data.get_axis_num(not_urban_data.cf['X'].name),
-                  not_urban_data.get_axis_num(not_urban_data.cf['Y'].name)])
-        
-        ax.fill_between(ds_var_period_mean['month'], 
-                        lower_percentile_not_urban, 
-                        upper_percentile_not_urban, color='blue', alpha=0.1)
-        # Urban
-        urban_data = ds_annomaly.where(urban_vicinity['urmask'] == 1)
-        
-        lower_percentile_urban = np.nanpercentile(
-            urban_data, percentile, 
-            axis=[urban_data.get_axis_num(urban_data.cf['X'].name),
-                  urban_data.get_axis_num(urban_data.cf['Y'].name)])
-        upper_percentile_urban = np.nanpercentile(
-            urban_data, 100-percentile, 
-            axis=[urban_data.get_axis_num(urban_data.cf['X'].name),
-                  urban_data.get_axis_num(urban_data.cf['Y'].name)])
-        
-        ax.fill_between(ds_var_period_mean['month'], 
-                        lower_percentile_urban, upper_percentile_urban, color='red', alpha=0.1)
-        
-        # Plot cell annual cicle
-        for i, j in product(ds_annomaly.cf['X'].values, ds_annomaly.cf['Y'].values):
-            if urban_vicinity['urmask'].sel(
-                {urban_vicinity.cf['X'].name: i, 
-                 urban_vicinity.cf['Y'].name: j}) == 1:
-                     
-                     ds_annomaly.sel({ds_var.cf['X'].name:i,
-                                      ds_var.cf['Y'].name:j}).plot(ax=ax, color='red', linewidth=0.5)
-                     urban_area_legend = True
-                     
-            elif urban_vicinity['urmask'].sel(
-                {urban_vicinity.cf['X'].name: i, 
-                 urban_vicinity.cf['Y'].name: j}) == 0:
-                     
-                     ds_annomaly.sel({ds_var.cf['X'].name:i, 
-                                      ds_var.cf['Y'].name:j}).plot(ax=ax, color='blue', linewidth=0.5)
-                     not_urban_area_legend=True
+    #
+    if data_squares:
+        #
+        # Fill within percentiles
+        #
+        axis = [ds_annomaly.get_axis_num(ds_annomaly.cf['X'].name),
+                ds_annomaly.get_axis_num(ds_annomaly.cf['Y'].name)]
+        colors = ['blue', 'red']
+        for index, anom in enumerate([rural_anomaly, urban_anomaly]): 
+            lower_percentile = np.nanpercentile(anom, percentile, axis=axis)
+            upper_percentile = np.nanpercentile(anom, 100-percentile, axis=axis)
+            ax.fill_between(
+                ds_var_period_mean['month'],
+                lower_percentile, upper_percentile,
+                color=colors[index], alpha=0.1
+            )
+            for i, j in product(anom.cf['X'].values, anom.cf['Y'].values):
+                anom_val = anom.sel({ds_var.cf['X'].name:i, ds_var.cf['Y'].name:j})
+                if not np.isnan(anom_val[0]):
+                    anom_val.plot(ax=ax, color=colors[index], linewidth=0.5)
                          
         #Add manually the legend
         #if urban_area_legend==True:
