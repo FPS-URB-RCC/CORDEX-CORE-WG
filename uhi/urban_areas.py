@@ -44,7 +44,7 @@ def load_variable(root_esgf, root_nextcloud, variable, domain, model, scenario):
         root_nextcloud = '/lustre/gmeteo/WORK/DATA/CORDEX-FPS-URB-RCC/'
         files = list(traverseDir(f"{root_nextcloud}{variable}/"))
         files_var = np.sort([file for file in files if (domain in file) and (model in file)])
-    ds_var = xr.open_mfdataset(sorted(files_var), combine = 'by_coords', parallel = True)
+    ds_var = xr.open_mfdataset(sorted(files_var), combine='nested', concat_dim='time')
     ds_var = fix_360_longitudes(ds_var)
     return ds_var
 
