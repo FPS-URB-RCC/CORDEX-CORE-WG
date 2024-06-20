@@ -1,21 +1,18 @@
-import xarray as xr
-import dask
-import glob
-import numpy as np
-from skimage.morphology import dilation, square
-import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
+import dask
+import geopandas as gpd
+import glob
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import xarray as xr
+from icecream import ic
+from itertools import product
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.morphology import dilation, square
-from itertools import product
-import geopandas as gpd
-import os
-
-from utils import (
-    RCM_DICT,
-    MODEL_DICT,
-)
+from skimage.morphology import dilation, square
+from utils import RCM_DICT, MODEL_DICT
 
 def traverseDir(root):
     for (dirpath, dirnames, filenames) in os.walk(root):
@@ -37,14 +34,13 @@ def load_variable(root_esgf, root_nextcloud, variable, domain, model, scenario):
     Returns:
     xr.Dataset: Combined dataset containing the variable data across all found files.
     """
-    files_var = glob.glob(
-        f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/*/{scenario}/*/{RCM_DICT[domain][model].split('_')[1]}/*/day/{variable}/*/{variable}_*.nc" 
-    )
+    files_pattern = f"{root_esgf}{domain}/{RCM_DICT[domain][model].split('_')[0]}/*/{scenario}/*/{RCM_DICT[domain][model].split('_')[1]}/*/day/{variable}/*/{variable}_*.nc"
+    files_var = glob.glob(files_pattern)
     if domain == 'NAM-22':
         root_nextcloud = '/lustre/gmeteo/WORK/DATA/CORDEX-FPS-URB-RCC/'
         files = list(traverseDir(f"{root_nextcloud}{variable}/"))
         files_var = np.sort([file for file in files if (domain in file) and (model in file)])
-    ds_var = xr.open_mfdataset(sorted(files_var), combine='nested', concat_dim='time')
+    ds_var = xr.open_mfdataset(sorted(files_var), combine='nested', concat_dim='time').compute()
     ds_var = fix_360_longitudes(ds_var)
     return ds_var
 
@@ -485,10 +481,9 @@ class Urban_vicinity:
                                     vmax = np.nanmax(ds_orog['orog'])
         )
         fig.colorbar(im2, ax=axes[1, 1], orientation='vertical')
-        axes[1, 1].set_title('Orography\n(' + str(int(self.urban_elev_min) - self.orog_diff) + 
-                             ' m < orog < ' +  
-                             str(int(self.urban_elev_max) + self.orog_diff) + ' m)'
-                            )
+        elev_lim_min = self.urban_elev_min - self.orog_diff
+        elev_lim_max = self.urban_elev_max + self.orog_diff
+        axes[1, 1].set_title(f'Orography\n({elev_lim_min:.0f} m < orog < {elev_lim_max:.0f} m)')
         axes[1, 1].coastlines()
         
         im3 = axes[1, 2].pcolormesh(ds_sftlf.lon, ds_sftlf.lat,
