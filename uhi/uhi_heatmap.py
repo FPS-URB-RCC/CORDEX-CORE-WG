@@ -15,7 +15,6 @@ def parse_filename(filename):
     model = parts[6][:6]
     return city, model
 
-
 def read_acycle_data(filelist):
     data = []
     for file in filelist:
@@ -42,8 +41,14 @@ def swap_column_levels(df):
     df.columns = df.columns.swaplevel(0, 1)
     return(df.sort_index(axis=1))
 
-def plot_heatmap(heatmap_data, out='heatmap.pdf', title='', **kwargs):
-    plt.figure(figsize=(6, 16))
+def split_index(dframe):
+    index_split = dframe.index.str.split('-', expand=True)
+    multi_index = pd.MultiIndex.from_tuples(index_split, names=['City', 'Domain', 'Resolution'])
+    dframe.index = multi_index
+    return(dframe)
+
+def plot_heatmap(heatmap_data, out='heatmap.pdf', title='', height=16, **kwargs):
+    plt.figure(figsize=(6, height))
     ax = sns.heatmap(heatmap_data, annot=True, **kwargs)
     # Cross out missing
     heatmap_data_mask = heatmap_data.isna()
@@ -58,7 +63,7 @@ def plot_heatmap(heatmap_data, out='heatmap.pdf', title='', **kwargs):
 filelist_acycle = glob.glob(f"{directory}/*/tasmin_*_acycle-ur.nc")
 filelist_urmask = glob.glob(f"{directory}/*/urmask_*_fx.nc")
 
-cachefile = 'uhi_heatmap.csv'
+cachefile = f'{directory}/uhi_heatmap.csv'
 if os.path.exists(cachefile):
     df = pd.read_csv(cachefile)
 else:
@@ -71,19 +76,28 @@ else:
     df.to_csv(cachefile)
 
 df['rur_to_urb_ratio'] = df['n_rural'] / df['n_urban']
-df['res'] = df['City'].str.split('-', expand=True)[2]
 num_cells = df.pivot_table(
     index='City', columns='Model',
     values=['n_urban', 'n_rural', 'rur_to_urb_ratio']
 )
 num_cells = swap_column_levels(num_cells)
-num_cells = num_cells.sort_values(by=('REMO20', 'n_rural'), ascending=False)
-heatmap_data = df.pivot_table(index='City', columns='Model', values=['DJF', 'JJA'])
+num_cells = num_cells.sort_values(by=('REMO20', 'n_urban'), ascending=False)
+heatmap_data = df.pivot_table(index='City', columns='Model', values=['DJF', 'JJA', 'Ann'])
 sorted_cities = [city for city in num_cells.index if city in heatmap_data.index]
 heatmap_data = heatmap_data.loc[sorted_cities]
 heatmap_data = swap_column_levels(heatmap_data)
+heatmap_data = split_index(heatmap_data)
+num_cells = split_index(num_cells)
 
-plot_heatmap(heatmap_data, out=f'{directory}/uhi_heatmap.pdf', title="Seasonal UHI (tasmin)",
-    center=0, cmap='RdBu_r', fmt=".2f")
-plot_heatmap(num_cells, out=f'{directory}/ncells_heatmap.pdf', title="Number of urban / rural cells",
-    cmap='BuPu', fmt=".0f", vmax=30)
+plot_heatmap(heatmap_data.xs('11', level='Resolution'),
+    out=f'{directory}/uhi_heatmap_EUR-11.pdf', title="Seasonal UHI (tasmin)", height = 6,
+    center=0, cmap='RdBu_r', vmin=-2, vmax=2, fmt=".2f")
+plot_heatmap(heatmap_data.xs('22', level='Resolution'),
+    out=f'{directory}/uhi_heatmap_CDX-22.pdf', title="Seasonal UHI (tasmin)", height = 16,
+    center=0, cmap='RdBu_r', vmin=-2, vmax=2, fmt=".2f")
+plot_heatmap(num_cells.xs('11', level='Resolution'),
+    out=f'{directory}/ncells_heatmap_EUR-11.pdf', title="Number of urban / rural cells", height = 6,
+    cmap='BuPu', fmt=".0f", vmax=25)
+plot_heatmap(num_cells.xs('22', level='Resolution'),
+    out=f'{directory}/ncells_heatmap_CDX-22.pdf', title="Number of urban / rural cells", height = 16,
+    cmap='BuPu', fmt=".0f", vmax=25)
