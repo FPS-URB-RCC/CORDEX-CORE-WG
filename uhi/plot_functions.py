@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from itertools import product
+from shapely.geometry import Point, Polygon
 
 var_map = {
     'tasmin': 'TMIN',
@@ -35,19 +36,41 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
     max_abs_value = abs(data).max().item()
     
     if valid_stations is not None:
-        for item in time_series:
-            temp_obs=item['data'].mean()[0]-rural_mean
-            if abs(temp_obs)>max_abs_value:
-                max_abs_value=abs(temp_obs)
-        for index, valid_stations in valid_stations.iterrows():
-            obs_lon = valid_stations['lon']
-            obs_lat = valid_stations['lat']
+        obs_urban, obs_vicinity = [], []
+        for index, obs in valid_stations.iterrows():
+            obs_lon = obs['lon']
+            obs_lat = obs['lat']
+            
+            # Create a point with latitude and longuitude
+            point = Point(obs_lon, obs_lat)
+            is_inside = ucdb_city.contains(point)
+
+            # Clasify in urban and vicinity
+            if is_inside.any():
+                obs_urban.append(obs['code'])
+            else:
+                obs_vicinity.append(obs['code'])
+        if len(obs_vicinity)>0:
+            #calculate the mean for the outside observations
+            obs_vicinity_mean = 0 
             for item in time_series:
-                if item['code'] == valid_stations['code']:
-                    temp_obs=item['data'].mean()[0]-rural_mean
-                    ax.scatter(obs_lon, obs_lat, c = temp_obs, marker='o', cmap='bwr', 
-                               s = 40, edgecolors = 'gray', vmin = -max_abs_value, vmax = max_abs_value,
-                               zorder = 10000) 
+                if item['code'] in obs_vicinity:
+                    obs_vicinity_mean+=item['data'].mean()[0]
+            obs_vicinity_mean = obs_vicinity_mean / len(obs_vicinity)
+            #plot each observation
+            for item in time_series:
+                temp_obs=item['data'].mean()[0]-obs_vicinity_mean
+                if abs(temp_obs)>max_abs_value:
+                    max_abs_value=abs(temp_obs)
+            for index, valid_stations in valid_stations.iterrows():
+                obs_lon = valid_stations['lon']
+                obs_lat = valid_stations['lat']
+                for item in time_series:
+                    if item['code'] == valid_stations['code']:
+                        temp_obs=item['data'].mean()[0]-obs_vicinity_mean
+                        ax.scatter(obs_lon, obs_lat, c = temp_obs, marker='o', cmap='bwr', 
+                                   s = 40, edgecolors = 'gray', vmin = -max_abs_value, vmax = max_abs_value,
+                                   zorder = 10000) 
     
     im1 = ax.pcolormesh(ds.lon, ds.lat, data.values,
                     cmap='bwr', alpha = 0.7,
@@ -72,7 +95,7 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
 
 def plot_time_series(ds_var, variable, urban_vicinity, 
                      time_series = None, valid_stations = None, data_squares = False,
-                     percentile = 100, var_map = var_map, city = None, cache = ''):
+                     percentile = 100, var_map = var_map, ucdb_city = None, city = None, cache = ''):
     '''
     Plot time series data with optional urban area overlay and additional time series overlay.
 
@@ -148,86 +171,78 @@ def plot_time_series(ds_var, variable, urban_vicinity,
         #    ax.plot([], [], color='b', linewidth=0.5, label = 'Vicinity Area')
     
     #Plot the observation if requested
-    obs_urban, obs_vicinity, obs_not_sected = [], [], []
+    obs_urban, obs_vicinity = [], []
     if time_series is not None:
         urban_obs_legend = False
-        not_urban_obs_legend = False
-        not_obs_legend = False
+
         var = var_map.get(variable, None)
         #obs_monthly_change_mean = [0] * 12
         obs_monthly_change_mean_urban = [0] * 12
         obs_monthly_change_mean_vicinity = [0] * 12
-        obs_monthly_change_mean_not_sected = [0] * 12
 
         for index, obs in valid_stations.iterrows():
             obs_lon = obs['lon']
             obs_lat = obs['lat']
             
-            # Calculate the differences
-            dist = np.sqrt((urban_vicinity['lon'] - obs_lon)**2 + 
-                           (urban_vicinity['lat'] - obs_lat)**2)
-            min_dist_idx = np.unravel_index(np.argmin(dist.values, axis=None), dist.shape)
+            # Create a point with latitude and longuitude
+            point = Point(obs_lon, obs_lat)
+            is_inside = ucdb_city.contains(point)
             
-            # Select the urban mask value at the nearest grid point
-            selected_value = urban_vicinity['urmask'].isel({
-                urban_vicinity.cf['Y'].name : min_dist_idx[0],
-                urban_vicinity.cf['X'].name : min_dist_idx[1]}).values
-            urban_mask_value = selected_value.item()
-            if selected_value.item()==1:
-                color_obs='k'
-                urban_obs_legend=True
-                obs_urban.append(obs)
-            elif selected_value.item()==0:
-                color_obs='g'
-                not_urban_obs_legend=True
-                obs_vicinity.append(obs)
+            # Clasify in urban and vicinity
+            if is_inside.any():
+                obs_urban.append(obs['code'])
             else:
-                color_obs='grey'
-                not_obs_legend=True
-                obs_not_sected.append(obs)
+                obs_vicinity.append(obs['code'])
+        
+        #get the mean and plot not urban observatios
+        if len(obs_vicinity) > 0:
             for item in time_series:
-                if item['code'] == obs['code']:                   
+                if item['code'] in obs_vicinity:
                     time_series_df = pd.DataFrame(item['data'])
                     time_series_df.index = pd.to_datetime(time_series_df.index)
                     time_series_df['month'] = time_series_df.index.month
-                    obs_monthly_change = []
                     for i in range(1, 13):
-                        monthly_data = time_series_df.loc[time_series_df.index.month == i].mean()
-                        rural_data = rural_mean[i-1].values
-                        monthly_change = monthly_data[var] - rural_data
-                        obs_monthly_change.append(monthly_change)
-                        #obs_monthly_change_mean[i-1] += monthly_change
-                        
-                        if color_obs == 'k':
-                            obs_monthly_change_mean_urban[i-1] += monthly_change
-                        if color_obs == 'g':
-                            obs_monthly_change_mean_vicinity[i-1] += monthly_change
-                        if color_obs == 'grey':
-                            obs_monthly_change_mean_not_sected[i-1] += monthly_change
-                        
-                    plt.plot(range(1, 13), obs_monthly_change, marker='o', color=color_obs, 
-                             linestyle='--', linewidth = 2)
-                    
-                    
-        #Add manually the legend
-        if urban_obs_legend==True:
-            ax.plot([], [], color='k', marker='o',  linewidth=0.5, label='Urban obs.')
-        if not_urban_obs_legend==True:
-            ax.plot([], [], color='g', marker='o',  linewidth=0.5, label='Vicinity obs.')
-        if not_obs_legend==True:
-            ax.plot([], [], color='grey', marker='o',  linewidth=0.5, 
-                    label='Outside study area obs.')
+                        monthly_data = time_series_df[var].loc[time_series_df.index.month == i].mean()
+                        obs_monthly_change_mean_vicinity[i-1] += monthly_data
+            
+            obs_monthly_change_mean_vicinity = [x / len(obs_vicinity) for x in obs_monthly_change_mean_vicinity]
+            plt.plot(range(1, 13), [0] * 12 , 
+                     color='g', linestyle='-', linewidth = 4, label='Vicinity obs. mean', zorder = 2000)
 
-        
-        if len(obs_urban) > 0:
-            obs_monthly_change_mean = [x / len(obs_urban) for x in obs_monthly_change_mean_urban]
-            plt.plot(range(1, 13), obs_monthly_change_mean, 
-                     color='k', linestyle='-', linewidth = 4, label='Urban obs. mean', zorder = 2000) 
-        if len(obs_vicinity) > 0:
-            obs_monthly_change_mean = [x / len(obs_vicinity) for x in obs_monthly_change_mean_vicinity]
-            plt.plot(range(1, 13), obs_monthly_change_mean, 
-                     color='g', linestyle='-', linewidth = 4, label='Vicinity obs. mean', zorder = 2000) 
+            #Plot each stations individually
+            for item in time_series:
+                time_series_df = pd.DataFrame(item['data'])
+                time_series_df.index = pd.to_datetime(time_series_df.index)
+                time_series_df['month'] = time_series_df.index.month
+                obs_monthly_change = []
+                for i in range(1, 13):
+                    monthly_data = time_series_df.loc[time_series_df.index.month == i].mean()
+                    monthly_change = monthly_data[var] - obs_monthly_change_mean_vicinity[i-1]
+                    obs_monthly_change.append(monthly_change)
+                    if item['code'] in obs_urban:
+                        obs_monthly_change_mean_urban[i-1] += monthly_change
+                        color_obs='g'
+                        urban_obs_legend=True
+                    else:
+                        color_obs='k'                       
+                        
+                plt.plot(range(1, 13), obs_monthly_change, marker='o', color=color_obs, 
+                             linestyle='--', linewidth = 2)
     
+            
+            if len(obs_urban) > 0:
+                obs_monthly_change_mean = [x / len(obs_urban) for x in obs_monthly_change_mean_urban]
+                plt.plot(range(1, 13), obs_monthly_change_mean, 
+                         color='k', linestyle='-', linewidth = 4, label='Urban obs. mean', zorder = 2000)
+                        
+            #Add manually the legend
+            ax.plot([], [], color='g', marker='o',  linestyle='--', linewidth=2, label='Vicinity obs.')
+            if urban_obs_legend==True:
+                ax.plot([], [], color='k', marker='o', linestyle='--',  linewidth=2, label='Urban obs.')
+            
+        else:
+            print("Due to limited data availability outside urban areas, we are currently unable to present observations for any region")
+ 
     # Add legend to the plot
     ax.legend(fontsize = 14)
     
