@@ -403,22 +403,83 @@ class Urban_vicinity:
         """
         lon2d = ds.lon.values
         lat2d = ds.lat.values
+        dist_lat = lat2d[1, 0] - lat2d[0, 0]
+        dist_lon = lon2d[0, 1] - lon2d[0, 0]
+        dist_latlon = lat2d[0 ,1] - lat2d[0, 0]
+        dist_lonlat = lon2d[1, 0] - lon2d[0, 0]
         # Overlay the cell borders and handle NaNs
         for i in range(len(ds.lat)-1):
             for j in range(len(ds.lon)-1):
                 lons = [lon2d[i, j], lon2d[i, j+1], lon2d[i+1, j+1], lon2d[i+1, j], lon2d[i, j]]
                 lats = [lat2d[i, j], lat2d[i, j+1], lat2d[i+1, j+1], lat2d[i+1, j], lat2d[i, j]]
 
-                lons = lons - abs(lon2d[i, j] - lon2d[i, j+1])/2                
+                lons = lons - abs(lon2d[i, j] - lon2d[i, j+1])/2              
                 lats = lats - abs(lat2d[i, j] - lat2d[i+1, j])/2
                 
                 data_cell = ds['urmask'].values[i, j]
-
+                
                 if data_cell == 1:
                     ax.plot(lons, lats, color='red', zorder = 100, linewidth=2)
                 elif data_cell == 0:
                     ax.plot(lons, lats, color='b', zorder = 1, linewidth=2)
 
+         # Plot the rightmost column
+        for i in range(len(ds.lat) - 1):
+            lons = [lon2d[i, -1], lon2d[i + 1, -1], lon2d[i + 1, -1] + dist_lon, lon2d[i, -1] + dist_lon, lon2d[i, -1]]
+            lats = [lat2d[i, -1], lat2d[i + 1, -1], lat2d[i + 1, -1] + dist_latlon, lat2d[i, -1] + dist_latlon, lat2d[i, -1]]
+
+            lons = lons - abs(lon2d[i, -1] - lon2d[i, -1])/2 - dist_lon/2            
+            lats = lats - abs(lat2d[i, -1] - lat2d[i+1, -1])/2 
+            
+            data_cell = ds['urmask'].values[i, -1]
+        
+            if data_cell == 1:
+                ax.plot(lons, lats, color='red', zorder=100, linewidth=2)
+            elif data_cell == 0:
+                ax.plot(lons, lats, color='b', zorder=1, linewidth=2)
+        
+        # Plot the topmost row
+        for j in range(len(ds.lon) - 1):
+            lons = [lon2d[-1, j], lon2d[-1, j + 1], lon2d[-1, j + 1]  + dist_lonlat, lon2d[-1, j]  + dist_lonlat, lon2d[-1, j]]
+            lats = [lat2d[-1, j], lat2d[-1, j + 1], lat2d[-1, j + 1] + dist_lat, lat2d[-1, j] + dist_lat, lat2d[-1, j]]
+
+            
+            lons = lons - abs(lon2d[-1, j] - lon2d[-1, j+1])/2           
+            lats = lats - abs(lat2d[-1, j] - lat2d[-1, j])/2 - dist_lat/2  
+            
+            data_cell = ds['urmask'].values[-1, j]
+        
+            if data_cell == 1:
+                ax.plot(lons, lats, color='red', zorder=100, linewidth=2)
+            elif data_cell == 0:
+                ax.plot(lons, lats, color='b', zorder=1, linewidth=2)
+        
+        # Plot the bottom right corner
+        lons = [
+            lon2d[-1, -1],
+            lon2d[-1, -1] + dist_lon,
+            lon2d[-1, -1] + dist_lon  + dist_lonlat,
+            lon2d[-1, -1]  + dist_lonlat,
+            lon2d[-1, -1]
+        ]
+        lats = [
+            lat2d[-1, -1],
+            lat2d[-1, -1] + dist_latlon,
+            lat2d[-1, -1] + dist_lat + dist_latlon,
+            lat2d[-1, -1] + dist_lat,
+            lat2d[-1, -1]
+        ]
+            
+        data_cell = ds['urmask'].values[-1, -1]
+
+        lons = lons - abs(lon2d[-1, -1] - lon2d[-1, -1])/2 - dist_lon/2
+        lats = lats - abs(lat2d[-1, -1] - lat2d[-1, -1])/2 - dist_lat/2  
+        
+        if data_cell == 1:
+            ax.plot(lons, lats, color='red', zorder=100, linewidth=2)
+        elif data_cell == 0:
+            ax.plot(lons, lats, color='b', zorder=1, linewidth=2)
+            
     def plot_fix_variables(self, ds_sftuf, ds_orog, ds_sftlf,
                              sftuf_mask, orog_mask, sftlf_mask, urban_areas = None,
                             ):
