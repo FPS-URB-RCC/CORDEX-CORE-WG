@@ -7,20 +7,25 @@ import papermill as pm
 import sys
 
 from icecream import ic
-from utils import cities, RCM_DICT
+from utils import RCM_DICT
+from utils import YAMLconfig
 
 input_notebook = 'urban_area_selection.ipynb'
 output_notebook = 'urban_area_selection__papermill.ipynb'
-expected_figure_number = 4
+variable = 'tasmin'
+expected_figure_number = 7
+cities = YAMLconfig('selected_cities.yaml')
 
 for city in cities:
-    abbr_city = cities[city]['city']
+    abbr_city = city
+    long_city = cities[city]['name']
     domain = cities[city]['domain']
     parameters = {
-        'city': city,
+        'abbr_city': city,
         'lon_city': cities[city]['lon'],
         'lat_city': cities[city]['lat'],
         'domain': domain,     
+        'variable': variable,     
     }
     for model in ['REMO', 'RegCM']:
         model_str = RCM_DICT[domain][model]
@@ -51,14 +56,16 @@ for city in cities:
 for city in cities:
     if cities[city]['domain'] != 'EUR-11':
         continue
-    abbr_city = cities[city]['city']
+    abbr_city = city
+    long_city = cities[city]['name']
     model = 'REMO'
     domain = 'EUR-22'  
     parameters = {
-        'city': city,
+        'abbr_city': abbr_city,
         'lon_city': cities[city]['lon'],
         'lat_city': cities[city]['lat'],
         'domain': domain,
+        'variable': variable,     
         'model': model
     }
 

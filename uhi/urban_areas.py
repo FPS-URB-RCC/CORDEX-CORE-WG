@@ -42,7 +42,14 @@ def load_variable(root_esgf, root_nextcloud, variable, domain, model, scenario):
         files_var = np.sort([file for file in files if (domain in file) and (model in file)])
     ds_var = xr.open_mfdataset(sorted(files_var), combine='nested', concat_dim='time').compute()
     ds_var = fix_360_longitudes(ds_var)
+    if RCM_DICT[domain][model] == 'KNU_RegCM4-0':
+        ds_var = fix_int64_time(ds_var)
     return ds_var
+
+def fix_int64_time(dataset):
+    dataset = dataset.assign_coords(time=dataset['time'].astype('float64'))
+    dataset['time'].units = dataset['time_bounds'].units
+    return(dataset)
 
 def fix_360_longitudes(
     dataset: xr.Dataset, lonname: str = "lon"

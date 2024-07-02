@@ -1,5 +1,7 @@
 import pandas as pd
 import geopandas as gpd
+import xarray as xr
+import numpy as np
 from shapely.geometry import Point
 
 var_map = {
@@ -69,15 +71,14 @@ def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_thre
     Returns:
     tuple: A tuple containing:
         - GeoDataFrame: The subset of stations with valid data.
-        - list: A list of valid time series data.
+        - pd.DataFrame: A DataFrame of valid time series data.
         - xr.Dataset: The subset of the dataset containing the selected period.
     '''
     var = var_map.get(variable, None)
     period = slice(idate, fdate)
     ds_var_period=ds_var.sel(time=period)
     ndays = (pd.to_datetime(fdate)-pd.to_datetime(idate)).days
-    valid_codes = []
-    valid_time_series = []
+    valid_codes, valid_time_series = [], []
     for stn_code in stations.code:
         stn_data = get_ghcnd_df(stn_code)
         if stn_data.empty:
@@ -89,8 +90,20 @@ def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_thre
                 print(f'{city} -- {stn_data.NAME[0]} - {var} has {100*valid_records:.1f}% valid records in {idate} to {fdate}')
                 valid_codes.append(stn_code)
                 valid_time_series.append({'data':stn_data[var].loc[period]/10.0,'code':stn_code})
-  
-    return(stations[stations.code.isin(valid_codes)], valid_time_series, ds_var_period)
+    #convert list in a dataframe
+    if valid_time_series:
+        for n_s, serie in enumerate(valid_time_series):
+            if n_s == 0:
+                freq = xr.infer_freq(serie['data'].index)
+                df_time_series_obs = pd.DataFrame(
+                        index = pd.date_range(period.start, period.stop, 
+                        freq = freq)
+                    )
+            df_time_series_obs[serie['code']] = serie['data']
+    else:
+        df_time_series_obs = valid_time_series
+        
+    return(stations[stations.code.isin(valid_codes)], df_time_series_obs, ds_var_period)
 
 def available_vars(station):
     """
@@ -104,57 +117,50 @@ def available_vars(station):
     """
     return(set(station.columns).intersection({'PRCP', 'TAVG', 'TMAX', 'TMIN', 'SNWD'}))
 
-def get_season(ds_var_period, time_series, season='all'):
+def get_season(ds_var_period, time_series, 
+               season = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
     '''
     Selects the chosen season from the observations and dataset.
 
     Parameters:
     ds_var_period (xarray.Dataset): The dataset containing the variable data over the desired period.
-    time_series (list of pd.Series): List of time series data from observations.
-    season (str): The season to select ('all', 'DJF', 'MAM', 'JJA', 'SON').
+    time_series (pd.DataFrame): DataFrame seres for observations.
+    season (list): The months to select ([1, 2, 3, 4]).
 
     Returns:
     xarray.Dataset: The subset of the dataset containing the selected season.
     pd.DataFrame: DataFrame of the time series data for the selected season.
     '''
-    if season == 'all':
-        # Return the whole period if season is 'all'
-        ds_season = ds_var_period
-        ts_season_list = []
-        for item in time_series:
-            time_series_df = pd.DataFrame(item['data'])
-            station_code = item['code']  # Get the station code
-            ts_season = {}
-            ts_season['data'] = time_series_df
-            ts_season['code'] = station_code  # Add station code to the DataFrame
-            ts_season_list.append(ts_season)
-            
-    else:
-        # Select the months corresponding to each season
-        seasons = {
-            'DJF': [12, 1, 2],
-            'MAM': [3, 4, 5],
-            'JJA': [6, 7, 8],
-            'SON': [9, 10, 11]
-        }
-        selected_months = seasons.get(season, None)
+    # Select the data for the chosen season from the dataset and the time series
+    ds_season = ds_var_period.sel(time=ds_var_period['time.month'].isin(season))
+    if not isinstance(time_series, list):
+        time_series = time_series[time_series.index.month.isin(season)]
 
-        
-        # Select the data for the chosen season from the dataset
-        ds_season = ds_var_period.sel(time=ds_var_period['time.month'].isin(selected_months))
-        
-        # Select the data for the chosen season from the time series
-        ts_season_list = []
-        for item in time_series:
-            time_series_df = pd.DataFrame(item['data'])
-            time_series_df.index = pd.to_datetime(time_series_df.index)
-            time_series_df['month'] = time_series_df.index.month
-            station_code = item['code']  # Get the station code
-            ts_season = {}
-            ts_season['data'] = time_series_df.loc[time_series_df['month'].isin(selected_months)].drop(columns=['month'])
-            ts_season['code'] = station_code  # Add station code to the DataFrame
-            ts_season_list.append(ts_season)
+    return ds_season, time_series
 
-    return ds_season, ts_season_list
+def inside_city(valid_obs, ucdb_city):
+    """
+    Add a column to the dataframe with the atributes of the series 
+    including in they are inside or outside the city.
+    """
+
+    valid_obs['inside_city'] = np.nan
+    for index, obs in valid_obs.iterrows():
+        # Create a point with latitude and longuitude
+        point = Point(obs['lon'], obs['lat'])
+        is_inside = ucdb_city.contains(point)
+        # Clasify in urban and vicinity
+        valid_obs.loc[valid_obs['code'].str.contains(obs.code), 'inside_city'] = is_inside.values[0]
+
+    n_series_inside = (valid_obs['inside_city'].values == True).sum()
+    n_series_ouside = (valid_obs['inside_city'].values == False).sum()
+    
+    print(f"There are {n_series_inside} series inside the city and {n_series_ouside} outside")
+
+    if (n_series_inside == 0) or (n_series_ouside == 0):
+        print(f"The number of inside/outside observations is 0 therefore valid_obs is empty")
+        valid_obs = []
+
+    return valid_obs
 
 
