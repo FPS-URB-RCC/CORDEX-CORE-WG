@@ -42,8 +42,8 @@ def load_variable(root_esgf, root_nextcloud, variable, domain, model, scenario):
         files_var = np.sort([file for file in files if (domain in file) and (model in file)])
     ds_var = xr.open_mfdataset(sorted(files_var), combine='nested', concat_dim='time').compute()
     ds_var = fix_360_longitudes(ds_var)
-    if RCM_DICT[domain][model] == 'KNU_RegCM4-0':
-        ds_var = fix_int64_time(ds_var)
+    #if RCM_DICT[domain][model] == 'KNU_RegCM4-0':
+    #    ds_var = fix_int64_time(ds_var)
     return ds_var
 
 def fix_int64_time(dataset):
@@ -184,8 +184,13 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud):
             f"{root_nextcloud}{model}/urbanfraction/{MODEL_DICT[model]['sftuf']}/{domain}*.nc" 
     )
     
-    if domain in ["NAM-22", "EAS-22"]: #nextcloud
+    if domain in ["NAM-22"]: #nextcloud
     
+        file_orog = glob.glob(f"{root_nextcloud}{model}/orography/orog_{domain}*.nc")
+        file_sftlf = glob.glob(f"{root_nextcloud}{model}/land-sea-mask/sftlf_{domain}*.nc")
+
+    elif domain in ["EAS-22"] and model in ["REMO"]: #nextcloud
+
         file_orog = glob.glob(f"{root_nextcloud}{model}/orography/orog_{domain}*.nc")
         file_sftlf = glob.glob(f"{root_nextcloud}{model}/land-sea-mask/sftlf_{domain}*.nc")
         
@@ -291,7 +296,7 @@ class Urban_vicinity:
         sftuf_mask : xarray.DataArray 
             Binary mask indicating urban areas with 1 and 0 for the rest.
         sftuf_sur_mask : xarray.DataArray 
-            Binary mask indicating non-urban areas with 1 and 0 for the rest.
+            Binary mask indicating surroundings of urban areas affected by the urban effect with 1 and 0 for the rest.
         orog_mask : xarray.DataArray
             Binary mask indicating of orography with .
         sftlf_mask : xarray.DataArray
@@ -300,8 +305,9 @@ class Urban_vicinity:
         # sftuf
         ds_sftuf = ds_sftuf["sftuf"]
         sftuf_mask = ds_sftuf > self.urban_th
-        sftuf_sur_mask = ds_sftuf <= self.urban_sur_th
-        
+        sftuf_sur_mask_1 = ds_sftuf <= self.urban_th
+        sftuf_sur_mask_2 = ds_sftuf > self.urban_sur_th
+        sftuf_sur_mask = sftuf_sur_mask_1*sftuf_sur_mask_2
         # orog
         ds_orog = ds_orog["orog"]
         urban_elev_max = ds_orog.where(sftuf_mask).max().item()
@@ -344,8 +350,8 @@ class Urban_vicinity:
             Binary mask indicating of orography with .
         sftlf_mask : xarray.DataArray
             Binary mask indicating sea areas.
-        sftuf_mask : xarray.DataArray 
-            Binary mask indicating non-urban areas with 1 and 0 for the rest.
+        sftuf_sur_mask : xarray.DataArray 
+            Binary mask indicating surroundings of urban areas affected by the urban effect with 1 and 0 for the rest.
         scale : int 
             Urban-rural ratio of grid boxes.
     
@@ -354,36 +360,63 @@ class Urban_vicinity:
         xarray.DataArray 
             Mask of urban (1) surrounding non-urban cells (0) and the rest (NaN).
         """
+        def delete_surrounding_intersect(dilated_data, sftuf_sur_mask):
+            """
+            Delete surroundings intersecting with dilated data
+            """
+            # Delete surroundings which intersect with dilated data
+            dilated_data_surr = dilated_data * sftuf_sur_mask.astype(int)
+            dilated_data_surr_opposite = xr.where(dilated_data_surr == 0, 1, 
+                                                  xr.where(dilated_data_surr == 1, 0, dilated_data_surr))
+            dilated_data = dilated_data * dilated_data_surr_opposite
+            return dilated_data
+        
+        kernel1 = np.array([[0, 1, 0],
+                            [1, 1, 1],
+                            [0, 1, 0]])
+        kernel2 = np.array([[1, 1, 1],
+                            [1, 1, 1],
+                            [1, 1, 1]])
+        
         if scale is None:
             scale = self.scale
         
-        #data_array = xr.DataArray((~sftuf_sur_mask)*(sftlf_mask)).astype(int)
         data_array = xr.DataArray(sftuf_mask).astype(int)
-        kernel = np.array([[0, 1, 0],
-                           [1, 1, 1],
-                           [0, 1, 0]])
-                
+        #data_array = xr.DataArray(sftuf_mask.astype(int) + sftuf_sur_mask.astype(int))
+
         urban_cells = np.sum(sftuf_mask).values
         non_urban_cells = 0
         counter = 0
         while non_urban_cells <= urban_cells * scale:
-            # Dilation
+            # Dilation (Try with kernel 1)
             dilated_data = xr.apply_ufunc(dilation, 
-                                          data_array if non_urban_cells == 0 else dilated_data, 
-                                          kwargs={'footprint': kernel})
-            
-            #Delete fixed variables
+                                          data_array if counter == 0 else dilated_data, 
+                                          kwargs={'footprint': kernel1})
+            # Delete fixed variables
             dilated_data = (dilated_data * orog_mask * sftlf_mask).astype(int)
+            
             if np.sum(dilated_data) - urban_cells == non_urban_cells:
-                print(f"Warning: No more non-urban cells can be found in iteration number {counter}")
-                break
-            non_urban_cells = (np.sum(dilated_data) - urban_cells).values
+                sys.exit()
+                #Try with kernel2
+                dilated_data = xr.apply_ufunc(dilation, 
+                                              data_array if counter == 0 else dilated_data, 
+                                              kwargs={'footprint': kernel2})
+                # Delete fixed variables
+                dilated_data = (dilated_data * orog_mask * sftlf_mask).astype(int)
+                
+                if np.sum(dilated_data) - urban_cells  == non_urban_cells:
+                    print(f"Warning: No more non-urban cells can be found in iteration number {counter}")
+                    break
+                    
+            # Number of surrounding cells intersecting dilated data
+            dilated_data_surr_cells = np.sum(dilated_data * sftuf_sur_mask.astype(int))
+            non_urban_cells = (np.sum(dilated_data) - urban_cells).values - dilated_data_surr_cells
             counter += 1
-                                
-        # select surroundings cells (not rural)
-        sur = sftuf_sur_mask.astype(int) - sftuf_mask.astype(int)
-        sur = sur.where(sur == 0, np.nan).fillna(1)
-        non_urban_mask = xr.DataArray(dilated_data.where(~sftuf_mask).fillna(0))*sur
+
+        # Delete surrounding intersectig with dilated data
+        dilated_data = delete_surrounding_intersect(dilated_data, sftuf_sur_mask)  
+        # Assing rural cells (1), vicinity (0) and the rest (nan) 
+        non_urban_mask = xr.DataArray(dilated_data.where(~sftuf_mask).fillna(0))
         urban_area = sftuf_mask.astype(int).where(sftuf_mask.astype(int) == 1, np.nan)
         urban_area = urban_area.where(non_urban_mask.astype(int) == 0, 0)
         urban_area = urban_area.to_dataset(name='urmask')
