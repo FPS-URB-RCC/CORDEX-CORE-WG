@@ -10,8 +10,7 @@ from icecream import ic
 from itertools import product
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from skimage.morphology import dilation, square
-from skimage.morphology import dilation, square
+from skimage.morphology import dilation, square, remove_small_objects
 from utils import RCM_DICT, MODEL_DICT
 
 def traverseDir(root):
@@ -218,7 +217,7 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud):
 
 class Urban_vicinity:
     def __init__(self, urban_th = 0.1, urban_sur_th = 0.1, orog_diff = 100, sftlf_th = 70,
-                 scale = 4, lon_city = None, lat_city = None, 
+                 scale = 4, min_city_size = 0, lon_city = None, lat_city = None, 
                  lon_lim = None, lat_lim = None,
                  model = None, domain = None):
                      
@@ -227,6 +226,7 @@ class Urban_vicinity:
         self.orog_diff = orog_diff
         self.sftlf_th = sftlf_th
         self.scale = scale
+        self.min_city_size = min_city_size
         self.lon_city = lon_city
         self.lat_city = lat_city
         self.lon_lim = lon_lim
@@ -303,22 +303,26 @@ class Urban_vicinity:
             Binary mask indicating sea areas.
         """
         # sftuf
-        ds_sftuf = ds_sftuf["sftuf"]
-        sftuf_mask = ds_sftuf > self.urban_th
-        sftuf_sur_mask_1 = ds_sftuf <= self.urban_th
-        sftuf_sur_mask_2 = ds_sftuf > self.urban_sur_th
-        sftuf_sur_mask = sftuf_sur_mask_1*sftuf_sur_mask_2
+        sftuf_mask = ds_sftuf["sftuf"] > self.urban_th
+        # Remove small objects
+        sftuf_mask_rem_small = remove_small_objects(sftuf_mask.values.astype(bool), 
+                                                    min_size = self.min_city_size)
+        sftuf_mask.data = sftuf_mask_rem_small
+        deleted_small = ~sftuf_mask_rem_small*(ds_sftuf["sftuf"] > self.urban_th)
+        # Calculate surrounding mask and delete small objects from it
+        sftuf_sur_mask_1 = ds_sftuf["sftuf"] <= self.urban_th
+        sftuf_sur_mask_2 = ds_sftuf["sftuf"] > self.urban_sur_th
+        sftuf_sur_mask_th = sftuf_sur_mask_1*sftuf_sur_mask_2
+        sftuf_sur_mask = xr.where(deleted_small, True, sftuf_sur_mask_th)
         # orog
-        ds_orog = ds_orog["orog"]
-        urban_elev_max = ds_orog.where(sftuf_mask).max().item()
-        urban_elev_min = ds_orog.where(sftuf_mask).min().item()
-        orog_mask1 = ds_orog < (self.orog_diff + urban_elev_max)
-        orog_mask2 = ds_orog > (urban_elev_min - self.orog_diff)
+        urban_elev_max = ds_orog["orog"].where(sftuf_mask).max().item()
+        urban_elev_min = ds_orog["orog"].where(sftuf_mask).min().item()
+        orog_mask1 = ds_orog["orog"] < (self.orog_diff + urban_elev_max)
+        orog_mask2 = ds_orog["orog"] > (urban_elev_min - self.orog_diff)
         orog_mask = orog_mask1 & orog_mask2
         
         #sftlf
-        ds_sftlf = ds_sftlf["sftlf"]
-        sftlf_mask = ds_sftlf > self.sftlf_th   
+        sftlf_mask = ds_sftlf["sftlf"] > self.sftlf_th   
         
         # Apply orog and sftlf thresholds to the urban_mask
         sftuf_mask = sftuf_mask*sftlf_mask
@@ -373,7 +377,7 @@ class Urban_vicinity:
         
         kernel1 = np.array([[0, 1, 0],
                             [1, 1, 1],
-                            [0, 1, 0]])
+                            [0, 1, 0]])        
         kernel2 = np.array([[1, 1, 1],
                             [1, 1, 1],
                             [1, 1, 1]])
@@ -382,7 +386,6 @@ class Urban_vicinity:
             scale = self.scale
         
         data_array = xr.DataArray(sftuf_mask).astype(int)
-        #data_array = xr.DataArray(sftuf_mask.astype(int) + sftuf_sur_mask.astype(int))
 
         urban_cells = np.sum(sftuf_mask).values
         non_urban_cells = 0
@@ -537,10 +540,12 @@ class Urban_vicinity:
         
         proj = ccrs.PlateCarree()
         fig, axes = plt.subplots(2, 3, subplot_kw={'projection': proj}, figsize=(20, 10))
-        
+
+        vmax_urb = np.nanmax(abs(ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan).values))
+                        
         im1 = axes[0, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
                                     ds_sftuf["sftuf"].values,
-                                    cmap='binary', vmin = 0, vmax = 0.6)
+                                    cmap='binary', vmin = 0, vmax = vmax_urb)
         fig.colorbar(im1, ax=axes[0, 0], orientation='vertical')
         axes[0, 0].set_title('Urban Fraction')
         axes[0, 0].coastlines()
@@ -563,9 +568,10 @@ class Urban_vicinity:
         axes[0, 2].coastlines()
     
         # masks
+        vmax = np.nanmax(abs(ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan).values))
         im1 = axes[1, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
                                     ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan),
-                                    cmap='binary', vmin = 0, vmax = 0.6)
+                                    cmap='binary', vmin = 0, vmax = vmax_urb)
         fig.colorbar(im1, ax=axes[1, 0], orientation='vertical')
         if not urban_areas:
             axes[1, 0].set_title('Urban Fraction\n(sftuf >' +  str(self.urban_th) + ')')
