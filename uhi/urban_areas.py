@@ -576,8 +576,7 @@ class Urban_vicinity:
         if not urban_areas:
             axes[1, 0].set_title('Urban Fraction\n(sftuf >' +  str(self.urban_th) + ')')
         else:
-            axes[1, 0].set_title('Urban Fraction\n(sftuf >' +  str(self.urban_th) + 
-                                 ', Non-urban(sftuf) <= ' + str(self.urban_sur_th) + ', scale = ' + str(self.scale) +  ')')
+            axes[1, 0].set_title(f"Urban Fraction\n(Urb. (sftuf) > {self.urban_th}, Surr.(sftuf) <= {self.urban_sur_th}\nscale = {self.scale}, max_city = {self.min_city_size})")
         axes[1, 0].coastlines()
         
         im2 = axes[1, 1].pcolormesh(ds_orog.lon, ds_orog.lat,
@@ -619,7 +618,7 @@ class Urban_vicinity:
         ds['urmask'].attrs['long_name'] = 'Urban vs. vicinity. 1 corresponds to urban areas and 0 to the surrounding areas'
         
         attrs_list = ["urban_th", "urban_sur_th", "orog_diff", "sftlf_th", "sftlf_th", "scale", 
-                    "lon_city", "lat_city", "lon_lim", "lat_lim", "model", "domain"]
+                      "min_city_size", "lon_city", "lat_city", "lon_lim", "lat_lim", "model", "domain"]
         
         for attr in attrs_list:
             if getattr(self, attr):
