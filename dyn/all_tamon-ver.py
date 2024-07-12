@@ -61,6 +61,11 @@ colab = 'seismic'
 
 lonlatbox = None
 
+# Cities with non-ASCII characters
+nonASCII = {
+  'Goi-nia': "Goiânia", 'XI-an': "XI'an", 'S-o_Paulo':  "São_Paulo"
+}
+
 #######    #######
 ## MAIN
     #######
@@ -240,6 +245,7 @@ for citygr in lcitygrs:
     
     cities[citygr] = dicv
 
+Ncitygr = len(lcitygrs)
 # Plotting
 
 # Direct all rounded time-series
@@ -262,20 +268,23 @@ if not os.path.isfile(ofignS):
         dicv = cities[citygr]
         
         allmean = dicv[3]
-        an = allmean.min()
-        ax = allmean.max()
+        ann = allmean.min()
+        anx = allmean.max()
         
-        if citygr == citygrs[Nfiles-1]:
+        if citygr == lcitygrs[Ncitygr-1]:
             il = ax.plot(allmean[0:11], allmean[1:12], '-x', color='black')
             for it in range(11):
-                ax.annotate(shortmon[it], xy=(allmean[it], allmean[it+1]),           \
+                ax.annotate(gen.shortmon[it], xy=(allmean[it], allmean[it+1]),       \
                   color='red')
         else:
             il = ax.plot(allmean[0:11], allmean[1:12], '-', color='gray')
     
-        if an < minv: minv = an
-        if ax > maxv: maxv = ax
+        if ann < minv: minv = ann
+        if anx > maxv: maxv = anx
     
+    ax.set_xlim(ann, anx)
+    ax.set_ylim(ann, anx)
+
     ax.set_xlabel('month (it)')
     ax.set_xlabel('month (it+1)')
      
