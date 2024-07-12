@@ -36,6 +36,7 @@ import generic_tools as gen
 
 fscratch = True
 
+ifxfold = '/datos/MOD/CORDEX/CMIP5'
 ifold = '/home/lluis.fita/process/mod/CORDEX-CORE/urban'
 
 secs = ['map', 'SN', 'WE']
@@ -76,7 +77,8 @@ parser.add_option("-v", "--Verbose", dest="verbose", help="Need verbose", metava
 debug = gen.Str_Bool(opts.verbose)
 
 Mn='_ymonmean'
-files = gen.files_folder_HMT(folder=ifold, head='ta',middle=Mn, tail='nc',           \
+ifoldS = './*/*'
+files = gen.files_folder_HMT(folder=ifoldS, head='ta',middle=Mn, tail='nc',          \
   rmfolder=False)
 Nfiles = len(files)
 
@@ -93,13 +95,15 @@ allrcms = []
 for filen in files:
 
     fn = os.path.basename(filen)
-    dom = filen.split('/')[0]
-    cityn = filen.split('/')[1]
+    if fn.count('None') != 0: continue
+    dom = filen.split('/')[1]
+    cityn = filen.split('/')[2]
     if not gen.searchInlist(alldoms, dom): alldoms.append(dom)
     if not gen.searchInlist(lcities, cityn): lcities.append(cityn)
     
     gcm = fn.split('_')[1]
     rcm = fn.split('_')[2]
+    if debug: print ('    ', dom, cityn, gcm, rcm)
 
     citygr = cityn + '_' + gcm + '_' + rcm
     tcitygr = (cityn, gcm, rcm)
@@ -109,42 +113,42 @@ for filen in files:
     if not gen.searchInlist(allrcms, rcm): allrcms.append(rcm)
     
     if firstcity:
-        iff =  dom + '/' + cityn
+        iff = './' + dom + '/' + cityn
         
         Mn=gcm + '_' + rcm + '_ymonmean'
         cityfiles = gen.files_folder_HMT(folder=iff, head='ta',middle=Mn, tail='nc', \
           rmfolder=True)
 
         for cfilen in cityfiles:
-            lev = re.sub("[^0-9]", "", filen.split('/')[2].split('_')[0])
+            lev = re.sub("[^0-9]", "", cfilen.split('/')[3].split('_')[0])
             levs.append(int(lev))
         levs.sort()
         Nlevs = len(levs)
         
-        prevcitygr
-        firstcty = False
+        prevcitygr = tcitygr
+        firstcity = False
 
-        cities[(cityn, gcm, rcm)] = [dom]
+        cities[tcitygr] = [dom]
 
     else:
-        if citygr != prevcitygr:
-            cities[(cityn, gcm, rcm)] = [dom]
-            prevcitygr = citygr
+        if tcitygr != prevcitygr:
+            cities[tcitygr] = [dom]
+            prevcitygr = tcitygr
 
 Ncities = len(lcities)
 print ('amount of files:', Nfiles, 'from', Ncities, 'cities found: ', lcities)
 
 if debug:
-    print ('  city values [dom] [gcm] [rcm]_______')
-    for cityn  in lcities:
-        print (cities[cityn])
+    print ('  city values [cityn] [gcm] [rcm] [dom]_______')
+    for citygr  in lcitygrs:
+        print (citygr, cities[citygr])
         
 presv = levs[Nlevs-1]
 
 # Getting anomalies
-for citygr in citygrs:
+for citygr in lcitygrs:
     cityn = citygr[0]
-    gcm = ciytgr[1]
+    gcm = citygr[1]
     rcm = citygr[2]
 
     dicv = cities[citygr]
@@ -159,7 +163,6 @@ for citygr in citygrs:
     ilev = 0
     for lev in iilevs:       
         filen = dom +'/'+ cityn +'/ta'+ lev + '_' + gcm + '_' + rcm + '_ymonmean.nc'
-
         onc = NetCDFFile(filen, 'r')
 
         ncvar.check_varInfile('main', filen, onc, 'ta' + str(lev)+'cyclemean')
@@ -167,7 +170,7 @@ for citygr in citygrs:
         if ilev == 0:
             dx = ovar.shape[2]
             dy = ovar.shape[1]
-            values = np.full((12,2,dy,dx), gen.fillValueF) 
+            values = np.full((12,2,2*Nx+1,2*Nx+1), gen.fillValueF) 
             olon = onc.variables['lon']
             olat = onc.variables['lat']
 
@@ -180,6 +183,10 @@ for citygr in citygrs:
                 
             loncity = lon[dy//2,dx//2]
             latcity = lat[dy//2,dx//2]
+            ix = dx//2 - Nx
+            ex = dx//2 + Nx + 1
+            iy = dy//2 - Nx
+            ey = dy//2 + Nx + 1
 
             # Getting orography
             orogfiles = gen.files_folder_HMT(folder=fxfoldn, head='*/fx/orog/',      \
@@ -202,8 +209,9 @@ for citygr in citygrs:
             eoy = jorog + Nx + 1
             orogv = orog[ioy:eoy,iox:eox]
 
-        ta = ovar[:] 
-        values[:,ilev,:,:] = ta[:]*(p0/lev)**(RCp)
+        ta = ovar[:,iy:ey,ix:ex] 
+        levv = np.float(lev)
+        values[:,ilev,:,:] = ta[:]*(p0/levv)**(RCp)
         onc.close()
 
         ilev = ilev + 1
@@ -218,15 +226,15 @@ for citygr in citygrs:
     fac3 = 5.25530
     topo = fac1*(1-orogv/fac2)**fac3
 
-    avals = np.full((12,2,dy,dx), gen.fillValueR)
+    avals = np.full((12,2,2*Nx+1,2*Nx+1), gen.fillValueR)
     # Masking outside topography
     for it in range(12):
         for iz in range(2):
-            mat = values[it,iz,:,:] - valanom
+            mat = values[it,iz,:,:] - valanom[it,iz]
             avals[it,iz,:,:] = ma.array(mat, mask=topo < presv)
         
-    allamean = avals.mean(axis(1,2,3))
-    levamean = avals.mean(axis(2,3))
+    allamean = avals.mean(axis=(1,2,3))
+    levamean = avals.mean(axis=(2,3))
     
     dicv = dicv + [values] + [avals] + [allamean] + [levamean]
     
@@ -250,7 +258,7 @@ if not os.path.isfile(ofignS):
  
     ifig = 1
     ax = plt.subplot(Nrow,Ncol,ifig)
-    for citygr in citygrs:
+    for citygr in lcitygrs:
         dicv = cities[citygr]
         
         allmean = dicv[3]
