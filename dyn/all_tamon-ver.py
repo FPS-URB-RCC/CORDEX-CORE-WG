@@ -92,7 +92,7 @@ allrcms = []
 # Getting list of available cities
 for filen in files:
 
-    fn = os.path.basedir(filen)
+    fn = os.path.basename(filen)
     dom = filen.split('/')[0]
     cityn = filen.split('/')[1]
     if not gen.searchInlist(alldoms, dom): alldoms.append(dom)
