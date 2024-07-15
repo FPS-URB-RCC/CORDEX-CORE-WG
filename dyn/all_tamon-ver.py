@@ -809,7 +809,7 @@ if not os.path.isfile(ofignS):
         if ann < minv: minv = ann
         if anx > maxv: maxv = anx
 
-        if icit == 0: break
+        #if icit == 0: break
     
     xtrm = np.max([np.abs(ann), anx])
     xtrm = xtrm*1.15
