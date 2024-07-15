@@ -488,6 +488,137 @@ else:
 
 # Plotting
 
+# Direct individual rounded time-series
+Nrow = 1
+Ncol = 2
+ 
+for icit in range(Ncitygr):
+    citynS = gen.byte_String(newvarcityn[icit,:])
+    
+    drg = newcitydrg[:,icit]
+    if drg.mask[0]: continue
+    if drg[0] != -9:
+        meanv = newvarvaluesa11[drg[0],:,:,:,:]
+    else:
+        meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+    domS = gen.byte_String(newvardom[drg[2],:])
+    gcmS = gen.byte_String(newvargcm[drg[3],:])
+    rcmS = gen.byte_String(newvarrcm[drg[4],:])
+    print (icit,':', citynS, domS, gcmS, rcmS)
+   
+    ofign = domS + '/'  + citynS + '/urbdyn_tahmon_' + gcmS + '_' + rcmS
+    if citynS in nonASCII:
+        citygS = nonASCII[citynS]
+    else:
+        citygS = citynS + ''
+    
+    ofignS = ofign  + '.png'
+    if gscratch: sub.call('rm ' + ofignS, shell=True)
+    if not os.path.isfile(ofignS):
+        print ("  plotting '" + ofignS + "' ...")
+
+        minv = gen.fillValueR
+        maxv = -gen.fillValueR
+
+        fig, axmat = plt.subplots(Nrow,Ncol)
+ 
+        # Circular plot
+        ifig = 1
+        ax = plt.subplot(Nrow,Ncol,ifig)
+
+        allmean = meanv.sum(axis=(1,2,3))
+        xv = list(allmean[:]) + [allmean[0]]
+        yv = list(allmean[1:12])+list(allmean[0:2])
+        
+        ann = allmean.min()
+        anx = allmean.max()
+        if icit == 0:
+#            for iz in range(meanv.shape[1]):
+#                for iy in range(meanv.shape[2]):
+#                    for ix in range(meanv.shape[3]):
+#                        iixv = list(meanv[:,iz,iy,ix]) + [meanv[0,iz,iy,ix]]
+#                        iiyv = list(meanv[1:12,iz,iy,ix]) + list(meanv[0:2,iz,iy,ix])
+#                        il = ax.plot(iixv, iiyv, '-x', color='gray')
+#                        ann = meanv[:,iz,iy,ix].min()
+#                        anx = meanv[:,iz,iy,ix].max()
+#                        if ann < minv: minv = ann
+#                        if anx > maxv: maxv = anx
+            il = ax.plot(xv, yv, '-x', color='black')
+            for it in range(12):
+                ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
+        else:
+            il = ax.plot(xv, yv, '-x', color='gray')
+    
+        if ann < minv: minv = ann
+        if anx > maxv: maxv = anx
+
+        if icit == 0: break
+    
+        xtrm = np.max([np.abs(ann), anx])
+        xtrm = xtrm*1.15
+        print ('circular ann:', ann, 'anx:', anx, 'xtrm', xtrm)
+    
+        ax.set_xlim(-xtrm, xtrm)
+        ax.set_ylim(-xtrm, xtrm)
+
+        ax.set_xlabel('month (it)')
+        ax.set_ylabel('month (it+1)')
+        ax.grid()
+
+        ax.set_title('anual cycle')
+        minv = gen.fillValueR
+        maxv = -gen.fillValueR
+
+        # Linear plot
+        ifig = 2
+        ax = plt.subplot(Nrow,Ncol,ifig)
+            
+        for iz in range(meanv.shape[1]):
+            if iz == 0:
+                color = '#AA0000'
+            else:
+                color = '#0000AA'
+            for iy in range(meanv.shape[2]):
+                for ix in range(meanv.shape[3]):
+                    ann = meanv[:,iz,iy,ix].min()
+                    anx = meanv[:,iz,iy,ix].max()
+                    if ann < minv: minv = ann
+                    if anx > maxv: maxv = anx
+                    if iy == 0 and ix == 0:
+                        presS = str(int(pres[iz]/100.)) + ' hPa'
+                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color,\
+                          label=presS)
+                    else:
+                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color)
+        il = ax.plot(range(12), allmean, '-x', color='black', label='sum')
+    
+        xtrm = np.max([np.abs(minv), maxv])
+
+        ax2 = ax.twinx()
+        ax.set_ylim(-xtrm, xtrm)
+        ax2.set_ylim(-xtrm, xtrm)
+
+        ax.set_xticks(arange(12))
+        ax.set_xticklabels(gen.shortmon,fontsize=6)
+        ytickspos = ax.get_yticks()
+        Nytcks = len(ytickspos)
+        ax.set_yticklabels(['']*Nytcks)
+
+        ax.set_xlabel('month (it)')
+        ax.set_ylabel('anomaly')
+
+        ax.legend()
+        ax.grid()
+     
+        fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
+          'from CORDEX-CORE',fontsize=10)
+     
+        #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
+
+        drw.output_kind(kfig, ofign, True)
+        if debug: sub.call('display ' + ofignS + ' &', shell=True)
+
 # Direct all rounded time-series
 Nrow = 1
 Ncol = 2
@@ -505,12 +636,7 @@ if not os.path.isfile(ofignS):
  
     ifig = 1
     ax = plt.subplot(Nrow,Ncol,ifig)
-    for icit in range(Ncitygr):
-        citynS = gen.byte_String(newvarcityn[icit,:])
-        gcmS = gen.byte_String(newvargcm[icit,:])
-        rcmS = gen.byte_String(newvarrcm[icit,:])
-        print (icit,':', citynS)
-   
+    for icit in range(Ncitygr):   
         drg = newcitydrg[:,icit]
         if drg.mask[0]: continue
         if drg[0] != -9:
@@ -522,22 +648,9 @@ if not os.path.isfile(ofignS):
         xv = list(allmean[:]) + [allmean[0]]
         yv = list(allmean[1:12])+list(allmean[0:2])
 
-        print ('lens xv', len(xv), 'yv', len(yv))
-        
         ann = allmean.min()
         anx = allmean.max()
-        print ('shapes meanv:',meanv.shape, 'allmean', allmean.shape)
-        if icit == 0:
-#            for iz in range(meanv.shape[1]):
-#                for iy in range(meanv.shape[2]):
-#                    for ix in range(meanv.shape[3]):
-#                        iixv = list(meanv[:,iz,iy,ix]) + [meanv[0,iz,iy,ix]]
-#                        iiyv = list(meanv[1:12,iz,iy,ix]) + list(meanv[0:2,iz,iy,ix])
-#                        il = ax.plot(iixv, iiyv, '-x', color='gray')
-#                        ann = meanv[:,iz,iy,ix].min()
-#                        anx = meanv[:,iz,iy,ix].max()
-#                        if ann < minv: minv = ann
-#                        if anx > maxv: maxv = anx
+        if icit == Ncitygr-1:
             il = ax.plot(xv, yv, '-x', color='black')
             for it in range(12):
                 ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
@@ -564,65 +677,8 @@ if not os.path.isfile(ofignS):
     minv = gen.fillValueR
     maxv = -gen.fillValueR
 
-    ifig = 2
-    ax = plt.subplot(Nrow,Ncol,ifig)
-    for icit in range(Ncitygr):
-   
-        drg = newcitydrg[:,icit]
-        if drg.mask[0]: continue
-        if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
-        else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            
-        allmean = meanv.sum(axis=(1,2,3))
-        if icit == 0:
-            for iz in range(meanv.shape[1]):
-                if iz == 0:
-                    color = '#AA0000'
-                else:
-                    color = '#0000AA'
-                for iy in range(meanv.shape[2]):
-                    for ix in range(meanv.shape[3]):
-                        ann = meanv[:,iz,iy,ix].min()
-                        anx = meanv[:,iz,iy,ix].max()
-                        if ann < minv: minv = ann
-                        if anx > maxv: maxv = anx
-                        if iy == 0 and ix == 0:
-                            presS = str(int(pres[iz]/100.)) + ' hPa'
-                            il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color, label=presS)
-                        else:
-                            il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color)
-            il = ax.plot(range(12), allmean, '-x', color='black', label='sum')
-        else:
-            il = ax.plot(range(12), allmean, '-x', color='gray')
-    
-        if icit == 0: break
-    
-    xtrm = np.max([np.abs(minv), maxv])
-
-    ax2 = ax.twinx()
-    ax.set_ylim(-xtrm, xtrm)
-    ax2.set_ylim(-xtrm, xtrm)
-
-    ax.set_xticks(arange(12))
-    ax.set_xticklabels(gen.shortmon,fontsize=6)
-    ytickspos = ax.get_yticks()
-    Nytcks = len(ytickspos)
-    ax.set_yticklabels(['']*Nytcks)
-
-    ax.set_xlabel('month (it)')
-    ax.set_ylabel('anomaly')
-
-    ax.legend()
-    ax.grid()
-     
-    fig.suptitle(citynS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +      \
-      'from CORDEX-CORE',fontsize=10)
-     
     #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
 
     drw.output_kind(kfig, ofign, True)
     if debug: sub.call('display ' + ofignS + ' &', shell=True)
-
 
