@@ -800,10 +800,11 @@ for cityn in lcities:
 
 # Direct all rounded time-series
 Nrow = 1
-Ncol = 1
+Ncol = 2
  
 ofign = 'urbdyn_' + varn + 'mon_all'
 ofignS = ofign  + '.png'
+cityxtrms = {}
 if gscratch: sub.call('rm ' + ofignS, shell=True)
 if not os.path.isfile(ofignS):
     print ("  plotting '" + ofignS + "' ...")
@@ -814,8 +815,11 @@ if not os.path.isfile(ofignS):
     fig, axmat = plt.subplots(Nrow,Ncol)
  
     ifig = 1
+    # Circular
     ax = plt.subplot(Nrow,Ncol,ifig)
-    for icit in range(Ncitygr):   
+    for icit in range(Ncitygr):
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
         drg = newcitydrg[:,icit]
         if drg.mask[0]: continue
         if drg[0] != -9:
@@ -836,10 +840,81 @@ if not os.path.isfile(ofignS):
         else:
             il = ax.plot(xv, yv, '-x', color='gray')
     
-        if ann < minv: minv = ann
-        if anx > maxv: maxv = anx
+        if ann < minv: 
+            print ('  new minium for ' + citynS)
+            minv = ann
+            if 'min' not in cityxtrms:
+                cityxtrms = [icit]
+            else:
+                dicv = cityxtrms['min']
+                dicv = [icit] + idcv
+                cityxtrms['min'] = dicv
+            
+        if anx > maxv: 
+            print ('  new maxium for ' + citynS)
+            maxv = anx
+            if 'max' not in cityxtrms:
+                cityxtrms = [icit]
+            else:
+                dicv = cityxtrms['max']
+                dicv = [icit] + idcv
+                cityxtrms['max'] = dicv
 
         #if icit == 0: break
+    
+    # re-Plotting first 2 cities from cityxtrms
+    dicv = cityxtrms['min']
+    iivv = 1
+    for icit in dicv[0:2]:
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
+        if citynS in nonASCII:
+            citygS = nonASCII[citynS]
+        else:
+            citygS = citynS + ''
+        citygS = citygS.replace('_',' ')
+    
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+        xv = list(allmean[:]) + [allmean[0]]
+        yv = list(allmean[1:12])+list(allmean[0:2])
+
+        colv = drw.colorsauto[iivv]
+        il = ax.plot(xv, yv, '-x', color=colv, label=citygS)
+        for it in range(12):
+            ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color=colv, fontsize=6)
+
+    dicv = cityxtrms['max']
+    for icit in dicv[0:2]:
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
+        if citynS in nonASCII:
+            citygS = nonASCII[citynS]
+        else:
+            citygS = citynS + ''
+        citygS = citygS.replace('_',' ')
+    
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+        xv = list(allmean[:]) + [allmean[0]]
+        yv = list(allmean[1:12])+list(allmean[0:2])
+
+        colv = drw.colorsauto[iivv]
+        il = ax.plot(xv, yv, '-x', color=colv, label=citygS)
+        for it in range(12):
+            ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color=colv, fontsize=6)
     
     xtrm = np.max([np.abs(minv), maxv])
     xtrm = xtrm*1.05
@@ -851,12 +926,98 @@ if not os.path.isfile(ofignS):
     ax.set_xlabel('month (it)')
     ax.set_ylabel('month (it+1)')
     ax.grid()
+    ax.set_legend(ncol=2, fontsize=6)
 
     ax.set_title('anual cycle')
     minv = gen.fillValueR
     maxv = -gen.fillValueR
 
-    #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
+    ifig = ifig + 1
+    # Linear
+    ax = plt.subplot(Nrow,Ncol,ifig)
+    for icit in range(Ncitygr):
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+
+        ann = allmean.min()
+        anx = allmean.max()
+        il = ax.plot(range(12), allmean, '-x', color='gray')   
+    
+    # re-Plotting first 2 cities from cityxtrms
+    dicv = cityxtrms['min']
+    iivv = 1
+    for icit in dicv[0:2]:
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
+        if citynS in nonASCII:
+            citygS = nonASCII[citynS]
+        else:
+            citygS = citynS + ''
+        citygS = citygS.replace('_',' ')
+    
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+
+        colv = drw.colorsauto[iivv]
+        il = ax.plot(range(12), allmean, '-x', color=colv, label=citygS)
+
+    dicv = cityxtrms['max']
+    for icit in dicv[0:2]:
+        citynS = gen.byte_String(newvarcityn[icit,:])
+    
+        if citynS in nonASCII:
+            citygS = nonASCII[citynS]
+        else:
+            citygS = citynS + ''
+        citygS = citygS.replace('_',' ')
+    
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+
+        colv = drw.colorsauto[iivv]
+        il = ax.plot(range(12), allmean, '-x', color=colv, label=citygS)
+    
+        il = ax.plot([0,11], [0,0], '-', color='k', linewidth=0.75)
+    
+    ax2 = ax.twinx()
+    ax.set_ylim(-xtrm, xtrm)
+    ax2.set_ylim(-xtrm, xtrm)
+    
+    ax.set_xticks(arange(12))
+    ax.set_xticklabels(gen.shortmon,fontsize=6)
+    ytickspos = ax.get_yticks()
+    Nytcks = len(ytickspos)
+    ax.set_yticklabels(['']*Nytcks)
+    
+    ax.set_xlabel('month (it)')
+    ax.set_ylabel('anomaly (' + gen.units_lunits(varu) + ')')
+    
+    ax.grid()
+    #ax.legend()
+    
+    ax.set_title('urbdyn(i,j,k) anual cycle', fontsize=8)
+
+    fig.suptitle('Anual cycle of urbdyn ' + varn)
 
     drw.output_kind(kfig, ofign, True)
     if debug: sub.call('display ' + ofignS + ' &', shell=True)
