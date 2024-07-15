@@ -490,6 +490,12 @@ else:
 
     onewnc.close()
 
+    # List of cities
+    lcities = []
+    for icit in range(Ncitygr):
+        citynS = gen.byte_String(newvarcityn[icit,:])
+        if not gen.searchInlist(lcities, citynS): lcities.append(citynS)
+
 # Plotting
 
 # Direct individual rounded time-series
@@ -627,6 +633,140 @@ for icit in range(Ncitygr):
         if debug: sub.call('display ' + ofignS + ' &', shell=True)
 
         #quit()
+
+# Direct individual rounded time-series by gcm-rcm couples
+Nrow = 1
+Ncol = 2
+
+for cityn in lcities:
+    icityvalues = []
+    for icit in range(Ncitygr):
+        citynS = gen.byte_String(newvarcityn[icit,:])
+        if citynS != cityn: continue
+        cityvalues.append(icit)
+
+    Ncityvalues = len(citybalues)
+    ofign = domS + '/'  + citynS + '/urbdyn_' + varn + 'mon_all-gcm-rcm'
+    ofignS = ofign  + '.png'
+    if gscratch: sub.call('rm ' + ofignS, shell=True)
+    if not os.path.isfile(ofignS):
+        print ("  plotting '" + ofignS + "' ...")
+        
+        for ivvc in range(Ncityvalues):
+            icit = cityvalues[ivvc]
+            drg = newcitydrg[:,icit]
+            if drg.mask[0]: continue
+            if drg[0] != -9:
+                meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            else:
+                meanv = newvarvaluesa22[drg[1],:,:,:,:]
+                
+            domS = gen.byte_String(newvardom[drg[2],:])
+            gcmS = gen.byte_String(newvargcm[drg[3],:])
+            rcmS = gen.byte_String(newvarrcm[drg[4],:])
+            print (icit,':', citynS, domS, gcmS, rcmS)
+       
+            if citynS in nonASCII:
+                citygS = nonASCII[citynS]
+            else:
+                citygS = citynS + ''
+            citygS = citygS.replace('_',' ')
+    
+            minv = gen.fillValueR
+            maxv = -gen.fillValueR
+    
+            fig, axmat = plt.subplots(Nrow,Ncol)
+     
+            # Circular plot
+            ifig = 1
+            ax = plt.subplot(Nrow,Ncol,ifig)
+    
+            allmean = meanv.sum(axis=(1,2,3))
+            xv = list(allmean[:]) + [allmean[0]]
+            yv = list(allmean[1:12])+list(allmean[0:2])
+            
+            ann = allmean.min()    
+            anx = allmean.max()
+            colv = drw.colorsauto[drg[3]+1]
+            markv = drw.pointskindsauto[drg[4]+1]
+            labS = gcmS + ' ' + rcmS
+            il = ax.plot(xv, yv, '-', color=colv, marker=markv, label=labS)
+            if ivvc == Ncityvalues-1
+                for it in range(12):
+                    ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
+            if ann < minv: minv = ann
+            if anx > maxv: maxv = anx
+    
+        xtrm = np.max([np.abs(ann), anx])
+        xtrm = xtrm*1.15
+        ilxx = ax.plot([-xtrm,xtrm], [0,0], '-', color='black', linewidth=1.)
+        ilyy = ax.plot([0,0,], [-xtrm,xtrm], '-', color='black', linewidth=1.)
+        print ('circular ann:', ann, 'anx:', anx, 'xtrm', xtrm)
+        
+        ax.set_xlim(-xtrm, xtrm)
+        ax.set_ylim(-xtrm, xtrm)
+  
+        ax.set_xlabel('month (it)')
+        ax.set_ylabel('month (it+1)')
+        ax.grid()
+        ax.legend(ncol=2)
+    
+        ax.set_title('urbdynmean anual cycle', fontsize=8)
+        minv = gen.fillValueR
+        maxv = -gen.fillValueR
+    
+        # Linear plot
+        ifig = 2
+        ax = plt.subplot(Nrow,Ncol,ifig)
+                
+        for ivvc in range(Ncityvalues):
+            icit = cityvalues[ivvc]
+            drg = newcitydrg[:,icit]
+            if drg.mask[0]: continue
+            if drg[0] != -9:
+                meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            else:
+                meanv = newvarvaluesa22[drg[1],:,:,:,:]
+
+            allmean = meanv.sum(axis=(1,2,3))
+            colv = drw.colorsauto[drg[3]+1]
+            markv = drw.pointskindsauto[drg[4]+1]
+            labS = gcmS + ' ' + rcmS
+            il = ax.plot(range(12), allmeanv, '-', color=colv, marker=markv,         \
+              linewidth=0.5, label=labS)
+        
+            xtrm = np.max([np.abs(minv), maxv])
+    
+            ax2 = ax.twinx()
+            ax.set_ylim(-xtrm, xtrm)
+            ax2.set_ylim(-xtrm, xtrm)
+    
+            ax.set_xticks(arange(12))
+            ax.set_xticklabels(gen.shortmon,fontsize=6)
+            ytickspos = ax.get_yticks()
+            Nytcks = len(ytickspos)
+            ax.set_yticklabels(['']*Nytcks)
+    
+            ax.set_xlabel('month (it)')
+            ax.set_ylabel('anomaly (' + gen.units_lunits(varu) + ')')
+    
+            ax.grid()
+            #ax.legend()
+    
+            ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
+              str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
+         
+            #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
+            #  'from CORDEX-CORE',fontsize=10)
+            fig.suptitle(citygS + ' anual cycle of ' + varn +  \
+              ' urbdyn', fontsize=11)
+         
+            #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
+    
+            drw.output_kind(kfig, ofign, True)
+            if debug: sub.call('display ' + ofignS + ' &', shell=True)
+    
+            quit()
 
 # Direct all rounded time-series
 Nrow = 1
