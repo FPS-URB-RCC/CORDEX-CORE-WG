@@ -1,4 +1,4 @@
-## e.g. # python3 all_tamon-ver.py
+## e.g. # python3 all_tamon-ver.py -v yes
 # L. Fita, UBA, CIMA, IFAECI, C. A. Buenos Aires, Argentina
 ### Computing a scalar index from which summarize the impact of cities in 
 #     atmospheric circulation. 
@@ -34,7 +34,8 @@ import diag_tools as diag
 import drawing_tools as drw
 import generic_tools as gen
 
-fscratch = True
+fscratch = False
+gscratch = True
 
 ifxfold = '/datos/MOD/CORDEX/CMIP5'
 ifold = '/home/lluis.fita/process/mod/CORDEX-CORE/urban'
@@ -67,7 +68,7 @@ lonlatbox = None
 
 # Cities with non-ASCII characters
 nonASCII = {
-  'Goi-nia': "Goiânia", 'XI-an': "XI'an", 'S-o_Paulo':  "São_Paulo"
+  'Goi-nia': "Goiânia", 'Xi-an': "Xi'an", 'S-o_Paulo':  "São_Paulo"
 }
 
 #######    #######
@@ -86,9 +87,9 @@ parser.add_option("-v", "--Verbose", dest="verbose", help="Need verbose", metava
 debug = gen.Str_Bool(opts.verbose)
         
 # netcDF creation
-filen = 'all_tamon-ver.nc'
-if fscratch: sub.call('rm ' + filen, shell=True)
-if not os.path.isfile(filen):
+allfilen = 'all_tamon-ver.nc'
+if fscratch: sub.call('rm ' + allfilen, shell=True)
+if not os.path.isfile(allfilen):
 
     Mn='_ymonmean'
     ifoldS = './*/*'
@@ -143,6 +144,8 @@ if not os.path.isfile(filen):
                 lev = re.sub("[^0-9]", "", cfilen.split('/')[3].split('_')[0])
                 levs.append(int(lev))
             levs.sort()
+            rlevs = list(levs)
+            rlevs.sort(reverse=True)
             Nlevs = len(levs)
         
             prevcitygr = tcitygr
@@ -168,7 +171,7 @@ if not os.path.isfile(filen):
 
     # netCDF
     ## 
-    onewnc = NetCDFFile(filen, 'w')
+    onewnc = NetCDFFile(allfilen, 'w')
 
     # dimensions
     newdim = onewnc.createDimension('lon22', 2*Nx22+1)
@@ -177,39 +180,46 @@ if not os.path.isfile(filen):
     newdim = onewnc.createDimension('lat11', 2*Nx11+1)
     newdim = onewnc.createDimension('cit22', Ncit22)
     newdim = onewnc.createDimension('cit11', Ncit11)
-    newdim = onewnc.createDimension('city', Ncities)    
+    newdim = onewnc.createDimension('city', Nfiles)    
     newdim = onewnc.createDimension('mon', 12)
+    newdim = onewnc.createDimension('pressure', Nlevs)
     newdim = onewnc.createDimension('pres', 2)
-    newdim = onewnc.createDimension('drg', 4)
+    newdim = onewnc.createDimension('drg', 5)
     newdim = onewnc.createDimension('StrLength', 64)   
     newdim = onewnc.createDimension('dom', Ndom)
     newdim = onewnc.createDimension('gcm', Ngcm)
     newdim = onewnc.createDimension('rcm', Nrcm)
+    onewnc.sync()
     
     # Variable-dimension
     newvar = onewnc.createVariable('lon22', 'f', ('lon22'))
-    newvar[:] = np.arange(-Nx22*0.22,(Nx22+2)*0.22)
+    newvar[:] = np.arange(-Nx22*0.22,(Nx22+1)*0.22,0.22)
     newattr=ncvar.basicvardef(newvar, 'longitude', 'Longitude relative city center', \
       'degrees_east')
 
     newvar = onewnc.createVariable('lon11', 'f', ('lon11'))
-    newvar[:] = np.arange(-Nx11*0.11,(Nx11+2)*0.11)
+    newvar[:] = np.arange(-Nx11*0.11,(Nx11+1)*0.11,0.11)
     newattr=ncvar.basicvardef(newvar, 'longitude', 'Longitude relative city center', \
       'degrees_east')
 
-    newvar = onewnc.createVariable('lon11', 'f', ('lon11'))
-    newvar[:] = np.arange(-Nx22*0.22,(Nx22+2)*0.22)
-    newattr=ncvar.basicvardef(newvar, 'longitude', 'Longitude relative city center', \
-      'degrees_east')
+    newvar = onewnc.createVariable('lat22', 'f', ('lat22'))
+    newvar[:] = np.arange(-Nx22*0.22,(Nx22+1)*0.22,0.22)
+    newattr=ncvar.basicvardef(newvar, 'latitude', 'Latitude relative city center',   \
+      'degrees_north')
 
-    newvar = onewnc.createVariable('lon11', 'f', ('lon11'))
-    newvar[:] = np.arange(-Nx11*0.11,(Nx11+2)*0.11)
-    newattr=ncvar.basicvardef(newvar, 'longitude', 'Longitude relative city center', \
-      'degrees_east')
+    newvar = onewnc.createVariable('lat11', 'f', ('lat11'))
+    newvar[:] = np.arange(-Nx11*0.11,(Nx11+1)*0.11,0.11)
+    newattr=ncvar.basicvardef(newvar, 'latitude', 'Latitude relative city center',   \
+      'degrees_north')
 
     newvar = onewnc.createVariable('mon', 'i', ('mon'))
     newvar[:] = np.arange(12)
     newattr = ncvar.basicvardef(newvar, 'mon', 'month of the year', '-')
+
+    newvar = onewnc.createVariable('pressure', 'f', ('pressure'))
+    newvar[:] = rlevs
+    newattr = ncvar.basicvardef(newvar, 'pressure', 'air pressure', 'Pa')
+    newvar.setncattr('presmax', 92500.)
 
     newvar = onewnc.createVariable('pres', 'f', ('pres'))
     newvar[:] = [92500., 85000.]
@@ -218,13 +228,13 @@ if not os.path.isfile(filen):
 
     # Variables
     newvarcityn = onewnc.createVariable('cityn', 'c', ('city', 'StrLength'))
-    newattr=ncvar.basicvardef(newvarcityn11, 'city_name', 'Name of the city', '-')
+    newattr=ncvar.basicvardef(newvarcityn, 'city_name', 'Name of the city', '-')
 
     newvarcityn11 = onewnc.createVariable('cityn11', 'c', ('cit11', 'StrLength'))
     newattr=ncvar.basicvardef(newvarcityn11, 'city_name', 'Name of the city', '-')
     
     newvarcityn22 = onewnc.createVariable('cityn22', 'c', ('cit22', 'StrLength'))
-    newattr=ncvar.basicvardef(newvarcityn11, 'city_name', 'Name of the city', '-')
+    newattr=ncvar.basicvardef(newvarcityn22, 'city_name', 'Name of the city', '-')
 
     newvardom = onewnc.createVariable('dom', 'c', ('dom', 'StrLength'))
     newattr=ncvar.basicvardef(newvardom, 'city_name', 'Name of the city', '-')
@@ -239,11 +249,19 @@ if not os.path.isfile(filen):
     newcitydrg = onewnc.createVariable('citydrg', 'i', ('drg','city'))
     newattr=ncvar.basicvardef(newcitydrg, 'citydrg','domain gcm rcm of the city','K')
 
-    dimn11 = ('cit11', 'mon', 'pres', 'lat11', 'lon11')
+    newvarcitylon = onewnc.createVariable('citylon', 'f', ('city'))
+    newattr=ncvar.basicvardef(newvarcitylon,'citylon','Longitude of the city center',\
+      'degrees_east')
+    
+    newvarcitylat = onewnc.createVariable('citylat', 'f', ('city'))
+    newattr=ncvar.basicvardef(newvarcitylon,'citylat','Latitude of the city center', \
+      'degrees_north')
+
+    dimn11 = ('cit11', 'mon', 'pressure', 'lat11', 'lon11')
     newvarvals11 = onewnc.createVariable('tah11', 'f', dimn11)
     newattr=ncvar.basicvardef(newvarvals11, 'tah', 'Potential temperature', 'K')
 
-    dimn22 = ('cit22', 'mon', 'pres', 'lat22', 'lon22')
+    dimn22 = ('cit22', 'mon', 'pressure', 'lat22', 'lon22')
     newvarvals22 = onewnc.createVariable('tah22', 'f', dimn22)
     newattr=ncvar.basicvardef(newvarvals22, 'tah', 'Potential temperature', 'K')
 
@@ -259,13 +277,13 @@ if not os.path.isfile(filen):
 
     dimn11 = ('cit11', 'mon', 'pres', 'lat11', 'lon11')
     newvarvalsa11 = onewnc.createVariable('tah11anom', 'f', dimn11,                  \
-      fill_Value=gen.fillValueR)
+      fill_value=gen.fillValueR)
     newattr=ncvar.basicvardef(newvarvalsa11, 'tahanom', 'Anomaly potential ' +       \
       'temperature', 'K')
 
     dimn22 = ('cit22', 'mon', 'pres', 'lat22', 'lon22')
     newvarvalsa22 = onewnc.createVariable('tah22anom', 'f', dimn22,                  \
-      fill_Value=gen.fillValueR)
+      fill_value=gen.fillValueR)
     newattr=ncvar.basicvardef(newvarvalsa22, 'tahanom', 'Anomaly potential ' +       \
       'temperature', 'K')
 
@@ -274,12 +292,16 @@ if not os.path.isfile(filen):
     newattr=ncvar.basicvardef(newvarorog11, 'orog', 'orography', 'm')
 
     dimn22 = ('cit22', 'lat22', 'lon22')
-    newvarorog22 = onewnc.createVariable('orog22', 'f', dimn11)
+    newvarorog22 = onewnc.createVariable('orog22', 'f', dimn22)
     newattr=ncvar.basicvardef(newvarorog22, 'orog', 'orography', 'm')
     
     ncvar.add_global_PyNCplot(onewnc, 'main', 'all_tamon-ver.py', '1.0', True)
 
     onewnc.sync()
+
+    newvals = ncvar.writing_str_nc(newvardom, alldoms, 64)
+    newvals = ncvar.writing_str_nc(newvargcm, allgcms, 64)
+    newvals = ncvar.writing_str_nc(newvarrcm, allrcms, 64)
 
     # Maximum pressure value
     presv = levs[Nlevs-1]
@@ -297,9 +319,6 @@ if not os.path.isfile(filen):
     
         dom = dicv[0]
         newvarcityn[icit,0:len(cityn)] = cityn[:]
-        newvardom[icit,0:len(dom)] = dom[:]
-        newvargcm[icit,0:len(gcm)] = gcm[:]
-        newvarrcm[icit,0:len(rcm)] = rcm[:]
     
         newcitydrg[2,icit] = alldoms.index(dom)
         newcitydrg[3,icit] = allgcms.index(gcm)
@@ -319,8 +338,10 @@ if not os.path.isfile(filen):
             newcitydrg[1,icit] = icit22
             icit22 = icit22 + 1
 
+        print (icit, ':', icit11, icit22, '|', cityn, dom, gcm, rcm)
         ilev = 0
-        for lev in iilevs:       
+        for levv in rlevs:       
+            lev = str(levv)
             filen = dom +'/'+ cityn +'/ta'+ lev +'_'+ gcm +'_'+ rcm + '_ymonmean.nc'
             onc = NetCDFFile(filen, 'r')
 
@@ -329,7 +350,7 @@ if not os.path.isfile(filen):
             if ilev == 0:
                 dx = ovar.shape[2]
                 dy = ovar.shape[1]
-                values = np.full((12,2,2*Nx+1,2*Nx+1), gen.fillValueF) 
+                values = np.full((12,Nlevs,2*Nx+1,2*Nx+1), gen.fillValueF) 
                 olon = onc.variables['lon']
                 olat = onc.variables['lat']
 
@@ -346,6 +367,9 @@ if not os.path.isfile(filen):
                 ex = dx//2 + Nx + 1
                 iy = dy//2 - Nx
                 ey = dy//2 + Nx + 1
+
+                newvarcitylon[icit] = loncity
+                newvarcitylat[icit] = latcity
 
                 # Getting orography
                 orogfiles = gen.files_folder_HMT(folder=fxfoldn, head='*/fx/orog/',  \
@@ -377,7 +401,7 @@ if not os.path.isfile(filen):
         # end of levels
    
         # Computing anomalies
-        valanom = values[:].mean(axis=(2,3))
+        valanom = values[:,0:2,:,:].mean(axis=(2,3))
 
         # FROM: https://en.wikipedia.org/wiki/Pressure_altitude
         fac1 = 1013.25
@@ -410,34 +434,34 @@ if not os.path.isfile(filen):
             newvarvalsm22[icit22-1,:,:] = valanom
             newvarorog22[icit22-1,:,:] = orogv
     
-        icity = icity + 1
+        icit = icit + 1
         onewnc.sync()
 
     Ncitygr = len(lcitygrs)
     onewnc.sync()
-    onewnc.close()
-    print ("Successfull cration of file '" + filen + "' !!")
+    #onewnc.close()
+    print ("Successfull cration of file '" + allfilen + "' !!")
     
-else
-    onewnc = NetCDFFile(filen, 'r')
+else:
+    onewnc = NetCDFFile(allfilen, 'r')
     
     Ncitygr = len(onewnc.dimensions['city'])
     
     onewcitydrg = onewnc.variables['citydrg']
-    onewvarcityn = onewnc.Variables['cityn']
-    onewvarcityn11 = onewnc.Variables['cityn11']
-    onewvarcityn22 = onewnc.Variables['cityn22']
-    onewvardom = onewnc.Variables['dom']
-    onewvargcm = onewnc.Variables['gcm']
-    onewvarrcm = onewnc.Variables['rcm']
-    onewvarvals11 = onewnc.Variables['tah11']
-    onewvarvals22 = onewnc.Variables['tah22']
-    onewvarvalsm11 = onewnc.Variables['tah11mean']
-    onewvarvalsm22 = onewnc.Variables['tah22mean']
-    onewvarvalsa11 = onewnc.Variables['tah11anom']
-    onewvarvalsa22 = onewnc.Variables['tah22anom']
-    onewvarorog11 = onewnc.Variables['orog11']
-    onewvarorog22 = onewnc.Variables['orog22']
+    onewvarcityn = onewnc.variables['cityn']
+    onewvarcityn11 = onewnc.variables['cityn11']
+    onewvarcityn22 = onewnc.variables['cityn22']
+    onewvardom = onewnc.variables['dom']
+    onewvargcm = onewnc.variables['gcm']
+    onewvarrcm = onewnc.variables['rcm']
+    onewvarvals11 = onewnc.variables['tah11']
+    onewvarvals22 = onewnc.variables['tah22']
+    onewvarvalsm11 = onewnc.variables['tah11mean']
+    onewvarvalsm22 = onewnc.variables['tah22mean']
+    onewvarvalsa11 = onewnc.variables['tah11anom']
+    onewvarvalsa22 = onewnc.variables['tah22anom']
+    onewvarorog11 = onewnc.variables['orog11']
+    onewvarorog22 = onewnc.variables['orog22']
     
     newcitydrg = onewcitydrg[:]
     newvarcityn = onewvarcityn[:]
@@ -456,7 +480,8 @@ else
     newvarorog22 = onewvarorog22[:]
     
     # Maximum pressure value
-    opres = oewnc.variables['pres']
+    opres = onewnc.variables['pres']
+    pres = opres[:]
     presv = opres.presmax
 
     onewnc.close()
@@ -465,12 +490,13 @@ else
 
 # Direct all rounded time-series
 Nrow = 1
-Ncol = 1
+Ncol = 2
  
 ofign = 'urbdyn_tahmon_all'
 ofignS = ofign  + '.png'
-if fscratch: sub.call('rm ' + ofignS, shell=True)
+if gscratch: sub.call('rm ' + ofignS, shell=True)
 if not os.path.isfile(ofignS):
+    print ("  plotting '" + ofignS + "' ...")
 
     minv = gen.fillValueR
     maxv = -gen.fillValueR
@@ -480,40 +506,121 @@ if not os.path.isfile(ofignS):
     ifig = 1
     ax = plt.subplot(Nrow,Ncol,ifig)
     for icit in range(Ncitygr):
-    
+        citynS = gen.byte_String(newvarcityn[icit,:])
+        gcmS = gen.byte_String(newvargcm[icit,:])
+        rcmS = gen.byte_String(newvarrcm[icit,:])
+        print (icit,':', citynS)
+   
         drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
         if drg[0] != -9:
-            meanv = newvarvaluesm11[drg[0],:,:,:,:]
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
         else:
-            meanv = newvarvaluesm22[drg[1],:,:,:,:]
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
             
-        allmean = meanv.mean(axis=(1,2,3))
-        xv = allmean[:]
-        yv = allmean[1:12]+[allmean[0]
+        allmean = meanv.sum(axis=(1,2,3))
+        xv = list(allmean[:]) + [allmean[0]]
+        yv = list(allmean[1:12])+list(allmean[0:2])
+
+        print ('lens xv', len(xv), 'yv', len(yv))
         
         ann = allmean.min()
         anx = allmean.max()
-        if icit == Ncitygr:
-        
+        print ('shapes meanv:',meanv.shape, 'allmean', allmean.shape)
+        if icit == 0:
+#            for iz in range(meanv.shape[1]):
+#                for iy in range(meanv.shape[2]):
+#                    for ix in range(meanv.shape[3]):
+#                        iixv = list(meanv[:,iz,iy,ix]) + [meanv[0,iz,iy,ix]]
+#                        iiyv = list(meanv[1:12,iz,iy,ix]) + list(meanv[0:2,iz,iy,ix])
+#                        il = ax.plot(iixv, iiyv, '-x', color='gray')
+#                        ann = meanv[:,iz,iy,ix].min()
+#                        anx = meanv[:,iz,iy,ix].max()
+#                        if ann < minv: minv = ann
+#                        if anx > maxv: maxv = anx
             il = ax.plot(xv, yv, '-x', color='black')
             for it in range(12):
                 ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
         else:
-            il = ax.plot(allmean[0:11], allmean[1:12], '-', color='gray')
+            il = ax.plot(xv, yv, '-x', color='gray')
     
         if ann < minv: minv = ann
         if anx > maxv: maxv = anx
+
+        if icit == 0: break
     
     xtrm = np.max([np.abs(ann), anx])
-    xtrm = xtrm*1.05
+    xtrm = xtrm*1.15
+    print ('ann:', ann, 'anx:', anx, 'xtrm', xtrm)
     
     ax.set_xlim(-xtrm, xtrm)
     ax.set_ylim(-xtrm, xtrm)
 
     ax.set_xlabel('month (it)')
-    ax.set_xlabel('month (it+1)')
+    ax.set_ylabel('month (it+1)')
+    ax.grid()
+
+    ax.set_title('anual cycle')
+    minv = gen.fillValueR
+    maxv = -gen.fillValueR
+
+    ifig = 2
+    ax = plt.subplot(Nrow,Ncol,ifig)
+    for icit in range(Ncitygr):
+   
+        drg = newcitydrg[:,icit]
+        if drg.mask[0]: continue
+        if drg[0] != -9:
+            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        else:
+            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            
+        allmean = meanv.sum(axis=(1,2,3))
+        if icit == 0:
+            for iz in range(meanv.shape[1]):
+                if iz == 0:
+                    color = '#AA0000'
+                else:
+                    color = '#0000AA'
+                for iy in range(meanv.shape[2]):
+                    for ix in range(meanv.shape[3]):
+                        ann = meanv[:,iz,iy,ix].min()
+                        anx = meanv[:,iz,iy,ix].max()
+                        if ann < minv: minv = ann
+                        if anx > maxv: maxv = anx
+                        if iy == 0 and ix == 0:
+                            presS = str(int(pres[iz]/100.)) + ' hPa'
+                            il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color, label=presS)
+                        else:
+                            il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color)
+            il = ax.plot(range(12), allmean, '-x', color='black', label='sum')
+        else:
+            il = ax.plot(range(12), allmean, '-x', color='gray')
+    
+        if icit == 0: break
+    
+    xtrm = np.max([np.abs(minv), maxv])
+
+    ax2 = ax.twinx()
+    ax.set_ylim(-xtrm, xtrm)
+    ax2.set_ylim(-xtrm, xtrm)
+
+    ax.set_xticks(arange(12))
+    ax.set_xticklabels(gen.shortmon,fontsize=6)
+    ytickspos = ax.get_yticks()
+    Nytcks = len(ytickspos)
+    ax.set_yticklabels(['']*Nytcks)
+
+    ax.set_xlabel('month (it)')
+    ax.set_ylabel('anomaly')
+
+    ax.legend()
+    ax.grid()
      
-    ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
+    fig.suptitle(citynS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +      \
+      'from CORDEX-CORE',fontsize=10)
+     
+    #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
 
     drw.output_kind(kfig, ofign, True)
     if debug: sub.call('display ' + ofignS + ' &', shell=True)
