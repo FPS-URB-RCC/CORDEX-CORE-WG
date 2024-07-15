@@ -71,6 +71,9 @@ nonASCII = {
   'Goi-nia': "Goiânia", 'Xi-an': "Xi'an", 'S-o_Paulo':  "São_Paulo"
 }
 
+# Variable to compute
+varn = 'tah'
+
 #######    #######
 ## MAIN
     #######
@@ -258,33 +261,33 @@ if not os.path.isfile(allfilen):
       'degrees_north')
 
     dimn11 = ('cit11', 'mon', 'pressure', 'lat11', 'lon11')
-    newvarvals11 = onewnc.createVariable('tah11', 'f', dimn11)
-    newattr=ncvar.basicvardef(newvarvals11, 'tah', 'Potential temperature', 'K')
+    newvarvals11 = onewnc.createVariable(varn + '11', 'f', dimn11)
+    newattr=ncvar.basicvardef(newvarvals11, varn, 'Potential temperature', 'K')
 
     dimn22 = ('cit22', 'mon', 'pressure', 'lat22', 'lon22')
-    newvarvals22 = onewnc.createVariable('tah22', 'f', dimn22)
-    newattr=ncvar.basicvardef(newvarvals22, 'tah', 'Potential temperature', 'K')
+    newvarvals22 = onewnc.createVariable(varn + '22', 'f', dimn22)
+    newattr=ncvar.basicvardef(newvarvals22, varn, 'Potential temperature', 'K')
 
     dimn11 = ('cit11', 'mon', 'pres')
-    newvarvalsm11 = onewnc.createVariable('tah11mean', 'f', dimn11)
-    newattr=ncvar.basicvardef(newvarvalsm11, 'tahmean', 'Mean potential temperature',\
+    newvarvalsm11 = onewnc.createVariable(varn + '11mean', 'f', dimn11)
+    newattr=ncvar.basicvardef(newvarvalsm11, varn + 'mean', 'Mean potential temperature',\
       'K')
 
     dimn22 = ('cit22', 'mon', 'pres')
-    newvarvalsm22 = onewnc.createVariable('tah22mean', 'f', dimn22)
-    newattr=ncvar.basicvardef(newvarvalsm22, 'tahmean', 'Mean potential temperature',\
+    newvarvalsm22 = onewnc.createVariable(varn + '22mean', 'f', dimn22)
+    newattr=ncvar.basicvardef(newvarvalsm22, varn + 'mean', 'Mean potential temperature',\
       'K')
 
     dimn11 = ('cit11', 'mon', 'pres', 'lat11', 'lon11')
-    newvarvalsa11 = onewnc.createVariable('tah11anom', 'f', dimn11,                  \
+    newvarvalsa11 = onewnc.createVariable(varn + '11anom', 'f', dimn11,              \
       fill_value=gen.fillValueR)
-    newattr=ncvar.basicvardef(newvarvalsa11, 'tahanom', 'Anomaly potential ' +       \
+    newattr=ncvar.basicvardef(newvarvalsa11, varn + 'anom', 'Anomaly potential ' +       \
       'temperature', 'K')
 
     dimn22 = ('cit22', 'mon', 'pres', 'lat22', 'lon22')
-    newvarvalsa22 = onewnc.createVariable('tah22anom', 'f', dimn22,                  \
+    newvarvalsa22 = onewnc.createVariable(varn + '22anom', 'f', dimn22,                  \
       fill_value=gen.fillValueR)
-    newattr=ncvar.basicvardef(newvarvalsa22, 'tahanom', 'Anomaly potential ' +       \
+    newattr=ncvar.basicvardef(newvarvalsa22, varn + 'anom', 'Anomaly potential ' +       \
       'temperature', 'K')
 
     dimn11 = ('cit11', 'lat11', 'lon11')
@@ -454,14 +457,15 @@ else:
     onewvardom = onewnc.variables['dom']
     onewvargcm = onewnc.variables['gcm']
     onewvarrcm = onewnc.variables['rcm']
-    onewvarvals11 = onewnc.variables['tah11']
-    onewvarvals22 = onewnc.variables['tah22']
-    onewvarvalsm11 = onewnc.variables['tah11mean']
-    onewvarvalsm22 = onewnc.variables['tah22mean']
-    onewvarvalsa11 = onewnc.variables['tah11anom']
-    onewvarvalsa22 = onewnc.variables['tah22anom']
+    onewvarvals11 = onewnc.variables[varn + '11']
+    onewvarvals22 = onewnc.variables[varn + '22']
+    onewvarvalsm11 = onewnc.variables[varn + '11mean']
+    onewvarvalsm22 = onewnc.variables[varn + '22mean']
+    onewvarvalsa11 = onewnc.variables[varn + '11anom']
+    onewvarvalsa22 = onewnc.variables[varn + '22anom']
     onewvarorog11 = onewnc.variables['orog11']
     onewvarorog22 = onewnc.variables['orog22']
+    varu = onewvarvals11.units
     
     newcitydrg = onewcitydrg[:]
     newvarcityn = onewvarcityn[:]
@@ -507,11 +511,12 @@ for icit in range(Ncitygr):
     rcmS = gen.byte_String(newvarrcm[drg[4],:])
     print (icit,':', citynS, domS, gcmS, rcmS)
    
-    ofign = domS + '/'  + citynS + '/urbdyn_tahmon_' + gcmS + '_' + rcmS
+    ofign = domS + '/'  + citynS + '/urbdyn_' + varn + 'mon_' + gcmS + '_' + rcmS
     if citynS in nonASCII:
         citygS = nonASCII[citynS]
     else:
         citygS = citynS + ''
+    citygS = citygS.replace('_',' ')
     
     ofignS = ofign  + '.png'
     if gscratch: sub.call('rm ' + ofignS, shell=True)
@@ -533,30 +538,26 @@ for icit in range(Ncitygr):
         
         ann = allmean.min()
         anx = allmean.max()
-        if icit == 0:
-#            for iz in range(meanv.shape[1]):
-#                for iy in range(meanv.shape[2]):
-#                    for ix in range(meanv.shape[3]):
-#                        iixv = list(meanv[:,iz,iy,ix]) + [meanv[0,iz,iy,ix]]
-#                        iiyv = list(meanv[1:12,iz,iy,ix]) + list(meanv[0:2,iz,iy,ix])
-#                        il = ax.plot(iixv, iiyv, '-x', color='gray')
-#                        ann = meanv[:,iz,iy,ix].min()
-#                        anx = meanv[:,iz,iy,ix].max()
-#                        if ann < minv: minv = ann
-#                        if anx > maxv: maxv = anx
-            il = ax.plot(xv, yv, '-x', color='black')
-            for it in range(12):
-                ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
-        else:
-            il = ax.plot(xv, yv, '-x', color='gray')
-    
+#        for iz in range(meanv.shape[1]):
+#            for iy in range(meanv.shape[2]):
+#                for ix in range(meanv.shape[3]):
+#                    iixv = list(meanv[:,iz,iy,ix]) + [meanv[0,iz,iy,ix]]
+#                    iiyv = list(meanv[1:12,iz,iy,ix]) + list(meanv[0:2,iz,iy,ix])
+#                    il = ax.plot(iixv, iiyv, '-x', color='gray')
+#                    ann = meanv[:,iz,iy,ix].min()
+#                    anx = meanv[:,iz,iy,ix].max()
+#                    if ann < minv: minv = ann
+#                    if anx > maxv: maxv = anx
+        il = ax.plot(xv, yv, '-x', color='black')
+        for it in range(12):
+            ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color='red')
         if ann < minv: minv = ann
         if anx > maxv: maxv = anx
 
-        if icit == 0: break
-    
         xtrm = np.max([np.abs(ann), anx])
         xtrm = xtrm*1.15
+        ilxx = ax.plot([-xtrm,xtrm], [0,0], '-', color='black', linewidth=1.)
+        ilyy = ax.plot([0,0,], [-xtrm,xtrm], '-', color='black', linewidth=1.)
         print ('circular ann:', ann, 'anx:', anx, 'xtrm', xtrm)
     
         ax.set_xlim(-xtrm, xtrm)
@@ -566,7 +567,7 @@ for icit in range(Ncitygr):
         ax.set_ylabel('month (it+1)')
         ax.grid()
 
-        ax.set_title('anual cycle')
+        ax.set_title('urbdynmean anual cycle', fontsize=8)
         minv = gen.fillValueR
         maxv = -gen.fillValueR
 
@@ -588,9 +589,10 @@ for icit in range(Ncitygr):
                     if iy == 0 and ix == 0:
                         presS = str(int(pres[iz]/100.)) + ' hPa'
                         il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color,\
-                          label=presS)
+                          linewidth=0.5, label=presS)
                     else:
-                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color)
+                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color,\
+                          linewidth=0.5)
         il = ax.plot(range(12), allmean, '-x', color='black', label='sum')
     
         xtrm = np.max([np.abs(minv), maxv])
@@ -606,24 +608,31 @@ for icit in range(Ncitygr):
         ax.set_yticklabels(['']*Nytcks)
 
         ax.set_xlabel('month (it)')
-        ax.set_ylabel('anomaly')
+        ax.set_ylabel('anomaly (' + gen.units_lunits(varu) + ')')
 
         ax.legend()
         ax.grid()
+
+        ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
+          str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
      
-        fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
-          'from CORDEX-CORE',fontsize=10)
+        #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
+        #  'from CORDEX-CORE',fontsize=10)
+        fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of ' + varn +  \
+          ' urbdyn', fontsize=11)
      
         #ax.set_title('Anual cycle of urbdyn from CORDEX-CORE')
 
         drw.output_kind(kfig, ofign, True)
         if debug: sub.call('display ' + ofignS + ' &', shell=True)
 
+        #quit()
+
 # Direct all rounded time-series
 Nrow = 1
-Ncol = 2
+Ncol = 1
  
-ofign = 'urbdyn_tahmon_all'
+ofign = 'urbdyn_' + varn + 'mon_all'
 ofignS = ofign  + '.png'
 if gscratch: sub.call('rm ' + ofignS, shell=True)
 if not os.path.isfile(ofignS):
