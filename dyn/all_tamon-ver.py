@@ -518,10 +518,7 @@ for icit in range(Ncitygr):
         orog = newvarorog22[drg[1],:,:]
 
     # Masking topography points
-    for it in range(meanv.shape[0]):
-        for iz in range(meanv.shape[1]):
-            meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR, meanv[it,iz,:,:])
-    meanv = ma.masked_equal(meanv, gen.fillValueR)
+    if np.any(orog.std() > 50.): continue
             
     domS = gen.byte_String(newvardom[drg[2],:])
     gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -695,12 +692,8 @@ for cityn in lcities:
                 orog = newvarorog22[drg[1],:,:]
 
             # Masking topography points
-            for it in range(meanv.shape[0]):
-                for iz in range(meanv.shape[1]):
-                    meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,          \
-                      meanv[it,iz,:,:])
-            meanv = ma.masked_equal(meanv, gen.fillValueR)
-                
+            if np.any(orog.std() > 50.): continue
+
             domS = gen.byte_String(newvardom[drg[2],:])
             gcmS = gen.byte_String(newvargcm[drg[3],:])
             rcmS = gen.byte_String(newvarrcm[drg[4],:])
@@ -772,11 +765,7 @@ for cityn in lcities:
                 orog = newvarorog22[drg[1],:,:]
 
             # Masking topography points
-            for it in range(meanv.shape[0]):
-                for iz in range(meanv.shape[1]):
-                    meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,          \
-                      meanv[it,iz,:,:])
-            meanv = ma.masked_equal(meanv, gen.fillValueR)
+            if np.any(orog.std() > 50.): continue
 
             allmean = meanv.sum(axis=(1,2,3))
             ann = allmean.min()
@@ -879,6 +868,14 @@ if not os.path.isfile(ofignS):
 
         ann = allmean.min()
         anx = allmean.max()
+        if anx > 1.e5: 
+            print (errormsg)
+            print ('  too largemaximum !!', cityndrg)
+            for it in range(meanv.shape[0]):
+                for iz in range(meanv.shape[1]):
+                    print (it,iz,' ________')
+                    print (meanv[it,iz,:,:])
+
         if icit == Ncitygr-1:
             il = ax.plot(xv, yv, '-x', color='black')
             for it in range(12):
@@ -896,11 +893,9 @@ if not os.path.isfile(ofignS):
         xtr = np.max([np.abs(ann),anx])
         if iicit == 0:
             cityxtrms.first([xtr,icit,cityndrg],'reverse')
-            iicit = iicit + 1
         else:
             cityxtrms.fill([xtr,icit,cityndrg])
-            iicit = iicit + 1
-
+        iicit = iicit + 1
         #if icit == 0: break
 
     if debug:
@@ -911,7 +906,7 @@ if not os.path.isfile(ofignS):
         for iic in range(Ncityxtrm*2):
             print ('    ', iic,dicvdrg[iic], dicvval[iic], dicvicit[iic])
     
-    # re-Plotting first 2 cities from cityxtrms
+    # re-Plotting first cities from cityxtrms
     dicv = cityxtrms.cols[1]
     cityndrg = cityxtrms.cols[2]
     plotted = []
