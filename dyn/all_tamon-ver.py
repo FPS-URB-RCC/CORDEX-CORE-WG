@@ -74,6 +74,9 @@ nonASCII = {
 # Variable to compute
 varn = 'tah'
 
+# Amount of extreme cities to plot 
+Ncityxtrm = 7
+
 #######    #######
 ## MAIN
     #######
@@ -509,8 +512,16 @@ for icit in range(Ncitygr):
     if drg.mask[0]: continue
     if drg[0] != -9:
         meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        orog = newvarorog11[drg[0],:,:]
     else:
         meanv = newvarvaluesa22[drg[1],:,:,:,:]
+        orog = newvarorog22[drg[1],:,:]
+
+    # Masking topography points
+    for it in range(meanv.shape[0]):
+        for iz in range(meanv.shape[1]):
+            meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR, meanv[it,iz,:,:])
+    meanv = ma.masked_equal(meanv, gen.fillValueR)
             
     domS = gen.byte_String(newvardom[drg[2],:])
     gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -678,8 +689,17 @@ for cityn in lcities:
             if drg.mask[0]: continue
             if drg[0] != -9:
                 meanv = newvarvaluesa11[drg[0],:,:,:,:]
+                orog = newvarorog11[drg[0],:,:]
             else:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
+                orog = newvarorog22[drg[0],:,:]
+
+            # Masking topography points
+            for it in range(meanv.shape[0]):
+                for iz in range(meanv.shape[1]):
+                    meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,          \
+                      meanv[it,iz,:,:])
+            meanv = ma.masked_equal(meanv, gen.fillValueR)
                 
             domS = gen.byte_String(newvardom[drg[2],:])
             gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -746,8 +766,17 @@ for cityn in lcities:
             if drg.mask[0]: continue
             if drg[0] != -9:
                 meanv = newvarvaluesa11[drg[0],:,:,:,:]
+                orog = newvarorog11[drg[0],:,:]
             else:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
+                orog = newvarorog22[drg[0],:,:]
+
+            # Masking topography points
+            for it in range(meanv.shape[0]):
+                for iz in range(meanv.shape[1]):
+                    meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,          \
+                      meanv[it,iz,:,:])
+            meanv = ma.masked_equal(meanv, gen.fillValueR)
 
             allmean = meanv.sum(axis=(1,2,3))
             ann = allmean.min()
@@ -804,13 +833,14 @@ Ncol = 2
  
 ofign = 'urbdyn_' + varn + 'mon_all'
 ofignS = ofign  + '.png'
-cityxtrms = {}
+cityxtrms = gen.order_cols()
 if gscratch: sub.call('rm ' + ofignS, shell=True)
 if not os.path.isfile(ofignS):
     print ("  plotting '" + ofignS + "' ...")
 
     minv = gen.fillValueR
     maxv = -gen.fillValueR
+    xtrv = -gen.fillValueR
 
     fig, axmat = plt.subplots(Nrow,Ncol)
  
@@ -824,8 +854,21 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            orog = newvarorog22[drg[0],:,:]
+
+        # Masking topography points
+        for it in range(meanv.shape[0]):
+            for iz in range(meanv.shape[1]):
+                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
+                  meanv[it,iz,:,:])
+        meanv = ma.masked_equal(meanv, gen.fillValueR)
+
+        gcmS = gen.byte_String(newvargcm[drg[3],:])
+        rcmS = gen.byte_String(newvarrcm[drg[4],:])
+        cityndrg = citynS + '_' + gcmS + '_' + rcmS
             
         allmean = meanv.sum(axis=(1,2,3))
         xv = list(allmean[:]) + [allmean[0]]
@@ -841,32 +884,37 @@ if not os.path.isfile(ofignS):
             il = ax.plot(xv, yv, '-x', color='gray')
     
         if ann < minv: 
-            print ('  new minium for ' + citynS)
             minv = ann
-            if 'min' not in cityxtrms:
-                cityxtrms = [icit]
-            else:
-                dicv = cityxtrms['min']
-                dicv = [icit] + idcv
-                cityxtrms['min'] = dicv
-            
+            if debug: print ('  new minium for ' + citynS, minv)
         if anx > maxv: 
-            print ('  new maxium for ' + citynS)
             maxv = anx
-            if 'max' not in cityxtrms:
-                cityxtrms = [icit]
-            else:
-                dicv = cityxtrms['max']
-                dicv = [icit] + idcv
-                cityxtrms['max'] = dicv
+            if debug: print ('  new maxium for ' + citynS, maxv)
+        # Absolute xtreme
+        xtr = np.max([np.abs(ann),anx])
+        if icit == 0:
+            cityxtrms.first([xtr,icit,cityndrg],'reverse')
+        else:
+            cityxtrms.fill([xtr,icit,cityndrg])
 
         #if icit == 0: break
+
+    if debug:
+        print ('    first', 2*Ncityxtrm, 'xtreme cities _______')
+        dicvdrg = cityxtrms.cols[2]
+        dicvval = cityxtrms.cols[0]
+        dicvicit = cityxtrms.cols[1]
+        for iic in range(Ncityxtrm*2):
+            print ('    ', iic,dicvdrg[iic], dicvval[iic], dicvicit[iic])
     
     # re-Plotting first 2 cities from cityxtrms
-    dicv = cityxtrms['min']
-    iivv = 1
-    for icit in dicv[0:2]:
+    dicv = cityxtrms.cols[1]
+    cityndrg = cityxtrms.cols[2]
+    plotted = []
+    iivv = 0
+    for icit in dicv:
         citynS = gen.byte_String(newvarcityn[icit,:])
+        if gen.searchInlist(plotted, cityndrg[iivv]): continue
+        plotted.append(cityndrg[iivv])
     
         if citynS in nonASCII:
             citygS = nonASCII[citynS]
@@ -878,8 +926,17 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            orog = newvarorog22[drg[0],:,:]
+
+        # Masking topography points
+        for it in range(meanv.shape[0]):
+            for iz in range(meanv.shape[1]):
+                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
+                  meanv[it,iz,:,:])
+        meanv = ma.masked_equal(meanv, gen.fillValueR)
             
         allmean = meanv.sum(axis=(1,2,3))
         xv = list(allmean[:]) + [allmean[0]]
@@ -889,33 +946,9 @@ if not os.path.isfile(ofignS):
         il = ax.plot(xv, yv, '-x', color=colv, label=citygS)
         for it in range(12):
             ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color=colv, fontsize=6)
+        iivv = iivv + 1
+        if iivv > Ncityxtrm: break
 
-    dicv = cityxtrms['max']
-    for icit in dicv[0:2]:
-        citynS = gen.byte_String(newvarcityn[icit,:])
-    
-        if citynS in nonASCII:
-            citygS = nonASCII[citynS]
-        else:
-            citygS = citynS + ''
-        citygS = citygS.replace('_',' ')
-    
-        drg = newcitydrg[:,icit]
-        if drg.mask[0]: continue
-        if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
-        else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            
-        allmean = meanv.sum(axis=(1,2,3))
-        xv = list(allmean[:]) + [allmean[0]]
-        yv = list(allmean[1:12])+list(allmean[0:2])
-
-        colv = drw.colorsauto[iivv]
-        il = ax.plot(xv, yv, '-x', color=colv, label=citygS)
-        for it in range(12):
-            ax.annotate(gen.shortmon[it], xy=(xv[it], yv[it]), color=colv, fontsize=6)
-    
     xtrm = np.max([np.abs(minv), maxv])
     xtrm = xtrm*1.05
     if debug: print ('ann:', ann, 'anx:', anx, 'xtrm', xtrm)
@@ -926,7 +959,7 @@ if not os.path.isfile(ofignS):
     ax.set_xlabel('month (it)')
     ax.set_ylabel('month (it+1)')
     ax.grid()
-    ax.set_legend(ncol=2, fontsize=6)
+    ax.legend(ncol=2, fontsize=6)
 
     ax.set_title('anual cycle')
     minv = gen.fillValueR
@@ -942,8 +975,17 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            orog = newvarorog22[drg[0],:,:]
+
+        # Masking topography points
+        for it in range(meanv.shape[0]):
+            for iz in range(meanv.shape[1]):
+                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
+                  meanv[it,iz,:,:])
+        meanv = ma.masked_equal(meanv, gen.fillValueR)
             
         allmean = meanv.sum(axis=(1,2,3))
 
@@ -952,10 +994,14 @@ if not os.path.isfile(ofignS):
         il = ax.plot(range(12), allmean, '-x', color='gray')   
     
     # re-Plotting first 2 cities from cityxtrms
-    dicv = cityxtrms['min']
-    iivv = 1
-    for icit in dicv[0:2]:
+    dicv = cityxtrms.cols[1]
+    cityndrg = cityxtrms.cols[2]
+    plotted = []
+    iivv = 0
+    for icit in dicv:
         citynS = gen.byte_String(newvarcityn[icit,:])
+        if gen.searchInlist(plotted, cityndrg[iivv]): continue
+        plotted.append(cityndrg[iivv])
     
         if citynS in nonASCII:
             citygS = nonASCII[citynS]
@@ -967,38 +1013,25 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            orog = newvarorog22[drg[0],:,:]
+
+        # Masking topography points
+        for it in range(meanv.shape[0]):
+            for iz in range(meanv.shape[1]):
+                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
+                  meanv[it,iz,:,:])
+        meanv = ma.masked_equal(meanv, gen.fillValueR)
             
         allmean = meanv.sum(axis=(1,2,3))
 
         colv = drw.colorsauto[iivv]
         il = ax.plot(range(12), allmean, '-x', color=colv, label=citygS)
+        iivv = iivv + 1
+        if iivv > Ncityxtrm: break
 
-    dicv = cityxtrms['max']
-    for icit in dicv[0:2]:
-        citynS = gen.byte_String(newvarcityn[icit,:])
-    
-        if citynS in nonASCII:
-            citygS = nonASCII[citynS]
-        else:
-            citygS = citynS + ''
-        citygS = citygS.replace('_',' ')
-    
-        drg = newcitydrg[:,icit]
-        if drg.mask[0]: continue
-        if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
-        else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            
-        allmean = meanv.sum(axis=(1,2,3))
-
-        colv = drw.colorsauto[iivv]
-        il = ax.plot(range(12), allmean, '-x', color=colv, label=citygS)
-    
-        il = ax.plot([0,11], [0,0], '-', color='k', linewidth=0.75)
-    
     ax2 = ax.twinx()
     ax.set_ylim(-xtrm, xtrm)
     ax2.set_ylim(-xtrm, xtrm)
