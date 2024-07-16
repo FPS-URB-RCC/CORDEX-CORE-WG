@@ -692,7 +692,7 @@ for cityn in lcities:
                 orog = newvarorog11[drg[0],:,:]
             else:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
-                orog = newvarorog22[drg[0],:,:]
+                orog = newvarorog22[drg[1],:,:]
 
             # Masking topography points
             for it in range(meanv.shape[0]):
@@ -769,7 +769,7 @@ for cityn in lcities:
                 orog = newvarorog11[drg[0],:,:]
             else:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
-                orog = newvarorog22[drg[0],:,:]
+                orog = newvarorog22[drg[1],:,:]
 
             # Masking topography points
             for it in range(meanv.shape[0]):
@@ -845,6 +845,7 @@ if not os.path.isfile(ofignS):
     fig, axmat = plt.subplots(Nrow,Ncol)
  
     ifig = 1
+    iicit = 0
     # Circular
     ax = plt.subplot(Nrow,Ncol,ifig)
     for icit in range(Ncitygr):
@@ -857,7 +858,7 @@ if not os.path.isfile(ofignS):
             orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            orog = newvarorog22[drg[0],:,:]
+            orog = newvarorog22[drg[1],:,:]
 
         # Masking topography points
         if np.any(orog.std() > 50.): continue
@@ -893,10 +894,12 @@ if not os.path.isfile(ofignS):
             if debug: print ('  new maxium for ' + citynS, maxv)
         # Absolute xtreme
         xtr = np.max([np.abs(ann),anx])
-        if icit == 0:
+        if iicit == 0:
             cityxtrms.first([xtr,icit,cityndrg],'reverse')
+            iicit = iicit + 1
         else:
             cityxtrms.fill([xtr,icit,cityndrg])
+            iicit = iicit + 1
 
         #if icit == 0: break
 
@@ -971,7 +974,7 @@ if not os.path.isfile(ofignS):
             orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            orog = newvarorog22[drg[0],:,:]
+            orog = newvarorog22[drg[1],:,:]
 
         # Masking topography points
         if np.any(orog.std() > 50.): continue
