@@ -923,6 +923,7 @@ if not os.path.isfile(ofignS):
         citygS = citygS.replace('_',' ')
     
         drg = newcitydrg[:,icit]
+        citygS = citygS + '$^{' + str(drg[3]+1) + ',' + str(drg[4]+1) + '}$'
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
@@ -980,7 +981,7 @@ if not os.path.isfile(ofignS):
         anx = allmean.max()
         il = ax.plot(range(12), allmean, '-x', color='gray')   
     
-    # re-Plotting first 2 cities from cityxtrms
+    # re-Plotting first cities from cityxtrms
     dicv = cityxtrms.cols[1]
     cityndrg = cityxtrms.cols[2]
     plotted = []
@@ -997,6 +998,7 @@ if not os.path.isfile(ofignS):
         citygS = citygS.replace('_',' ')
     
         drg = newcitydrg[:,icit]
+        citygS =citygS + '$^{' + str(drg[3]+1) + ',' + str(drg[4]+1) + '}$'
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
