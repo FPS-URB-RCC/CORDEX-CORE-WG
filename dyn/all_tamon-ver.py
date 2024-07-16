@@ -516,9 +516,6 @@ for icit in range(Ncitygr):
     else:
         meanv = newvarvaluesa22[drg[1],:,:,:,:]
         orog = newvarorog22[drg[1],:,:]
-
-    # Masking topography points
-    if np.any(orog.std() > 50.): continue
             
     domS = gen.byte_String(newvardom[drg[2],:])
     gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -629,6 +626,10 @@ for icit in range(Ncitygr):
 
         ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
           str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
+
+        # Giving standard deviation of orography
+        labS = str(orog.std()) + ' $m$'
+        ax.annotate(labS, xy=(0.05,0.05), xycoords='figure fraction', fontsize=6)
      
         #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
         #  'from CORDEX-CORE',fontsize=10)
@@ -690,9 +691,6 @@ for cityn in lcities:
             else:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
                 orog = newvarorog22[drg[1],:,:]
-
-            # Masking topography points
-            if np.any(orog.std() > 50.): continue
 
             domS = gen.byte_String(newvardom[drg[2],:])
             gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -764,9 +762,6 @@ for cityn in lcities:
                 meanv = newvarvaluesa22[drg[1],:,:,:,:]
                 orog = newvarorog22[drg[1],:,:]
 
-            # Masking topography points
-            if np.any(orog.std() > 50.): continue
-
             allmean = meanv.sum(axis=(1,2,3))
             ann = allmean.min()
             anx = allmean.max()
@@ -803,6 +798,10 @@ for cityn in lcities:
     
         ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
           str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
+        
+        # Giving standard deviation of orography
+        labS = str(orog.std()) + ' $m$'
+        ax.annotate(labS, xy=(0.05,0.05), xycoords='figure fraction', fontsize=6)
          
         #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
         #  'from CORDEX-CORE',fontsize=10)
