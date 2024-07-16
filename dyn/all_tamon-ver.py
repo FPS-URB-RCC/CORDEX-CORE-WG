@@ -860,11 +860,13 @@ if not os.path.isfile(ofignS):
             orog = newvarorog22[drg[0],:,:]
 
         # Masking topography points
-        for it in range(meanv.shape[0]):
-            for iz in range(meanv.shape[1]):
-                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
-                  meanv[it,iz,:,:])
-        meanv = ma.masked_equal(meanv, gen.fillValueR)
+        if np.any(orog.std() > 50.): continue
+# This decompensates sums
+#        for it in range(meanv.shape[0]):
+#            for iz in range(meanv.shape[1]):
+#                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
+#                  meanv[it,iz,:,:])
+#        meanv = ma.masked_equal(meanv, gen.fillValueR)
 
         gcmS = gen.byte_String(newvargcm[drg[3],:])
         rcmS = gen.byte_String(newvarrcm[drg[4],:])
@@ -926,17 +928,8 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
-            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            orog = newvarorog22[drg[0],:,:]
-
-        # Masking topography points
-        for it in range(meanv.shape[0]):
-            for iz in range(meanv.shape[1]):
-                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
-                  meanv[it,iz,:,:])
-        meanv = ma.masked_equal(meanv, gen.fillValueR)
             
         allmean = meanv.sum(axis=(1,2,3))
         xv = list(allmean[:]) + [allmean[0]]
@@ -981,11 +974,7 @@ if not os.path.isfile(ofignS):
             orog = newvarorog22[drg[0],:,:]
 
         # Masking topography points
-        for it in range(meanv.shape[0]):
-            for iz in range(meanv.shape[1]):
-                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
-                  meanv[it,iz,:,:])
-        meanv = ma.masked_equal(meanv, gen.fillValueR)
+        if np.any(orog.std() > 50.): continue
             
         allmean = meanv.sum(axis=(1,2,3))
 
@@ -1013,18 +1002,9 @@ if not os.path.isfile(ofignS):
         if drg.mask[0]: continue
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
-            orog = newvarorog11[drg[0],:,:]
         else:
             meanv = newvarvaluesa22[drg[1],:,:,:,:]
-            orog = newvarorog22[drg[0],:,:]
 
-        # Masking topography points
-        for it in range(meanv.shape[0]):
-            for iz in range(meanv.shape[1]):
-                meanv[it,iz,:,:] = np.where(orog > 50., gen.fillValueR,              \
-                  meanv[it,iz,:,:])
-        meanv = ma.masked_equal(meanv, gen.fillValueR)
-            
         allmean = meanv.sum(axis=(1,2,3))
 
         colv = drw.colorsauto[iivv]
