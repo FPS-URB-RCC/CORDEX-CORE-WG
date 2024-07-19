@@ -3,7 +3,7 @@
 pyBIN=/usr/bin/python3
 export HDF5_USE_FILE_LOCKING=FALSE
 
-fscratch=false
+fscratch=true
 gscratch=true
 
 # List of cities to process
@@ -13,6 +13,10 @@ gscratch=true
 #cities=${cities}'SAM-22|Buenos!Aires|-58.416,-34.559:'
 #cities=${cities}'EAS-22|Beijing|116.41,39.90'
 cities=`cat CORDEX-CORE-WG/city_info.csv | tr ' ' '!' | tr ',' ' ' | awk '{print $10"|"$1"|"$7","$8}' | tr '\n' ':'`
+
+## Single city
+#cityval='Mumbai,India,1074.0,21755882.364945933,20256.873710377964,1.79,73.03655296648097,19.13765841208688,Am,WAS'
+#cities=`echo ${cityval} | tr ' ' '!' | tr ',' ' ' | awk '{print $10"|"$1"|"$7","$8}' | tr '\n' ':'`
 
 infold=/datos/MOD/CORDEX/CMIP5
 
@@ -29,15 +33,15 @@ errmsg="ERROR -- error -- ERROR -- error"
 cits=`echo ${cities}  | tr ':' ' '`
 Lvarn=`expr length ${varn}`
 for city in ${cits}; do
+  if test ${city} = 'domain|city|lon,lat'; then continue; fi
   dom=`echo ${city} | tr '|' ' ' | awk '{print $1}'`
   if test ${dom} = 'EUR'; then
     dom=${dom}-11
-  elif test ${dom} = 'NAM'; then
-    continue
   else
     dom=${dom}-22
   fi
   citn=`echo ${city} | tr '|' ' ' | awk '{print $2}'`
+  if test ${citn} = 'UNNAMED'; then continue; fi
   lonlat=`echo ${city} | tr '|' ' ' | awk '{print $3}'`
 
   echo "city: "${domn}" "${citn}" "${lonlat}
@@ -90,12 +94,33 @@ for city in ${cits}; do
 	  ifiledir=`dirname ${ifile}`
 
 	  rcm=`echo ${ifileS} | tr '_' ' ' | awk '{print $6}'`
+	  echo "  gcm: "${gcm}" rcm: "${rcm}
+
+	  # x,y dims are center dependent! Not fully CF compilant !!
+          # FROM: https://stackoverflow.com/questions/21688553/bash-expr-index-command
+	  Lrcm=`expr length ${rcm}`
+	  prefix=${rcm%%ICTP*}
+	  iposICTP=${#prefix}
+	  prefix=${rcm%%GERICS*}
+	  iposGERICS=${#prefix}
+	  echo "ICTP: "${iposICTP}" GERICS: "${iposGERICS}
+	  if test $iposICTP != ${Lrcm}; then
+            xdimn='x'
+	    ydimn='y'
+	  elif test $iposGERICS != ${Lrcm}; then
+            xdimn='rlon'
+            ydimn='rlat'
+          else
+            echo "avoiding non CORDEX-CORE ..."
+	    continue
+          fi
+
 	  ofile=${odir}/${vn}_${gcm}_${rcm}.nc
 	  ofile2=${odir}/${vn}_${gcm}_${rcm}_ymonmean.nc
-
 	  if ${fscratch}; then rm ${ofile}; fi
           if test ! -f ${ofile}; then
-	    values='y|'${jpti}'@'${jpte}'@1:x|'${ipti}'@'${ipte}'@1,'${ifiledir}',time,time'
+	    values=${ydimn}'|'${jpti}'@'${jpte}'@1:'${xdimn}'|'${ipti}'@'${ipte}'@1,'
+	    values=${values}${ifiledir}',time,time'
 	    ${pyBIN} ${pyHOME3}/nc_var.py -o netcdf_fold_slice_concatenation_HMT -S ${values}\
               -v all -f ${vn},${rcm},nc
   	    if test $? -ne 0; then
@@ -135,7 +160,7 @@ for city in ${cits}; do
             mv netcdf_fold_slice_concatenated_HMT.nc ${ofile}
 
 	    # Statistics
-	    values=x,y:cycle,time,0,12,1,12:yes:mean:yes
+	    values=${xdimn},${ydimn}:cycle,time,0,12,1,12:yes:mean:yes
 	    ${pyBIN} ${pyHOME3}/nc_var.py -o stats_varfile -S ${values} -f ${ofile} -v ${vn}
 	    echo nc_var.py -o stats_varfile -S ${values} -f ${ofile} -v ${vn}
   	    if test $? -ne 0; then
@@ -158,13 +183,21 @@ for city in ${cits}; do
     done
 
     # Plotting
+    Lofile2=`expr length ${ofile2}0`
+    if test ${Lofile2} -lt 2; then continue; fi
+    echo "ofile2: "${ofile2}
+    if test -f ${ofile2}; then
 
-    ofig=${odir}/${vn}_${gcm}_${rcm}.png
-    python3 tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
-    if test $? -ne 0; then
-      echo ${errmsg}
-      echo "  python failed !!"
-      echo tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
+      ofig=${odir}/${vn}ymon-anom_${gcm}_${rcm}_SN.png
+      if ${gscratch}; then rm ${ofig}; fi
+      if test ! -f ${ofig}; then
+        python3 tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
+        if test $? -ne 0; then
+          echo ${errmsg}
+          echo "  python failed !!"
+          echo tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
+        fi
+      fi
     fi
 
     #exit

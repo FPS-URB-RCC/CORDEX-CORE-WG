@@ -35,7 +35,7 @@ import drawing_tools as drw
 import generic_tools as gen
 
 fscratch = False
-gscratch = False
+gscratch = True
 
 ifxfold = '/datos/MOD/CORDEX/CMIP5'
 ifold = '/home/lluis.fita/process/mod/CORDEX-CORE/urban'
@@ -109,6 +109,7 @@ if not os.path.isfile(allfilen):
     cities = {}
     lcities = []
     lcitygrs = []
+    lcitygrsS = []
     alldoms = []
     allgcms = []
     allrcms = []
@@ -132,9 +133,11 @@ if not os.path.isfile(allfilen):
         rcm = fn.split('_')[2]
         if debug: print ('    ', dom, cityn, gcm, rcm)
 
-        citygr = cityn + '_' + gcm + '_' + rcm
+        citygr = cityn + '@' + gcm + '@' + rcm
         tcitygr = (cityn, gcm, rcm)
-        lcitygrs.append(tcitygr)
+        if not gen.searchInlist(lcitygrsS, citygr): 
+            lcitygrsS.append(citygr)
+            lcitygrs.append(tcitygr)
 
         if not gen.searchInlist(allgcms, gcm): allgcms.append(gcm)
         if not gen.searchInlist(allrcms, rcm): allrcms.append(rcm)
@@ -165,15 +168,18 @@ if not os.path.isfile(allfilen):
                 prevcitygr = tcitygr
 
     Ncities = len(lcities)
+    Ncitiesgr = len(lcitygrsS)
     Ndom = len(alldoms)
     Ngcm = len(allgcms)
     Nrcm = len(allrcms)
-    print ('amount of files:', Nfiles, 'from', Ncities, 'cities found: ', lcities)
+    print ('amount of files:', Nfiles, 'city-gcm-rcm', Ncitiesgr, 'from', Ncities,   \
+      'cities found: ', lcities)
 
     if debug:
         print ('  city values [cityn] [gcm] [rcm] [dom]_______')
-        for citygr  in lcitygrs:
-            print (citygr, cities[citygr])
+        for citygr  in lcitygrsS:
+            tcitygr = tuple(citygr.split('@'))
+            print (citygr, cities[tcitygr])
 
     # netCDF
     ## 
@@ -186,7 +192,7 @@ if not os.path.isfile(allfilen):
     newdim = onewnc.createDimension('lat11', 2*Nx11+1)
     newdim = onewnc.createDimension('cit22', Ncit22)
     newdim = onewnc.createDimension('cit11', Ncit11)
-    newdim = onewnc.createDimension('city', Nfiles)    
+    newdim = onewnc.createDimension('city', Ncitiesgr)    
     newdim = onewnc.createDimension('mon', 12)
     newdim = onewnc.createDimension('pressure', Nlevs)
     newdim = onewnc.createDimension('pres', 2)
@@ -316,12 +322,13 @@ if not os.path.isfile(allfilen):
     icit = 0
     icit11 = 0
     icit22 = 0
-    for citygr in lcitygrs:
-        cityn = citygr[0]
-        gcm = citygr[1]
-        rcm = citygr[2]
+    for citygr in lcitygrsS:
+        tcitygr = tuple(citygr.split('@'))
+        cityn = tcitygr[0]
+        gcm = tcitygr[1]
+        rcm = tcitygr[2]
 
-        dicv = cities[citygr]
+        dicv = cities[tcitygr]
     
         dom = dicv[0]
         newvarcityn[icit,0:len(cityn)] = cityn[:]
@@ -509,7 +516,11 @@ for icit in range(Ncitygr):
     citynS = gen.byte_String(newvarcityn[icit,:])
     
     drg = newcitydrg[:,icit]
-    if drg.mask[0]: continue
+    if len(drg.mask.shape) == 0:
+        if drg.mask: continue
+    else:
+        if drg.mask[0]: continue
+
     if drg[0] != -9:
         meanv = newvarvaluesa11[drg[0],:,:,:,:]
         orog = newvarorog11[drg[0],:,:]
@@ -628,8 +639,8 @@ for icit in range(Ncitygr):
           str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
 
         # Giving standard deviation of orography
-        labS = str(orog.std()) + ' $m$'
-        ax.annotate(labS, xy=(0.05,0.05), xycoords='figure fraction', fontsize=6)
+        labS = '$\sigma_{orog} =$ ' + str(orog.std()) + ' $m$'
+        ax.annotate(labS, xy=(0.02,0.02), xycoords='figure fraction', fontsize=6)
      
         #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
         #  'from CORDEX-CORE',fontsize=10)
@@ -658,7 +669,10 @@ for cityn in lcities:
     Ncityvalues = len(icityvalues)
     icit = icityvalues[ivvc]
     drg = newcitydrg[:,icit]
-    if drg.mask[0]: continue
+    if len(drg.mask.shape) == 0:
+        if drg.mask: continue
+    else:
+        if drg.mask[0]: continue
                 
     domS = gen.byte_String(newvardom[drg[2],:])
     gcmS = gen.byte_String(newvargcm[drg[3],:])
@@ -683,8 +697,13 @@ for cityn in lcities:
         ax = plt.subplot(Nrow,Ncol,ifig)
         for ivvc in range(Ncityvalues):
             icit = icityvalues[ivvc]
+
             drg = newcitydrg[:,icit]
-            if drg.mask[0]: continue
+            if len(drg.mask.shape) == 0:
+                if drg.mask: continue
+            else:
+                if drg.mask[0]: continue
+
             if drg[0] != -9:
                 meanv = newvarvaluesa11[drg[0],:,:,:,:]
                 orog = newvarorog11[drg[0],:,:]
@@ -754,7 +773,12 @@ for cityn in lcities:
         for ivvc in range(Ncityvalues):
             icit = icityvalues[ivvc]
             drg = newcitydrg[:,icit]
-            if drg.mask[0]: continue
+
+            if len(drg.mask.shape) == 0:
+                if drg.mask: continue
+            else:
+                if drg.mask[0]: continue
+
             if drg[0] != -9:
                 meanv = newvarvaluesa11[drg[0],:,:,:,:]
                 orog = newvarorog11[drg[0],:,:]
@@ -800,8 +824,8 @@ for cityn in lcities:
           str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
         
         # Giving standard deviation of orography
-        labS = str(orog.std()) + ' $m$'
-        ax.annotate(labS, xy=(0.05,0.05), xycoords='figure fraction', fontsize=6)
+        labS = '$\sigma_{orog} =$ ' + str(orog.std()) + ' $m$'
+        ax.annotate(labS, xy=(0.02,0.02), xycoords='figure fraction', fontsize=6)
          
         #fig.suptitle(citygS + ' ' + gcmS + ' ' + rcmS + ' anual cycle of urbdyn ' +  \
         #  'from CORDEX-CORE',fontsize=10)
@@ -838,9 +862,13 @@ if not os.path.isfile(ofignS):
     ax = plt.subplot(Nrow,Ncol,ifig)
     for icit in range(Ncitygr):
         citynS = gen.byte_String(newvarcityn[icit,:])
-    
         drg = newcitydrg[:,icit]
-        if drg.mask[0]: continue
+
+        if len(drg.mask.shape) == 0:
+            if drg.mask: continue
+        else:
+            if drg.mask[0]: continue
+
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
             orog = newvarorog11[drg[0],:,:]
@@ -923,7 +951,11 @@ if not os.path.isfile(ofignS):
     
         drg = newcitydrg[:,icit]
         citygS = citygS + '$^{' + str(drg[3]+1) + ',' + str(drg[4]+1) + '}$'
-        if drg.mask[0]: continue
+        if len(drg.mask.shape) == 0:
+            if drg.mask: continue
+        else:
+            if drg.mask[0]: continue
+
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
         else:
@@ -963,7 +995,11 @@ if not os.path.isfile(ofignS):
         citynS = gen.byte_String(newvarcityn[icit,:])
     
         drg = newcitydrg[:,icit]
-        if drg.mask[0]: continue
+        if len(drg.mask.shape) == 0:
+            if drg.mask: continue
+        else:
+            if drg.mask[0]: continue
+
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
             orog = newvarorog11[drg[0],:,:]
@@ -998,7 +1034,11 @@ if not os.path.isfile(ofignS):
     
         drg = newcitydrg[:,icit]
         citygS =citygS + '$^{' + str(drg[3]+1) + ',' + str(drg[4]+1) + '}$'
-        if drg.mask[0]: continue
+        if len(drg.mask.shape) == 0:
+            if drg.mask: continue
+        else:
+            if drg.mask[0]: continue
+
         if drg[0] != -9:
             meanv = newvarvaluesa11[drg[0],:,:,:,:]
         else:

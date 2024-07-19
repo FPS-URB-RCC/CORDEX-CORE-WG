@@ -76,6 +76,10 @@ ifold = opts.dom + '/' + opts.city
 
 Mn=opts.gcm + '_' + opts.rcm + '_ymonmean'
 files = gen.files_folder_HMT(folder=ifold, head='ta',middle=Mn, tail='nc', rmfolder=True)
+Nfiles=len(files)
+if Nfiles < 1:
+    print ("  No files found as '" + ifold + '/ta*' + Mn + "*nc' !!")
+    quit()
 
 levs = []
 for filen in files:
@@ -171,7 +175,8 @@ if not os.path.isfile(ofignS):
     eoy = jorog + Nx + 1
 
     iz = Nlevs-1
-    presv = levs[iz]
+    # Fixing to 925 hPa
+    presv = 925.
 
     vals = values[:,iz,iy:ey,ix:ex] + 0.
     orogv = orog[ioy:eoy,iox:eox]
@@ -179,6 +184,9 @@ if not os.path.isfile(ofignS):
 
     x = lon[iy:ey,ix:ex]
     y = lat[iy:ey,ix:ex]
+    # Ranigng longitudes to -180.,180. otherwise cartopy does not work
+    xmax = x.max()
+    if xmax > 180.: x = np.where(x > 180., x-360., x)
     
     # FROM: https://en.wikipedia.org/wiki/Pressure_altitude
     fac1 = 1013.25
@@ -298,7 +306,8 @@ if not os.path.isfile(ofignS):
     eoy = jorog + Nx + 1
     
     iz = Nlevs-1
-    presv = levs[iz]
+    #presv = levs[iz]
+    presv = 925.
 
     vals = values[:,iz,iy:ey,ix:ex] + 0.
     orogv = orog[ioy:eoy,iox:eox]
@@ -309,6 +318,9 @@ if not os.path.isfile(ofignS):
 
     x = lon[iy:ey,ix:ex]
     y = lat[iy:ey,ix:ex]
+    # Ranigng longitudes to -180.,180. otherwise cartopy does not work
+    xmax = x.max()
+    if xmax > 180.: x = np.where(x > 180., x-360., x)
 
     # FROM: https://en.wikipedia.org/wiki/Pressure_altitude
     fac1 = 1013.25
