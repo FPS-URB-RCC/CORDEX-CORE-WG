@@ -66,7 +66,7 @@ def plot_climatology(ds, ucdb_city, urban_vicinity, variable, URBAN,
     ax.coastlines()
     if variable == 'tasmin':
         ax.set_title(f"Minimum temperature anomaly for {city}", fontsize = 14)
-    elif varibale == 'tasmax':
+    elif variable == 'tasmax':
         ax.set_title(f"Maximum temperature anomaly for {city}", fontsize = 14)    
     
     # Overlay the cell borders and handle NaNs
@@ -179,7 +179,11 @@ def plot_time_series(ds_var, variable, urban_vicinity,
                                                      zorder = 2000) 
         time_series_mon_mean_anom['rural_mean'].plot(ax = ax, color='g', linestyle='-', 
                                                      linewidth = 4, label='Vicinity obs. mean', 
-                                                     zorder = 2000) 
+                                                     zorder = 2000)
+        if cache != '':
+            xr.Dataset(dict(
+                urban_mean_anom = time_series_mon_mean_anom['urban_mean'],
+                )).to_netcdf(cache)
     # Add legend to the plot
     ax.legend(fontsize = 14, loc='center left', bbox_to_anchor=(0, -0.2), prop={'size': 14})
     

@@ -9,7 +9,7 @@ from icecream import ic
 from utils import YAMLconfig
 
 directory = 'results'
-variable = 'tasmin'
+variable = 'tasmax'
 
 def parse_filename(filename):
     parts = filename.split('/')[-1].split('_')
@@ -63,12 +63,12 @@ def plot_heatmap(heatmap_data, out='heatmap.pdf', title='', height=16, **kwargs)
     plt.tight_layout()
     plt.savefig(out)
 
-cities = YAMLconfig('selected_cities.yaml')._data
+cities = YAMLconfig('selected_cities.yaml')
 
 filelist_acycle = glob.glob(f"{directory}/*/{variable}_*_acycle-ur.nc")
 filelist_urmask = glob.glob(f"{directory}/*/urmask_*_fx.nc")
 
-cachefile = f'{directory}/uhi_heatmap.csv'
+cachefile = f'{directory}/{variable}_uhi_heatmap.csv'
 if os.path.exists(cachefile):
     df = pd.read_csv(cachefile)
 else:
