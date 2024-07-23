@@ -2,10 +2,12 @@ Cairo:
     name: Cairo
     ktype: Bwh
     coastal: False
-    mountain: False
+    mountain: True
     lon: 31.25
     lat: 30.06
     domain: AFR-22
+    comment: >
+        closet to mountain areas
 
 Lagos:
     name: Lagos
@@ -81,6 +83,8 @@ Moscow:
     mountain: False
     lon: 37.62
     lat: 55.75
+    urban_th : 0.4
+    urban_sur_th : 0.2
     domain: EUR-11
 
 Tashkent:
@@ -169,6 +173,8 @@ Paris:
     lon: 2.35
     lat: 48.85
     domain: EUR-11
+    urban_th : 0.4
+    urban_sur_th : 0.1
     comment: >
         FPS URB-RCC core city
 
@@ -179,6 +185,8 @@ London:
     mountain: False
     lon: -0.13
     lat: 51.50
+    urban_th : 0.4
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Istanbul:
@@ -188,6 +196,8 @@ Istanbul:
     mountain: False
     lon: 28.98
     lat: 41.01
+    urban_th : 0.4
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Berlin:
@@ -197,6 +207,10 @@ Berlin:
     mountain: False
     lon: 13.4039
     lat: 52.4683
+    urban_th : 0.4
+    urban_sur_th : 0.1
+    lon_lim : 0.75
+    lat_lim : 0.75
     domain: EUR-11
 
 Naples:
@@ -206,6 +220,10 @@ Naples:
     mountain: False
     lon: 14.27
     lat: 40.85
+    urban_th : 0.4
+    urban_sur_th : 0.4
+    lon_lim : 0.75
+    lat_lim : 0.75
     domain: EUR-11
 
 Barcelona:
@@ -215,6 +233,8 @@ Barcelona:
     mountain: False
     lon: 2.18
     lat: 41.39
+    urban_th : 0.4
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Athens:
@@ -224,6 +244,8 @@ Athens:
     mountain: False
     lon: 23.72
     lat: 37.98
+    urban_th : 0.4
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Prague:
@@ -233,6 +255,10 @@ Prague:
     mountain: False
     lon: 14.42
     lat: 50.08
+    urban_th : 0.4
+    urban_sur_th : 0.1
+    lon_lim : 0.6
+    lat_lim : 0.6
     domain: EUR-11
 
 Manila:
@@ -245,7 +271,7 @@ Manila:
     domain: SEA-22
 
 Mumbai:
-    name: Mumbai Bombay
+    name: Mumbai
     ktype: Am
     coastal: True
     mountain: False

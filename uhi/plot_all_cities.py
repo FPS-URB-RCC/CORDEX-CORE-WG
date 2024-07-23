@@ -12,9 +12,14 @@ from utils import YAMLconfig
 
 input_notebook = 'urban_area_selection.ipynb'
 output_notebook = 'urban_area_selection__papermill.ipynb'
-variable = 'tasmin'
+variable = 'tasmax'
 expected_figure_number = 7
 cities = YAMLconfig('selected_cities.yaml')
+
+default_urban_th = 0.1
+default_urban_sur_th = 0.1
+default_lon_lim = 1
+default_lat_lim = 1
 
 for city in cities:
     abbr_city = city
@@ -25,7 +30,11 @@ for city in cities:
         'lon_city': cities[city]['lon'],
         'lat_city': cities[city]['lat'],
         'domain': domain,     
-        'variable': variable,     
+        'variable': variable,
+        'urban_th': cities[city].get('urban_th', default_urban_th),
+        'urban_sur_th': cities[city].get('urban_sur_th', default_urban_sur_th),
+        'lon_lim': cities[city].get('lon_lim', default_lon_lim),
+        'lat_lim': cities[city].get('lat_lim', default_lat_lim),
     }
     for model in ['REMO', 'RegCM']:
         model_str = RCM_DICT[domain][model]
@@ -66,7 +75,11 @@ for city in cities:
         'lat_city': cities[city]['lat'],
         'domain': domain,
         'variable': variable,     
-        'model': model
+        'model': model,    
+        'urban_th': default_urban_th,
+        'urban_sur_th': default_urban_sur_th,
+        'lon_lim': cities[city].get('lon_lim', default_lon_lim),
+        'lat_lim': cities[city].get('lat_lim', default_lat_lim),
     }
 
     model_str = 'GERICS_REMO2015'
