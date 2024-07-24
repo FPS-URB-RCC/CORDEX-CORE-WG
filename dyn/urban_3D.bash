@@ -3,8 +3,8 @@
 pyBIN=/usr/bin/python3
 export HDF5_USE_FILE_LOCKING=FALSE
 
-fscratch=true
-gscratch=true
+fscratch=false
+gscratch=false
 
 # List of cities to process
 #   [dom]|[CityName]|[lon],[lat]
@@ -12,7 +12,9 @@ gscratch=true
 #cities=${cities}'EUR-11|London|-0.13,51.50:EUR-11|Madrid|-3.70,40.42:'
 #cities=${cities}'SAM-22|Buenos!Aires|-58.416,-34.559:'
 #cities=${cities}'EAS-22|Beijing|116.41,39.90'
-cities=`cat CORDEX-CORE-WG/city_info.csv | tr ' ' '!' | tr ',' ' ' | awk '{print $10"|"$1"|"$7","$8}' | tr '\n' ':'`
+cityfilen='CORDEX-CORE-WG/city_info.csv'
+#cityfilen='city_info_mod.csv'
+cities=`cat ${cityfilen} | tr ' ' '!' | tr ',' ' ' | awk '{print $10"|"$1"|"$7","$8}' | tr '\n' ':'`
 
 ## Single city
 #cityval='Mumbai,India,1074.0,21755882.364945933,20256.873710377964,1.79,73.03655296648097,19.13765841208688,Am,WAS'
@@ -23,6 +25,10 @@ infold=/datos/MOD/CORDEX/CMIP5
 # Variable to process
 varn=ta
 
+# Diagnostics for a given variable
+#   [varn]|[diagn]
+diagn='ta|tha:ua|ua:va|va'
+
 # +/- points from city center 
 Npoints=10
 
@@ -31,6 +37,7 @@ Npoints=10
     #######
 errmsg="ERROR -- error -- ERROR -- error"
 cits=`echo ${cities}  | tr ':' ' '`
+diags=`echo ${diagn}  | tr ':' ' '`
 Lvarn=`expr length ${varn}`
 for city in ${cits}; do
   if test ${city} = 'domain|city|lon,lat'; then continue; fi
@@ -114,9 +121,41 @@ for city in ${cits}; do
             echo "avoiding non CORDEX-CORE ..."
 	    continue
           fi
+	  # Domain extremes
+	  values='dim:'${xdimn}':None:None'
+          xdS=`$pyBIN $pyHOME3/nc_var.py -o get_file_inf -S ${values} -f ${ifile}`
+	  if test $? -ne 0; then
+            echo ${errmsg}
+	    echo "  python failed !!"
+	    echo nc_var.py -o get_file_inf -S ${values} -f ${ifile}
+	    exit -1
+	  fi
+	  values='dim:'${ydimn}':None:None'
+          ydS=`$pyBIN $pyHOME3/nc_var.py -o get_file_inf -S ${values} -f ${ifile}`
+	  if test $? -ne 0; then
+            echo ${errmsg}
+	    echo "  python failed !!"
+	    echo nc_var.py -o get_file_inf -S ${values} -f ${ifile}
+	    exit -1
+	  fi
+          domdimx=`echo ${xdS} | tr '|' ' ' | awk '{print $2}'`
+          domdimy=`echo ${ydS} | tr '|' ' ' | awk '{print $2}'`
+
+	  echo "    ij SW: "${ipti}", "${jpti}" NE: "${ipte}", "${jpte} 
+	  echo "    "${dom}" domain size: "${domdimx}", "${domdimy}
+	  if test ${ipti} -lt 1 || test ${jpti} -lt 1 || test ${ipte} -gt ${domdimx} \
+	    || test ${jpte} -gt ${domdimy}; then
+            echo ${errmsg}
+	    echo "  city '"${cityn}"' too close to borders of CORDEX domain '"${dom}"' !!"
+	    echo "    select another domain for the city"
+	    echo "    ij SW: "${ipti}", "${jpti}" NE: "${ipte}", "${jpte} 
+	    echo "    "${dom}" domain size: "${domdimx}", "${domdimy}
+	    exit -1
+	  fi
 
 	  ofile=${odir}/${vn}_${gcm}_${rcm}.nc
 	  ofile2=${odir}/${vn}_${gcm}_${rcm}_ymonmean.nc
+	  vnS=${vn//[[:digit:]]}
 	  if ${fscratch}; then rm ${ofile}; fi
           if test ! -f ${ofile}; then
 	    values=${ydimn}'|'${jpti}'@'${jpte}'@1:'${xdimn}'|'${ipti}'@'${ipte}'@1,'
@@ -187,16 +226,20 @@ for city in ${cits}; do
     if test ${Lofile2} -lt 2; then continue; fi
     echo "ofile2: "${ofile2}
     if test -f ${ofile2}; then
+      din=`echo ${diagn} | tr ':' '\n' | grep ${vnS} | tr '|' ' ' | awk '{print $2}'`
+      echo "    "${vnS}" - "${din}
 
-      ofig=${odir}/${vn}ymon-anom_${gcm}_${rcm}_SN.png
+      ofig=${odir}/${din}ymon-anom_${gcm}_${rcm}_SN.png
       if ${gscratch}; then rm ${ofig}; fi
       if test ! -f ${ofig}; then
+	echo "  plotting '"${ofig}"' ..."
         python3 tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
         if test $? -ne 0; then
           echo ${errmsg}
           echo "  python failed !!"
           echo tamon_pressure_ver.py -d ${dom} -c ${cityS} -g ${gcm} -r ${rcm} -v no
         fi
+	#exit
       fi
     fi
 

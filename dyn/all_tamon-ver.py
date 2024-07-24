@@ -35,7 +35,7 @@ import drawing_tools as drw
 import generic_tools as gen
 
 fscratch = False
-gscratch = True
+gscratch = False
 
 ifxfold = '/datos/MOD/CORDEX/CMIP5'
 ifold = '/home/lluis.fita/process/mod/CORDEX-CORE/urban'
@@ -76,6 +76,16 @@ varn = 'tah'
 
 # Amount of extreme cities to plot 
 Ncityxtrm = 7
+
+# CORDEX article cities
+#cdxcities='cat CORDEX-CORE-WG/selected_cities.yaml | grep - | tr ' ' '!' | tr '#' ' ' | awk '{print $1}' | tr '-' ' ' | awk '{print $2}' | tr -s '!!!!!' '!'  | tr '\n' ':' | sed 's/!:!/:/g' | sed 's/!:/:/g' | sed 's/!C/C/g'`
+#cdxcities = Cairo:Lagos:Johannesburg:Luanda:Khartoum:Sydney:Melbourne:MexicoCity:Moscow:Tashkent:Tehran:Dhaka:Beijing:Tokyo:Chengdu:Seoul:Shanghai:Paris:London:Istanbul:Berlin:Naples:New!York:Chicago:Los!Angeles:Montreal:Buenos!Aires:Lima:São!Paulo:Santiago:Bogota:Jakarta:QuezonCity![Manila]:Singapore:Mumbai:Riyadh:Delhi![New!Delhi]:Baghdad
+cdxcities=['Cairo', 'Lagos', 'Johannesburg', 'Luanda', 'Khartoum', 'Sydney',         \
+  'Melbourne', 'Mexico_City', 'Moscow', 'Tashkent', 'Tehran', 'Dhaka', 'Beijing',    \
+  'Tokyo', 'Chengdu', 'Seoul', 'Shanghai', 'Paris', 'London', 'Istanbul', 'Berlin',  \
+  'Naples', 'New_York', 'Chicago', 'Los_Angeles', 'Montreal', 'Buenos_Aires', 'Lima',\
+  'São!Paulo', 'Santiago', 'Bogota', 'Jakarta', 'QuezonCity_[Manila]', 'Singapore',  \
+  'Mumbai', 'Riyadh', 'Delhi_[New_Delhi]', 'Baghdad']
 
 #######    #######
 ## MAIN
@@ -122,6 +132,8 @@ if not os.path.isfile(allfilen):
         if fn.count('None') != 0: continue
         dom = filen.split('/')[1]
         cityn = filen.split('/')[2]
+
+        #if not gen.searchInlist(cdxcities, cityn): continue
     
         if dom == 'EUR-11': Ncit11 = Ncit11 + 1
         else:Ncit22 = Ncit22 + 1
@@ -279,12 +291,12 @@ if not os.path.isfile(allfilen):
 
     dimn11 = ('cit11', 'mon', 'pres')
     newvarvalsm11 = onewnc.createVariable(varn + '11mean', 'f', dimn11)
-    newattr=ncvar.basicvardef(newvarvalsm11, varn + 'mean', 'Mean potential temperature',\
+    newattr=ncvar.basicvardef(newvarvalsm11, varn+'mean', 'Mean potential temperature',\
       'K')
 
     dimn22 = ('cit22', 'mon', 'pres')
     newvarvalsm22 = onewnc.createVariable(varn + '22mean', 'f', dimn22)
-    newattr=ncvar.basicvardef(newvarvalsm22, varn + 'mean', 'Mean potential temperature',\
+    newattr=ncvar.basicvardef(newvarvalsm22, varn+'mean', 'Mean potential temperature',\
       'K')
 
     dimn11 = ('cit11', 'mon', 'pres', 'lat11', 'lon11')
@@ -356,6 +368,9 @@ if not os.path.isfile(allfilen):
         for levv in rlevs:       
             lev = str(levv)
             filen = dom +'/'+ cityn +'/ta'+ lev +'_'+ gcm +'_'+ rcm + '_ymonmean.nc'
+            if not os.path.isfile(filen): 
+                print ("  No file '" + filen + "' !!")
+                continue
             onc = NetCDFFile(filen, 'r')
 
             ncvar.check_varInfile('main', filen, onc, 'ta' + str(lev)+'cyclemean')
@@ -387,6 +402,11 @@ if not os.path.isfile(allfilen):
                 # Getting orography
                 orogfiles = gen.files_folder_HMT(folder=fxfoldn, head='*/fx/orog/',  \
                   middle='orog', tail='nc', rmfolder=False)
+                Norog = len(orogfiles)
+                print ('Norog: ', Norog, orogfiles)
+                if Norog < 2:
+                    print ('No orography file !!')
+                    continue
                 orogfn = orogfiles[0][1:len(orogfiles[0])]
                 oncorog = NetCDFFile(orogfn, 'r')
                 oorog = oncorog.variables['orog']
@@ -414,7 +434,7 @@ if not os.path.isfile(allfilen):
         # end of levels
    
         # Computing anomalies
-        valanom = values[:,0:2,:,:].mean(axis=(2,3))
+        valanom = values[:,0:2,:,:].sum(axis=(2,3))
 
         # FROM: https://en.wikipedia.org/wiki/Pressure_altitude
         fac1 = 1013.25
@@ -429,10 +449,10 @@ if not os.path.isfile(allfilen):
                 mat = values[it,iz,:,:] - valanom[it,iz]
                 avals[it,iz,:,:] = ma.array(mat, mask=topo < presv)
             
-        allamean = avals.mean(axis=(1,2,3))
-        levamean = avals.mean(axis=(2,3))
+        allasum = avals.sum(axis=(1,2,3))
+        levasum = avals.sum(axis=(2,3))
     
-        dicv = dicv + [values] + [avals] + [allamean] + [levamean]
+        dicv = dicv + [values] + [avals] + [allasum] + [levasum]
     
         cities[citygr] = dicv
 
@@ -522,10 +542,10 @@ for icit in range(Ncitygr):
         if drg.mask[0]: continue
 
     if drg[0] != -9:
-        meanv = newvarvaluesa11[drg[0],:,:,:,:]
+        sumv = newvarvaluesa11[drg[0],:,:,:,:]
         orog = newvarorog11[drg[0],:,:]
     else:
-        meanv = newvarvaluesa22[drg[1],:,:,:,:]
+        sumv = newvarvaluesa22[drg[1],:,:,:,:]
         orog = newvarorog22[drg[1],:,:]
             
     domS = gen.byte_String(newvardom[drg[2],:])
@@ -554,12 +574,12 @@ for icit in range(Ncitygr):
         ifig = 1
         ax = plt.subplot(Nrow,Ncol,ifig)
 
-        allmean = meanv.sum(axis=(1,2,3))
-        xv = list(allmean[:]) + [allmean[0]]
-        yv = list(allmean[1:12])+list(allmean[0:2])
+        allsum = sumv.sum(axis=(1,2,3))
+        xv = list(allsum[:]) + [allsum[0]]
+        yv = list(allsum[1:12])+list(allsum[0:2])
         
-        ann = allmean.min()
-        anx = allmean.max()
+        ann = allsum.min()
+        anx = allsum.max()
 #        for iz in range(meanv.shape[1]):
 #            for iy in range(meanv.shape[2]):
 #                for ix in range(meanv.shape[3]):
@@ -588,6 +608,7 @@ for icit in range(Ncitygr):
         ax.set_xlabel('month (it)')
         ax.set_ylabel('month (it+1)')
         ax.grid()
+        ax.set_aspect('equal')
 
         ax.set_title('urbdynmean anual cycle', fontsize=8)
         minv = gen.fillValueR
@@ -597,25 +618,25 @@ for icit in range(Ncitygr):
         ifig = 2
         ax = plt.subplot(Nrow,Ncol,ifig)
             
-        for iz in range(meanv.shape[1]):
+        for iz in range(sumv.shape[1]):
             if iz == 0:
                 color = '#AA0000'
             else:
                 color = '#0000AA'
-            for iy in range(meanv.shape[2]):
-                for ix in range(meanv.shape[3]):
-                    ann = meanv[:,iz,iy,ix].min()
-                    anx = meanv[:,iz,iy,ix].max()
+            for iy in range(sumv.shape[2]):
+                for ix in range(sumv.shape[3]):
+                    ann = sumv[:,iz,iy,ix].min()
+                    anx = sumv[:,iz,iy,ix].max()
                     if ann < minv: minv = ann
                     if anx > maxv: maxv = anx
                     if iy == 0 and ix == 0:
                         presS = str(int(pres[iz]/100.)) + ' hPa'
-                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color,\
+                        il = ax.plot(range(12), sumv[:,iz,iy,ix], '-x', color=color, \
                           linewidth=0.5, label=presS)
                     else:
-                        il = ax.plot(range(12), meanv[:,iz,iy,ix], '-x', color=color,\
+                        il = ax.plot(range(12), sumv[:,iz,iy,ix], '-x', color=color, \
                           linewidth=0.5)
-        il = ax.plot(range(12), allmean, '-x', color='black', label='sum')
+        il = ax.plot(range(12), allsum, '-x', color='black', label='sum')
     
         xtrm = np.max([np.abs(minv), maxv])
 
@@ -634,9 +655,10 @@ for icit in range(Ncitygr):
 
         ax.legend()
         ax.grid()
+        ax.set_aspect('equal')
 
-        ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
-          str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
+        ax.set_title('urbdyn(i,j,k) [' + str(sumv.shape[2]) + 'x' +                  \
+          str(sumv.shape[2]) +  '] anual cycle', fontsize=8)
 
         # Giving standard deviation of orography
         labS = '$\sigma_{orog} =$ ' + str(orog.std()) + ' $m$'
@@ -688,7 +710,7 @@ for cityn in lcities:
         minv = gen.fillValueR
         maxv = -gen.fillValueR
         
-        allmeanv = np.full((12,Ncityvalues), gen.fillValueR)
+        allsumv = np.full((12,Ncityvalues), gen.fillValueR)
 
         fig, axmat = plt.subplots(Nrow,Ncol)
      
@@ -705,10 +727,10 @@ for cityn in lcities:
                 if drg.mask[0]: continue
 
             if drg[0] != -9:
-                meanv = newvarvaluesa11[drg[0],:,:,:,:]
+                sumv = newvarvaluesa11[drg[0],:,:,:,:]
                 orog = newvarorog11[drg[0],:,:]
             else:
-                meanv = newvarvaluesa22[drg[1],:,:,:,:]
+                sumv = newvarvaluesa22[drg[1],:,:,:,:]
                 orog = newvarorog22[drg[1],:,:]
 
             domS = gen.byte_String(newvardom[drg[2],:])
@@ -722,25 +744,28 @@ for cityn in lcities:
                 citygS = citynS + ''
             citygS = citygS.replace('_',' ')
     
-            allmean = meanv.sum(axis=(1,2,3))
-            xv = list(allmean[:]) + [allmean[0]]
-            yv = list(allmean[1:12])+list(allmean[0:2])
-            allmeanv[:,ivvc] = allmean
+            allsum = sumv.sum(axis=(1,2,3))
+            xv = list(allsum[:]) + [allsum[0]]
+            yv = list(allsum[1:12])+list(allsum[0:2])
+            allsumv[:,ivvc] = allsum
             
-            ann = allmean.min()    
-            anx = allmean.max()
+            ann = allsum.min()    
+            anx = allsum.max()
             colv = drw.colorsauto[drg[3]+1]
             markv = drw.pointkindsauto[drg[4]+1]
-            labS = gcmS + ' ' + rcmS
+            #labS = gcmS + ' ' + rcmS
+            #labS = 'gcm$^{' + str(drg[3])+ '}$, rcm$^{'+ str(drg[4]) +'}$'
+            labS = str(drg[3])+ ', '+ str(drg[4])
             if debug: print ('        ' + labS + ':',colv, markv, '<>', ann, anx)
-            il = ax.plot(xv, yv, '-', color=colv, marker=markv, label=labS)
+            il = ax.plot(xv, yv, '-', color=colv, marker=markv, linewidth=0.75,      \
+              label=labS)
             if ann < minv: minv = ann
             if anx > maxv: maxv = anx
 
-            if ivvc == 2: break
+            #if ivvc == 2: break
 
-        allmeanv = ma.masked_equal(allmeanv, gen.fillValueR)
-        allmv = allmeanv.mean(axis=1)
+        allsumv = ma.masked_equal(allsumv, gen.fillValueR)
+        allmv = allsumv.mean(axis=1)
         xv = list(allmv[:]) + [allmv[0]]
         yv = list(allmv[1:12])+list(allmv[0:2])
 
@@ -760,6 +785,7 @@ for cityn in lcities:
         ax.set_xlabel('month (it)')
         ax.set_ylabel('month (it+1)')
         ax.grid()
+        ax.set_aspect('equal')
         ax.legend(ncol=1, fontsize=6)
     
         ax.set_title('urbdynmean anual cycle', fontsize=8)
@@ -780,21 +806,22 @@ for cityn in lcities:
                 if drg.mask[0]: continue
 
             if drg[0] != -9:
-                meanv = newvarvaluesa11[drg[0],:,:,:,:]
+                sumv = newvarvaluesa11[drg[0],:,:,:,:]
                 orog = newvarorog11[drg[0],:,:]
             else:
-                meanv = newvarvaluesa22[drg[1],:,:,:,:]
+                sumv = newvarvaluesa22[drg[1],:,:,:,:]
                 orog = newvarorog22[drg[1],:,:]
 
-            allmean = meanv.sum(axis=(1,2,3))
-            ann = allmean.min()
-            anx = allmean.max()
+            allsum = sumv.sum(axis=(1,2,3))
+            ann = allsum.min()
+            anx = allsum.max()
 
             colv = drw.colorsauto[drg[3]+1]
             markv = drw.pointkindsauto[drg[4]+1]
-            labS = gcmS + ' ' + rcmS
-            il = ax.plot(range(12), allmean, '-', color=colv, marker=markv,          \
-              linewidth=0.5, label=labS)
+            #labS = gcmS + ' ' + rcmS
+            labS = 'gcm$^{' + str(drg[3])+ '}$, rcm^{'+ str(drg[4]) +'}$'
+            il = ax.plot(range(12), allsum, '-', color=colv, marker=markv,           \
+              linewidth=0.75, label=labS)
             if ann < minv: minv = ann
             if anx > maxv: maxv = anx
         
@@ -820,8 +847,8 @@ for cityn in lcities:
         ax.grid()
         #ax.legend()
     
-        ax.set_title('urbdyn(i,j,k) [' + str(meanv.shape[2]) + 'x' +                 \
-          str(meanv.shape[2]) +  '] anual cycle', fontsize=8)
+        ax.set_title('urbdyn(i,j,k) [' + str(sumv.shape[2]) + 'x' +                  \
+          str(sumv.shape[2]) +  '] anual cycle', fontsize=8)
         
         # Giving standard deviation of orography
         labS = '$\sigma_{orog} =$ ' + str(orog.std()) + ' $m$'
@@ -870,10 +897,10 @@ if not os.path.isfile(ofignS):
             if drg.mask[0]: continue
 
         if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            sumv = newvarvaluesa11[drg[0],:,:,:,:]
             orog = newvarorog11[drg[0],:,:]
         else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            sumv = newvarvaluesa22[drg[1],:,:,:,:]
             orog = newvarorog22[drg[1],:,:]
 
         # Masking topography points
@@ -889,19 +916,19 @@ if not os.path.isfile(ofignS):
         rcmS = gen.byte_String(newvarrcm[drg[4],:])
         cityndrg = citynS + '_' + gcmS + '_' + rcmS
             
-        allmean = meanv.sum(axis=(1,2,3))
-        xv = list(allmean[:]) + [allmean[0]]
-        yv = list(allmean[1:12])+list(allmean[0:2])
+        allsum = sumv.sum(axis=(1,2,3))
+        xv = list(allsum[:]) + [allsum[0]]
+        yv = list(allsum[1:12])+list(allsum[0:2])
 
-        ann = allmean.min()
-        anx = allmean.max()
+        ann = allsum.min()
+        anx = allsum.max()
         if anx > 1.e5: 
             print (errormsg)
             print ('  too largemaximum !!', cityndrg)
-            for it in range(meanv.shape[0]):
-                for iz in range(meanv.shape[1]):
+            for it in range(sumv.shape[0]):
+                for iz in range(sumv.shape[1]):
                     print (it,iz,' ________')
-                    print (meanv[it,iz,:,:])
+                    print (sumv[it,iz,:,:])
 
         if icit == Ncitygr-1:
             il = ax.plot(xv, yv, '-x', color='black')
@@ -957,13 +984,13 @@ if not os.path.isfile(ofignS):
             if drg.mask[0]: continue
 
         if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            sumv = newvarvaluesa11[drg[0],:,:,:,:]
         else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            sumv = newvarvaluesa22[drg[1],:,:,:,:]
             
-        allmean = meanv.sum(axis=(1,2,3))
-        xv = list(allmean[:]) + [allmean[0]]
-        yv = list(allmean[1:12])+list(allmean[0:2])
+        allsum = sumv.sum(axis=(1,2,3))
+        xv = list(allsum[:]) + [allsum[0]]
+        yv = list(allsum[1:12])+list(allsum[0:2])
 
         colv = drw.colorsauto[iivv]
         il = ax.plot(xv, yv, '-x', color=colv, label=citygS)
@@ -982,6 +1009,7 @@ if not os.path.isfile(ofignS):
     ax.set_xlabel('month (it)')
     ax.set_ylabel('month (it+1)')
     ax.grid()
+    ax.set_aspect('equal')
     ax.legend(ncol=2, fontsize=6)
 
     ax.set_title('anual cycle')
@@ -1001,20 +1029,20 @@ if not os.path.isfile(ofignS):
             if drg.mask[0]: continue
 
         if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            sumv = newvarvaluesa11[drg[0],:,:,:,:]
             orog = newvarorog11[drg[0],:,:]
         else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            sumv = newvarvaluesa22[drg[1],:,:,:,:]
             orog = newvarorog22[drg[1],:,:]
 
         # Masking topography points
         if np.any(orog.std() > 50.): continue
             
-        allmean = meanv.sum(axis=(1,2,3))
+        allsum = sumv.sum(axis=(1,2,3))
 
-        ann = allmean.min()
-        anx = allmean.max()
-        il = ax.plot(range(12), allmean, '-x', color='gray')   
+        ann = allsum.min()
+        anx = allsum.max()
+        il = ax.plot(range(12), allsum, '-x', color='gray')   
     
     # re-Plotting first cities from cityxtrms
     dicv = cityxtrms.cols[1]
@@ -1040,14 +1068,14 @@ if not os.path.isfile(ofignS):
             if drg.mask[0]: continue
 
         if drg[0] != -9:
-            meanv = newvarvaluesa11[drg[0],:,:,:,:]
+            sumv = newvarvaluesa11[drg[0],:,:,:,:]
         else:
-            meanv = newvarvaluesa22[drg[1],:,:,:,:]
+            sumv = newvarvaluesa22[drg[1],:,:,:,:]
 
-        allmean = meanv.sum(axis=(1,2,3))
+        allsum = sumv.sum(axis=(1,2,3))
 
         colv = drw.colorsauto[iivv]
-        il = ax.plot(range(12), allmean, '-x', color=colv, label=citygS)
+        il = ax.plot(range(12), allsum, '-x', color=colv, label=citygS)
         iivv = iivv + 1
         if iivv > Ncityxtrm: break
 
@@ -1064,7 +1092,8 @@ if not os.path.isfile(ofignS):
     ax.set_xlabel('month (it)')
     ax.set_ylabel('anomaly (' + gen.units_lunits(varu) + ')')
     
-    ax.grid()
+    ax.grid()  
+    ax.set_aspect('equal')
     #ax.legend()
     
     ax.set_title('urbdyn(i,j,k) anual cycle', fontsize=8)
