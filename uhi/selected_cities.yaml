@@ -64,6 +64,7 @@ Melbourne:
     lon: 144.96
     lat: -37.81
     domain: AUS-22
+    min_city_size: 2
     comment: >
         To replace Brisbane, as Melbourne is bigger & has flux tower
 
@@ -84,7 +85,7 @@ Moscow:
     lon: 37.62
     lat: 55.75
     urban_th : 0.4
-    urban_sur_th : 0.2
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Tashkent:
@@ -95,6 +96,7 @@ Tashkent:
     lon: 69.24
     lat: 41.31
     domain: WAS-22
+    min_city_size: 2
     comment: >
         close to domain center
 
@@ -106,6 +108,7 @@ Tehran:
     lon: 51.42
     lat: 35.69
     domain: WAS-22
+    min_city_size: 2
 
 Dhaka:
     name: Dhaka
@@ -126,6 +129,7 @@ Beijing:
     lon: 116.41
     lat: 39.90
     domain: EAS-22
+    min_city_size: 2
 
 Tokyo:
     name: Tokyo
@@ -209,8 +213,6 @@ Berlin:
     lat: 52.4683
     urban_th : 0.4
     urban_sur_th : 0.1
-    lon_lim : 0.75
-    lat_lim : 0.75
     domain: EUR-11
 
 Naples:
@@ -221,9 +223,7 @@ Naples:
     lon: 14.27
     lat: 40.85
     urban_th : 0.4
-    urban_sur_th : 0.4
-    lon_lim : 0.75
-    lat_lim : 0.75
+    urban_sur_th : 0.1
     domain: EUR-11
 
 Barcelona:
@@ -257,8 +257,6 @@ Prague:
     lat: 50.08
     urban_th : 0.4
     urban_sur_th : 0.1
-    lon_lim : 0.6
-    lat_lim : 0.6
     domain: EUR-11
 
 Manila:
@@ -278,6 +276,8 @@ Mumbai:
     lon: 72.82
     lat: 18.96
     domain: WAS-22
+    min_city_size: 2
+
 
 NewYork:
     name: New York
@@ -287,6 +287,7 @@ NewYork:
     lon: -74.2261
     lat: 40.8858
     domain: NAM-22
+    min_city_size: 6
 
 BuenosAires:
     name: Buenos Aires
@@ -304,7 +305,9 @@ SaoPaulo:
     mountain: False
     lon: -46.633
     lat: -23.550
-    domain: SAM-22
+    domain: SAM-22    
+    min_city_size: 3
+    
 
 LosAngeles:
     name: Los Angeles
@@ -314,6 +317,7 @@ LosAngeles:
     lon: -118.24
     lat: 34.05
     domain: NAM-22
+    min_city_size: 2
 
 Singapore:
     name: Singapore
@@ -359,7 +363,8 @@ Chicago:
     lon: -87.55
     lat: 41.73
     domain: NAM-22
-
+    min_city_size: 3
+    
 Montreal:
     name: Montreal
     ktype: Dfb
@@ -368,6 +373,7 @@ Montreal:
     lon: -73.56
     lat: 45.50
     domain: NAM-22
+    min_city_size: 2
 
 Lima:
     name: Lima
