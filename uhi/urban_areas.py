@@ -541,7 +541,7 @@ class Urban_vicinity:
         proj = ccrs.PlateCarree()
         fig, axes = plt.subplots(2, 3, subplot_kw={'projection': proj}, figsize=(20, 10))
 
-        vmax_urb = np.nanmax(abs(ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan).values))
+        vmax_urb = 0.6
                         
         im1 = axes[0, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
                                     ds_sftuf["sftuf"].values,
