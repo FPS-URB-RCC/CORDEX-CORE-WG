@@ -44,18 +44,32 @@ def get_ghcnd_df(code):
     '''
     baseurl = '/lustre/gmeteo/WORK/WWW/chus/ghcnd/data'
     try:
-      rval = pd.read_csv(f'{baseurl}/{code[0]}/{code}.csv.gz',
-        compression = 'gzip',
-        index_col = 'DATE',
-        parse_dates = True,
-        low_memory = False # Avoid warning on mixed dtypes for some (unused) columns
-      )
+        # Attempt to load the compressed file from the original location
+        rval = pd.read_csv(f'{baseurl}/{code[0]}/{code}.csv.gz',
+                           compression='gzip',
+                           index_col='DATE',
+                           parse_dates=True,
+                           low_memory=False  # Avoid warnings for mixed data types in some columns
+                           )
     except:
-      print(f'Problem downloading {code}')
-      rval = pd.DataFrame()
-    return(rval)
+       try:
+            # Load the combined_temp_data.csv file
+            file_path = '/oceano/gmeteo/users/quintanay/CORDEX-CORE-WG/uhi/PARIS_surface_weather_data/combined_temp_data.csv'
+            combined_data = pd.read_csv(file_path)
 
-def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_threshold=0.8, idate='1979-01-01', fdate='2014-12-31',var_map=var_map):
+            # Filter the data by the station code
+            rval = combined_data[combined_data['code'] == int(code)]
+            rval = rval.set_index('DATE')
+
+            # Raise an error if no data is found for the station code
+       except Exception as e:
+            # Handle any errors during the second attempt
+            print(f"Error loading data for {code}: {e}")
+            rval = pd.DataFrame()  # Return an empty DataFrame if everything fails
+
+    return rval
+
+def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_threshold=0.8, idate='1979-01-01', fdate='2014-12-31',var_map=var_map, divide=10.0):
     '''
     Retrieves valid time series data for a specific variable from GHCND stations for a given city.
 
@@ -89,7 +103,8 @@ def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_thre
             if valid_records > valid_threshold:
                 print(f'{city} -- {stn_data.NAME[0]} - {var} has {100*valid_records:.1f}% valid records in {idate} to {fdate}')
                 valid_codes.append(stn_code)
-                valid_time_series.append({'data':stn_data[var].loc[period]/10.0,'code':stn_code})
+                valid_time_series.append({'data':stn_data[var].loc[period]/divide,'code':stn_code})
+
     #convert list in a dataframe
     if valid_time_series:
         for n_s, serie in enumerate(valid_time_series):
@@ -99,7 +114,11 @@ def get_valid_timeseries(city, stations, ds_var, variable = 'tasmin', valid_thre
                         index = pd.date_range(period.start, period.stop, 
                         freq = freq)
                     )
+            serie['data'].index = pd.to_datetime(serie['data'].index)
+
+            serie['data'] = serie['data'].reindex(df_time_series_obs.index)
             df_time_series_obs[serie['code']] = serie['data']
+
     else:
         df_time_series_obs = valid_time_series
         
