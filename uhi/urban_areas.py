@@ -4,6 +4,7 @@ import geopandas as gpd
 import glob
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import os
 import xarray as xr
 from icecream import ic
@@ -12,6 +13,9 @@ from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.morphology import dilation, square, remove_small_objects
 from utils import RCM_DICT, MODEL_DICT
+
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
 def traverseDir(root):
     for (dirpath, dirnames, filenames) in os.walk(root):
@@ -165,7 +169,7 @@ def fix_sftuf(
         
     return ds_sftuf
 
-def load_fix_variables(domain, model, root_esgf, root_nextcloud):
+def load_fix_variables(domain, model, root_esgf, root_nextcloud, urban_var):
     """
     Load fix variable data files for a specific domain and model from given root directories.
 
@@ -174,13 +178,14 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud):
     model (str): The model identifier (e.g., 'modelA').
     root_esgf (str): The root directory for ESGF data.
     root_nextcloud (str): The root directory for Nextcloud data.
+    urban_var (str): Urban variable (sfturf/sftimf)
 
     Returns:
     tuple: A tuple containing datasets for sftuf, orog, and sftlf.
     """
     # find fixed files
     file_sftuf = glob.glob(
-            f"{root_nextcloud}{model}/urbanfraction/{MODEL_DICT[model]['sftuf']}/{domain}*.nc" 
+            f"{root_nextcloud}{model}/{urban_var}/{urban_var}_{domain}*.nc" 
     )
     
     if domain in ["NAM-22"]: #nextcloud
@@ -217,7 +222,7 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud):
 
 class Urban_vicinity:
     def __init__(self, urban_th = 0.1, urban_sur_th = 0.1, orog_diff = 100, sftlf_th = 70,
-                 scale = 4, min_city_size = 0, lon_city = None, lat_city = None, 
+                 scale = 4, min_city_size = 0, urban_var = None, lon_city = None, lat_city = None, 
                  lon_lim = None, lat_lim = None,
                  model = None, domain = None):
                      
@@ -227,6 +232,7 @@ class Urban_vicinity:
         self.sftlf_th = sftlf_th
         self.scale = scale
         self.min_city_size = min_city_size
+        self.urban_var = urban_var
         self.lon_city = lon_city
         self.lat_city = lat_city
         self.lon_lim = lon_lim
@@ -303,15 +309,15 @@ class Urban_vicinity:
             Binary mask indicating sea areas.
         """
         # sftuf
-        sftuf_mask = ds_sftuf["sftuf"] > self.urban_th
+        sftuf_mask = ds_sftuf[self.urban_var] > self.urban_th
         # Remove small objects
         sftuf_mask_rem_small = remove_small_objects(sftuf_mask.values.astype(bool), 
                                                     min_size = self.min_city_size)
         sftuf_mask.data = sftuf_mask_rem_small
-        deleted_small = ~sftuf_mask_rem_small*(ds_sftuf["sftuf"] > self.urban_th)
+        deleted_small = ~sftuf_mask_rem_small*(ds_sftuf[self.urban_var] > self.urban_th)
         # Calculate surrounding mask and delete small objects from it
-        sftuf_sur_mask_1 = ds_sftuf["sftuf"] <= self.urban_th
-        sftuf_sur_mask_2 = ds_sftuf["sftuf"] > self.urban_sur_th
+        sftuf_sur_mask_1 = ds_sftuf[self.urban_var] <= self.urban_th
+        sftuf_sur_mask_2 = ds_sftuf[self.urban_var] > self.urban_sur_th
         sftuf_sur_mask_th = sftuf_sur_mask_1*sftuf_sur_mask_2
         sftuf_sur_mask = xr.where(deleted_small, True, sftuf_sur_mask_th)
         # orog
@@ -426,6 +432,50 @@ class Urban_vicinity:
         urban_area = Urban_vicinity.netcdf_attrs(self, urban_area)
         
         return urban_area
+
+    def plot_urban_polygon(self, ds, ax):
+        '''
+        '''
+        # Assume the mask is in the 'urmask' variable
+        mask = ds['urmask']
+        lon2d = mask.lon.values
+        lat2d = mask.lat.values
+        dist_lat = abs(lat2d[1, 0] - lat2d[0, 0])/2
+        dist_lon = abs(lon2d[0, 1] - lon2d[0, 0])/2
+        
+        # Create lists to store polygons for urban areas (mask == 1) and non-urban areas (mask == 0)
+        urban_polygons = []
+        non_urban_polygons = []
+        # Iterate through the mask and generate polygons for urban (1) and non-urban (0) cells
+        for lat in range(mask.shape[0] - 1):  # Avoid the last index to prevent out-of-bounds errors
+            for lon in range(mask.shape[1] - 1):
+                # Create a polygon using the 2D lat/lon coordinates of the cell corners
+                if pd.isnull(mask.lon[lat, lon]): # If cell contains nans continue
+                    continue
+                square = Polygon([
+                    (mask.lon[lat, lon] - dist_lon, mask.lat[lat, lon] - dist_lat),          # bottom-left corner
+                    (mask.lon[lat, lon + 1] - dist_lon, mask.lat[lat, lon + 1] - dist_lat),  # bottom-right corner
+                    (mask.lon[lat + 1, lon + 1] - dist_lon, mask.lat[lat + 1, lon + 1] - dist_lat),  # top-right corner
+                    (mask.lon[lat + 1, lon] - dist_lon, mask.lat[lat + 1, lon] - dist_lat),  # top-left corner
+                ])
+                # Add the polygon to the corresponding list
+                if mask[lat, lon] == 1:
+                    urban_polygons.append(square)
+                elif mask[lat, lon] == 0:
+                    non_urban_polygons.append(square)
+        # Unite all adjacent polygons for urban (mask == 1) and non-urban (mask == 0)
+        unified_urban_polygon = unary_union(urban_polygons)
+        unified_non_urban_polygon = unary_union(non_urban_polygons)
+        # Create GeoDataFrames for the urban and non-urban polygons
+        # CRS 'EPSG:4326' specifies the WGS 84 coordinate system, which is widely used for global GPS coordinates (lat/lon)
+        gdf_urban = gpd.GeoDataFrame(geometry=[unified_urban_polygon])
+        gdf_non_urban = gpd.GeoDataFrame(geometry=[unified_non_urban_polygon])
+        # Plot the boundary of the unified non-urban polygon (in blue)
+        gdf_non_urban.boundary.plot(ax=ax,color='b', zorder=1, linewidth=2)
+        # Plot the boundary of the unified urban polygon (in red) on top of the non-urban
+        gdf_urban.boundary.plot(ax=ax,  color='red', zorder=100, linewidth=2)
+
+        return(gdf_urban, gdf_non_urban)
     
     def plot_urban_borders(self, ds, ax):
         """
@@ -541,10 +591,10 @@ class Urban_vicinity:
         proj = ccrs.PlateCarree()
         fig, axes = plt.subplots(2, 3, subplot_kw={'projection': proj}, figsize=(20, 10))
 
-        vmax_urb = 0.6
+        vmax_urb = 100
                         
         im1 = axes[0, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
-                                    ds_sftuf["sftuf"].values,
+                                    ds_sftuf[self.urban_var].values,
                                     cmap='binary', vmin = 0, vmax = vmax_urb)
         fig.colorbar(im1, ax=axes[0, 0], orientation='vertical')
         axes[0, 0].set_title('Urban Fraction')
@@ -568,9 +618,9 @@ class Urban_vicinity:
         axes[0, 2].coastlines()
     
         # masks
-        vmax = np.nanmax(abs(ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan).values))
+        vmax = np.nanmax(abs(ds_sftuf[self.urban_var].where(sftuf_mask == 1, np.nan).values))
         im1 = axes[1, 0].pcolormesh(ds_sftuf.lon, ds_sftuf.lat,
-                                    ds_sftuf["sftuf"].where(sftuf_mask == 1, np.nan),
+                                    ds_sftuf[self.urban_var].where(sftuf_mask == 1, np.nan),
                                     cmap='binary', vmin = 0, vmax = vmax_urb)
         fig.colorbar(im1, ax=axes[1, 0], orientation='vertical')
         if not urban_areas:
@@ -600,7 +650,8 @@ class Urban_vicinity:
 
         if urban_areas:
             for k in range(3):
-                Urban_vicinity.plot_urban_borders(self, urban_areas, axes[1, k])
+                Urban_vicinity.plot_urban_polygon(self, urban_areas, axes[1, k])
+                #Urban_vicinity.plot_urban_borders(self, urban_areas, axes[1, k])
 
         plt.subplots_adjust(wspace=0.1, hspace=0.1)  # Adjust vertical and horizontal space
         return fig
