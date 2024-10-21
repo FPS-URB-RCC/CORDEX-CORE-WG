@@ -59,69 +59,16 @@ for city in cities:
     if len(glob.glob(f"{directory}/*.pdf")) == expected_figure_number:
         continue
 
-    # Skip specific domain/model combination if conditions are met
-    if domain == 'EUR-22' and model == 'RegCM':
-        ic()
-        continue
-    else:
-        try:
-            # Execute notebook using Papermill
-            pm.execute_notebook(
-                input_path=input_notebook,
-                output_path=output_notebook,
-                parameters=parameters,
-                kernel_name='python3'
-            )
-        except Exception as e:
-            # Handle errors by saving a failed version of the output notebook
-            output_notebook_failed = output_notebook.replace('.ipynb', f'_ERROR_{abbr_city}-{domain}_{model}.ipynb')
-            os.system(f'cp {output_notebook} {output_notebook_failed}')
-            print(f'Error executing notebook: {e}')
-
-# Generate EUR-22 counterpart for REMO EUR-11 simulations (RegCM4 not available)
-for urban_var in ["sfturf", "sftimf"]:
-    for city in cities:
-        if cities[city]['domain'] != 'EUR-11':
-            continue
-        
-        abbr_city = city
-        long_city = cities[city]['name']
-        model = 'REMO'
-        domain = 'EUR-22'
-
-        # Generate parameters for the current city
-        parameters = {
-            'abbr_city': city.split('_')[0],
-            'lon_city': cities[city]['lon'],
-            'lat_city': cities[city]['lat'],
-            'domain': domain,     
-            'variable': variable,
-            'urban_th': cities[city].get('urban_th', default_urban_th),
-            'urban_sur_th': cities[city].get('urban_sur_th', default_urban_sur_th),
-            'lon_lim': cities[city].get('lon_lim', default_lon_lim),
-            'lat_lim': cities[city].get('lat_lim', default_lat_lim),
-            'min_city_size': cities[city].get('min_city_size', default_min_city_size),
-        }
-
-        model_str = 'GERICS_REMO2015'
-        ic(city, model, cities[city]['domain'])
-
-        # Update directory for the results
-        directory = f"results/{urban_var}_{abbr_city}-{domain}_{model_str}"
-        if len(glob.glob(f"{directory}/*.pdf")) == expected_figure_number:
-            continue
-        else:
-            try:
-                # Execute notebook using Papermill
-                pm.execute_notebook(
-                    input_path=input_notebook,
-                    output_path=output_notebook,
-                    parameters=parameters,
-                    kernel_name='python3'
-                )
-            except:
-                # Handle errors by saving a failed version of the output notebook
-                output_notebook_failed = output_notebook.replace('.ipynb', f'_ERROR_{abbr_city}-{domain}_{model}.ipynb')
-                os.system(f'cp {output_notebook} {output_notebook_failed}')
-                print('error')
-
+    # Execute notebook using Papermill
+    try:
+        pm.execute_notebook(
+            input_path=input_notebook,
+            output_path=output_notebook,
+            parameters=parameters,
+            kernel_name='python3'
+        )
+    except Exception as e:
+        # Handle errors by saving a failed version of the output notebook
+        output_notebook_failed = output_notebook.replace('.ipynb', f'_ERROR_{abbr_city}-{domain}_{model}.ipynb')
+        os.system(f'cp {output_notebook} {output_notebook_failed}')
+        print(f'Error executing notebook: {e}')
