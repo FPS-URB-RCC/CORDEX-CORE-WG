@@ -1,4 +1,4 @@
-Cairo:
+Cairo_REMO_sftimf:
     name: Cairo
     ktype: Bwh
     coastal: False
@@ -7,9 +7,46 @@ Cairo:
     lat: 30.06
     domain: AFR-22
     comment: >
-        closet to mountain areas
+        closet to mountain areas. One urban cell
 
-Lagos:
+Cairo_REMO_sfturf:
+    name: Cairo
+    ktype: Bwh
+    coastal: False
+    mountain: True
+    lon: 31.25
+    lat: 30.06
+    domain: AFR-22
+    comment: >
+        closet to mountain areas. One urban cell
+
+Cairo_RegCM_sftimf:
+    name: Cairo
+    ktype: Bwh
+    coastal: False
+    mountain: True
+    lon: 31.25
+    lat: 30.06
+    domain: AFR-22
+    lon_lim : 1.5
+    lat_lim : 1.5
+    comment: >
+        closet to mountain areas. The limits for longitude and latitude differ due to an urban cell located at the boundary
+
+Cairo_RegCM_sfturf:
+    name: Cairo
+    ktype: Bwh
+    coastal: False
+    mountain: True
+    lon: 31.25
+    lat: 30.06
+    domain: AFR-22
+    lon_lim : 1.5
+    lat_lim : 1.5
+    comment: >
+        closet to mountain areas. The limits for longitude and latitude differ due to an urban cell located at the boundary
+
+Lagos_REMO_sftimf:
     name: Lagos
     ktype: Aw
     coastal: True
@@ -18,9 +55,42 @@ Lagos:
     lat: 6.52
     domain: AFR-22
     comment: >
-        smaller but monsoon
+        smaller but monsoon. No urban cells above 10%
 
-Johannesburg:
+Lagos_REMO_sfturf:
+    name: Lagos
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 3.38
+    lat: 6.52
+    domain: AFR-22
+    comment: >
+        smaller but monsoon.  No urban cells above 10%
+        
+Lagos_RegCM_sftimf:
+    name: Lagos
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 3.38
+    lat: 6.52
+    domain: AFR-22
+    comment: >
+        smaller but monsoon.  No urban cells above 10%
+
+Lagos_RegCM_sfturf:
+    name: Lagos
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 3.38
+    lat: 6.52
+    domain: AFR-22
+    comment: >
+        smaller but monsoon.  No urban cells above 10%
+
+Johannesburg_REMO_sftimf:
     name: Johannesburg
     ktype: Cwb
     coastal: False
@@ -28,8 +98,43 @@ Johannesburg:
     lon: 28.183
     lat: -25.733
     domain: AFR-22
+    comment: >
+        mountainous
+        
+Johannesburg_REMO_sfturf:
+    name: Johannesburg
+    ktype: Cwb
+    coastal: False
+    mountain: False
+    lon: 28.183
+    lat: -25.733
+    domain: AFR-22
+    comment: >
+        mountainous
 
-Luanda:
+Johannesburg_RegCM_sftimf:
+    name: Johannesburg
+    ktype: Cwb
+    coastal: False
+    mountain: False
+    lon: 28.183
+    lat: -25.733
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
+
+Johannesburg_RegCM_sfturf:
+    name: Johannesburg
+    ktype: Cwb
+    coastal: False
+    mountain: False
+    lon: 28.183
+    lat: -25.733
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
+    
+Luanda_REMO_sftimf:
     name: Luanda
     ktype: BSh
     coastal: True
@@ -37,8 +142,43 @@ Luanda:
     lon: 13.24
     lat: -8.81
     domain: AFR-22
+    comment: >
+        No urban cells above 10%
 
-Khartoum:
+Luanda_REMO_sfturf:
+    name: Luanda
+    ktype: BSh
+    coastal: True
+    mountain: False
+    lon: 13.24
+    lat: -8.81
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
+        
+Luanda_RegCM_sftimf:
+    name: Luanda
+    ktype: BSh
+    coastal: True
+    mountain: False
+    lon: 13.24
+    lat: -8.81
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%    
+
+Luanda_RegCM_sfturf:
+    name: Luanda
+    ktype: BSh
+    coastal: True
+    mountain: False
+    lon: 13.24
+    lat: -8.81
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
+
+Khartoum_REMO_sftimf:
     name: Khartoum
     ktype: BWh
     coastal: False
@@ -46,8 +186,43 @@ Khartoum:
     lon: 32.53
     lat: 15.58
     domain: AFR-22
+    comment: >
+        No urban cells above 10%
+        
+Khartoum_REMO_sfturf:
+    name: Khartoum
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 32.53
+    lat: 15.58
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
+        
+Khartoum_RegCM_sftimf:
+    name: Khartoum
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 32.53
+    lat: 15.58
+    domain: AFR-22
+    comment: >
+        No urban cells above 10%
 
-Sydney:
+Khartoum_RegCM_sfturf:
+    name: Khartoum
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 32.53
+    lat: 15.58
+    domain: AFR-22
+    comment: >
+        No urban cells above 10% 
+
+Sydney_REMO_sftimf:
     name: Sydney
     ktype: Cfa
     coastal: True
@@ -55,8 +230,43 @@ Sydney:
     lon: 151.01810
     lat: -33.79170
     domain: AUS-22
+    comment: >
+        near a mountain and coastal
 
-Melbourne:
+Sydney_REMO_sfturf:
+    name: Sydney
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 151.01810
+    lat: -33.79170
+    domain: AUS-22
+    comment: >
+        near a mountain and coastal
+
+Sydney_RegCM_sftimf:
+    name: Sydney
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 151.01810
+    lat: -33.79170
+    domain: AUS-22
+    comment: >
+        No urban cells above 10% 
+
+Sydney_RegCM_sfturf:
+    name: Sydney
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 151.01810
+    lat: -33.79170
+    domain: AUS-22
+    comment: >
+        No urban cells above 10%
+        
+Melbourne_REMO_sftimf:
     name: Melbourne
     ktype: Cfb
     coastal: True
@@ -66,9 +276,43 @@ Melbourne:
     domain: AUS-22
     min_city_size: 2
     comment: >
-        To replace Brisbane, as Melbourne is bigger & has flux tower
+        To replace Brisbane, as Melbourne is bigger & has flux tower. Coastal
 
-MexicoCity:
+Melbourne_REMO_sfturf:
+    name: Melbourne
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 144.96
+    lat: -37.81
+    domain: AUS-22
+    min_city_size: 2
+    comment: >
+        To replace Brisbane, as Melbourne is bigger & has flux tower. Coastal
+
+Melbourne_RegCM_sftimf:
+    name: Melbourne
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 144.96
+    lat: -37.81
+    domain: AUS-22
+    comment: >
+        To replace Brisbane, as Melbourne is bigger & has flux tower. No urban cells above 10%
+
+Melbourne_RegCM_sfturf:
+    name: Melbourne
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 144.96
+    lat: -37.81
+    domain: AUS-22
+    comment: >
+        To replace Brisbane, as Melbourne is bigger & has flux tower. No urban cells above 10%
+
+MexicoCity_REMO_sftimf:
     name: Mexico City
     ktype: None
     coastal: False
@@ -76,19 +320,142 @@ MexicoCity:
     lon: -99.0833
     lat: 19.4667
     domain: CAM-22
+    comment: >
+        mountainous
+        
+MexicoCity_REMO_sfturf:
+    name: Mexico City
+    ktype: None
+    coastal: False
+    mountain: True
+    lon: -99.0833
+    lat: 19.4667
+    domain: CAM-22
+    comment: >
+        mountainous
 
-Moscow:
+MexicoCity_RegCM_sftimf:
+    name: Mexico City
+    ktype: None
+    coastal: False
+    mountain: True
+    lon: -99.0833
+    lat: 19.4667
+    domain: CAM-22
+    comment: >
+        No urban cells above 10%
+
+MexicoCity_RegCM_sfturf:
+    name: Mexico City
+    ktype: None
+    coastal: False
+    mountain: True
+    lon: -99.0833
+    lat: 19.4667
+    domain: CAM-22
+    comment: >
+        No urban cells above 10%
+    
+Moscow_EUR-11_REMO_sftimf:
     name: Moscow
     ktype: Dfb
     coastal: False
     mountain: False
     lon: 37.62
     lat: 55.75
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
 
-Tashkent:
+        
+Moscow_EUR-11_REMO_sfturf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+
+    
+Moscow_EUR-11_RegCM_sftimf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+
+        
+Moscow_EUR-11_RegCM_sfturf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 40
+    urban_sur_th : 10
+    min_city_size : 2
+    domain: EUR-11
+
+Moscow_EUR-22_REMO_sftimf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+
+        
+Moscow_EUR-22_REMO_sfturf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+
+    
+Moscow_EUR-22_RegCM_sftimf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+
+        
+Moscow_EUR-22_RegCM_sfturf:
+    name: Moscow
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: 37.62
+    lat: 55.75
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+
+Tashkent_REMO_sftimf:
     name: Tashkent
     ktype: Csa
     coastal: False
@@ -96,11 +463,44 @@ Tashkent:
     lon: 69.24
     lat: 41.31
     domain: WAS-22
-    min_city_size: 2
     comment: >
-        close to domain center
+        close to domain center. Only 2 urban cells. Close to mountains.
 
-Tehran:
+Tashkent_REMO_sfturf:
+    name: Tashkent
+    ktype: Csa
+    coastal: False
+    mountain: False
+    lon: 69.24
+    lat: 41.31
+    domain: WAS-22
+    comment: >
+        close to domain center.  Only 2 urban cells. Close to mountains.
+
+
+Tashkent_RegCM_sftimf:
+    name: Tashkent
+    ktype: Csa
+    coastal: False
+    mountain: False
+    lon: 69.24
+    lat: 41.31
+    domain: WAS-22
+    comment: >
+        close to domain center. No urban cells above 10%
+
+Tashkent_RegCM_sfturf:
+    name: Tashkent
+    ktype: Csa
+    coastal: False
+    mountain: False
+    lon: 69.24
+    lat: 41.31
+    domain: WAS-22
+    comment: >
+        close to domain center. No urban cells above 10%
+
+Tehran_REMO_sftimf:
     name: Tehran
     ktype: BSk
     coastal: False
@@ -108,20 +508,87 @@ Tehran:
     lon: 51.42
     lat: 35.69
     domain: WAS-22
-    min_city_size: 2
+    comment: >
+        Only 2 urban cells. Close to mountains.
 
-Dhaka:
+Tehran_REMO_sfturf:
+    name: Tehran
+    ktype: BSk
+    coastal: False
+    mountain: False
+    lon: 51.42
+    lat: 35.69
+    domain: WAS-22
+    comment: >
+        Only 2 urban cells. Close to mountains.
+
+Tehran_RegCM_sftimf:
+    name: Tehran
+    ktype: BSk
+    coastal: False
+    mountain: False
+    lon: 51.42
+    lat: 35.69
+    domain: WAS-22
+    comment: >
+        No urban cells above 10%
+
+Tehran_RegCM_sfturf:
+    name: Tehran
+    ktype: BSk
+    coastal: False
+    mountain: False
+    lon: 51.42
+    lat: 35.69
+    domain: WAS-22
+    comment: >
+        No urban cells above 10%
+
+Dhaka_REMO_sftimf:
     name: Dhaka
     ktype: Aw
     coastal: True
     mountain: False
-    lon: 90.41
+    lon: 9401
     lat: 23.70
     domain: WAS-22
     comment: >
-        COASTAL INLAND Floodplain / Delta
+        No urban cells above 10%
 
-Beijing:
+Dhaka_REMO_sfturf:
+    name: Dhaka
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 9401
+    lat: 23.70
+    domain: WAS-22
+    comment: >
+         No urban cells above 10%
+
+Dhaka_RegCM_sftimf:
+    name: Dhaka
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 9401
+    lat: 23.70
+    domain: WAS-22
+    comment: >
+        No urban cells above 10%
+
+Dhaka_RegCM_sfturf:
+    name: Dhaka
+    ktype: Aw
+    coastal: True
+    mountain: False
+    lon: 9401
+    lat: 23.70
+    domain: WAS-22
+    comment: >
+        No urban cells above 10%
+        
+Beijing_REMO_sftimf:
     name: Beijing
     ktype: Cwa
     coastal: False
@@ -130,8 +597,44 @@ Beijing:
     lat: 39.90
     domain: EAS-22
     min_city_size: 2
+    comment: >
+        close to a mountain
 
-Tokyo:
+Beijing_REMO_sfturf:
+    name: Beijing
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 116.41
+    lat: 39.90
+    domain: EAS-22
+    min_city_size: 2
+    comment: >
+        close to a mountain
+
+Beijing_RegCM_sftimf:
+    name: Beijing
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 116.41
+    lat: 39.90
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+
+Beijing_RegCM_sfturf:
+    name: Beijing
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 116.41
+    lat: 39.90
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+    
+Tokyo_REMO_sftimf:
     name: Tokyo
     ktype: Cfa
     coastal: True
@@ -139,8 +642,43 @@ Tokyo:
     lon: 139.84
     lat: 35.65
     domain: EAS-22
-
-Chengdu:
+    comment: >
+        coastal
+        
+Tokyo_REMO_sfturf:
+    name: Tokyo
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 139.84
+    lat: 35.65
+    domain: EAS-22
+    comment: >
+        coastal
+        
+Tokyo_RegCM_sftimf:
+    name: Tokyo
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 139.84
+    lat: 35.65
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Tokyo_RegCM_sfturf:
+    name: Tokyo
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 139.84
+    lat: 35.65
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Chengdu_REMO_sftimf:
     name: Chengdu
     ktype: Cwa
     coastal: False
@@ -148,8 +686,43 @@ Chengdu:
     lon: 104.07
     lat: 30.67
     domain: EAS-22
+    comment: >
+        No urban cells above 10%
 
-Seoul:
+Chengdu_REMO_sfturf:
+    name: Chengdu
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 104.07
+    lat: 30.67
+    domain: EAS-22
+    comment: >
+        No urban cells above 10%
+        
+Chengdu_RegCM_sftimf:
+    name: Chengdu
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 104.07
+    lat: 30.67
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+        
+Chengdu_RegCM_sfturf:
+    name: Chengdu
+    ktype: Cwa
+    coastal: False
+    mountain: False
+    lon: 104.07
+    lat: 30.67
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Seoul_REMO_sftimf:
     name: Seoul
     ktype: Dwa
     coastal: True
@@ -157,8 +730,43 @@ Seoul:
     lon: 126.98
     lat: 37.57
     domain: EAS-22
-
-Shanghai:
+    comment: >
+        coastal
+       
+Seoul_REMO_sfturf:
+    name: Seoul
+    ktype: Dwa
+    coastal: True
+    mountain: False
+    lon: 126.98
+    lat: 37.57
+    domain: EAS-22
+    comment: >
+        coastal
+        
+Seoul_RegCM_sftimf:
+    name: Seoul
+    ktype: Dwa
+    coastal: True
+    mountain: False
+    lon: 126.98
+    lat: 37.57
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Seoul_RegCM_sfturf:
+    name: Seoul
+    ktype: Dwa
+    coastal: True
+    mountain: False
+    lon: 126.98
+    lat: 37.57
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Shanghai_REMO_sftimf:
     name: Shanghai
     ktype: Cfa
     coastal: True
@@ -167,9 +775,43 @@ Shanghai:
     lat: 31.23
     domain: EAS-22
     comment: >
-        Big city, and largest Pop. and GDP in China. Observations available.
+        no variables for this domain. Big city, and largest Pop. and GDP in China. Observations available.
 
-Paris:
+       
+Shanghai_REMO_sfturf:
+    name: Shanghai
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 121.47
+    lat: 31.23
+    domain: EAS-22
+    comment: >
+        no variables for this domain. Big city, and largest Pop. and GDP in China. Observations available.
+       
+Shanghai_RegCM_sftimf:
+    name: Shanghai
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 121.47
+    lat: 31.23
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+       
+Shanghai_RegCM_sfturf:
+    name: Shanghai
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: 121.47
+    lat: 31.23
+    domain: EAS-22
+    comment: >
+       no variables for this domain
+              
+Paris_EUR-11_REMO_sftimf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -177,89 +819,816 @@ Paris:
     lon: 2.35
     lat: 48.85
     domain: EUR-11
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
+    comment: >
+        FPS URB-RCC core city
+              
+Paris_EUR-11_REMO_sfturf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-11
+    urban_th : 40
+    urban_sur_th : 10
     comment: >
         FPS URB-RCC core city
 
-London:
+Paris_EUR-11_RegCM_sftimf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-11
+    urban_th : 40
+    urban_sur_th : 10
+    comment: >
+        FPS URB-RCC core city
+              
+Paris_EUR-11_RegCM_sfturf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-11
+    urban_th : 40
+    urban_sur_th : 10
+    min_city_size : 2 
+    comment: >
+        FPS URB-RCC core city
+        
+Paris_EUR-22_REMO_sftimf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-22
+    urban_th : 10
+    urban_sur_th : 10
+
+Paris_EUR-22_REMO_sfturf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-22
+    urban_th : 10
+    urban_sur_th : 10
+
+Paris_EUR-22_RegCM_sftimf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-22
+    urban_th : 10
+    urban_sur_th : 10
+    comment: >
+        no variables for this domain
+    
+Paris_EUR-22_RegCM_sfturf:
+    name: Paris
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 2.35
+    lat: 48.85
+    domain: EUR-22
+    urban_th : 10
+    urban_sur_th : 10
+    comment: >
+        no variables for this domain
+              
+London_EUR-11_REMO_sftimf:
     name: London
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -0.13
+    lon: -103
     lat: 51.50
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
 
-Istanbul:
+London_EUR-11_REMO_sfturf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+              
+London_EUR-11_RegCM_sftimf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+
+London_EUR-11_RegCM_sfturf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 3
+              
+London_EUR-22_REMO_sftimf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    min_city_size : 2
+
+London_EUR-22_REMO_sfturf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    min_city_size : 2
+              
+London_EUR-22_RegCM_sftimf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+
+London_EUR-22_RegCM_sfturf:
+    name: London
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -103
+    lat: 51.50
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+    
+Istanbul_EUR-11_REMO_sftimf:
     name: Istanbul
     ktype: Csa
     coastal: True
     mountain: False
     lon: 28.98
     lat: 41.01
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
+    comment: >
+        No urban cells above 10%
 
-Berlin:
+Istanbul_EUR-11_REMO_sfturf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        No urban cells above 10%
+    
+Istanbul_EUR-11_RegCM_sftimf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
+    comment: >
+        cells separated by water if we remove nuclei from only one cell only two urban cells remain
+
+Istanbul_EUR-11_RegCM_sfturf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
+    comment: >
+        cells separated by water if we remove nuclei from only one cell only two urban cells remain
+
+Istanbul_EUR-22_REMO_sftimf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        One urban cell
+
+Istanbul_EUR-22_REMO_sfturf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        One urban cell
+    
+Istanbul_EUR-22_RegCM_sftimf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain 
+
+Istanbul_EUR-22_RegCM_sfturf:
+    name: Istanbul
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 28.98
+    lat: 41.01
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain    
+        
+Berlin_EUR-11_REMO_sftimf:
     name: Berlin
     ktype: Cfb
     coastal: False
     mountain: False
     lon: 13.4039
     lat: 52.4683
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
+    min_city_size : 2
+    
+Berlin_EUR-11_REMO_sfturf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
 
-Naples:
+        
+Berlin_EUR-11_RegCM_sftimf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
+    
+Berlin_EUR-11_RegCM_sfturf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
+        
+Berlin_EUR-22_REMO_sftimf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    
+Berlin_EUR-22_REMO_sfturf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+
+Berlin_EUR-22_RegCM_sftimf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain 
+    
+Berlin_EUR-22_RegCM_sfturf:
+    name: Berlin
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 13.4039
+    lat: 52.4683
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain 
+    
+Naples_EUR-11_REMO_sftimf:
     name: Naples
     ktype: CsB
     coastal: True
     mountain: False
     lon: 14.27
     lat: 40.85
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
+    comment: >
+        No urban cells above 10%
+        
+Naples_EUR-11_REMO_sfturf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        No urban cells above 10%
+        
+Naples_EUR-11_RegCM_sftimf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        no variables for this domain 
+ 
+Naples_EUR-11_RegCM_sfturf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        no variables for this domain 
 
-Barcelona:
+Naples_EUR-22_REMO_sftimf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        No urban cells above 10%
+        
+Naples_EUR-22_REMO_sfturf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        No urban cells above 10%
+        
+Naples_EUR-22_RegCM_sftimf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+         no variables for this domain         
+ 
+Naples_EUR-22_RegCM_sfturf:
+    name: Naples
+    ktype: CsB
+    coastal: True
+    mountain: False
+    lon: 14.27
+    lat: 40.85
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+         no variables for this domain
+         
+Barcelona_EUR-11_REMO_sftimf:
     name: Barcelona
     ktype: Cfb
     coastal: True
     mountain: False
     lon: 2.18
     lat: 41.39
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
-
-Athens:
+    comment: >
+        No urban cells above 40%
+         
+Barcelona_EUR-11_REMO_sfturf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        No urban cells above 40% 
+         
+Barcelona_EUR-11_RegCM_sftimf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Onle one urban cell
+         
+Barcelona_EUR-11_RegCM_sfturf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        2 separate urban cores of 1 cell 
+                  
+Barcelona_EUR-22_REMO_sftimf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        No urban cells above 10%
+         
+Barcelona_EUR-22_REMO_sfturf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        No urban cells above 10%
+         
+Barcelona_EUR-22_RegCM_sftimf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+         no variables for this domain
+         
+Barcelona_EUR-22_RegCM_sfturf:
+    name: Barcelona
+    ktype: Cfb
+    coastal: True
+    mountain: False
+    lon: 2.18
+    lat: 41.39
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+         no variables for this domain
+    
+Athens_EUR-11_REMO_sftimf:
     name: Athens
     ktype: Csa
     coastal: True
     mountain: False
     lon: 23.72
     lat: 37.98
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
+    comment: >
+        Only one urban cell. Coastal
 
-Prague:
+Athens_EUR-11_REMO_sfturf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only one urban cell. Coastal
+    
+Athens_EUR-11_RegCM_sftimf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only one urban cell. Coastal
+
+Athens_EUR-11_RegCM_sfturf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only two urban cell. Coastal
+
+Athens_EUR-22_REMO_sftimf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only one urban cell. Coastal
+
+Athens_EUR-22_REMO_sfturf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        Only one urban cell. Coastal
+    
+Athens_EUR-22_RegCM_sftimf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+
+Athens_EUR-22_RegCM_sfturf:
+    name: Athens
+    ktype: Csa
+    coastal: True
+    mountain: False
+    lon: 23.72
+    lat: 37.98
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+        
+Prague_EUR-11_REMO_sftimf:
     name: Prague
     ktype: Cfb
     coastal: False
     mountain: False
     lon: 14.42
     lat: 50.08
-    urban_th : 0.4
-    urban_sur_th : 0.1
+    urban_th : 40
+    urban_sur_th : 10
     domain: EUR-11
+    comment: >
+        Only one urban cell. Mountainous
+    
+Prague_EUR-11_REMO_sfturf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only one urban cell. Mountainous
+        
+Prague_EUR-11_RegCM_sftimf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    comment: >
+        Only two urban cell. Mountainous
+        
+Prague_EUR-11_RegCM_sfturf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 40
+    urban_sur_th : 10
+    domain: EUR-11
+    min_city_size : 2
+    comment: >
+        Only one urban cell. Mountainous
 
-Manila:
+            
+Prague_EUR-22_REMO_sftimf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        Only one urban cell. Mountainous
+    
+Prague_EUR-22_REMO_sfturf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        Only one urban cell. Mountainous
+        
+Prague_EUR-22_RegCM_sftimf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+        
+Prague_EUR-22_RegCM_sfturf:
+    name: Prague
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: 14.42
+    lat: 50.08
+    urban_th : 10
+    urban_sur_th : 10
+    domain: EUR-22
+    comment: >
+        no variables for this domain
+
+Manila_REMO_sftimf:
     name: "Quezon City [Manila]"
     ktype: Am
     coastal: True
@@ -267,8 +1636,43 @@ Manila:
     lon: 120.98
     lat: 14.60
     domain: SEA-22
+    comment: >
+        no urban cells above 10%
 
-Mumbai:
+Manila_REMO_sfturf:
+    name: "Quezon City [Manila]"
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 120.98
+    lat: 14.60
+    domain: SEA-22
+    comment: >
+        no urban cells above 10%
+    
+Manila_RegCM_sftimf:
+    name: "Quezon City [Manila]"
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 120.98
+    lat: 14.60
+    domain: SEA-22
+    comment: >
+        no urban cells above 10%
+        
+Manila_RegCM_sfturf:
+    name: "Quezon City [Manila]"
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 120.98
+    lat: 14.60
+    domain: SEA-22
+    comment: >
+        no urban cells above 10%
+        
+Mumbai_REMO_sftimf:
     name: Mumbai
     ktype: Am
     coastal: True
@@ -276,10 +1680,44 @@ Mumbai:
     lon: 72.82
     lat: 18.96
     domain: WAS-22
-    min_city_size: 2
-
-
-NewYork:
+    min_city_size : 2
+    comment: >
+        Only one urban cell. Coastal
+        
+Mumbai_REMO_sfturf:
+    name: Mumbai
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 72.82
+    lat: 18.96
+    domain: WAS-22
+    comment: >
+        Only one urban cell. Coastal
+        
+Mumbai_RegCM_sftimf:
+    name: Mumbai
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 72.82
+    lat: 18.96
+    domain: WAS-22
+    comment: >
+        Only one urban cell. Coastal
+        
+Mumbai_RegCM_sfturf:
+    name: Mumbai
+    ktype: Am
+    coastal: True
+    mountain: False
+    lon: 72.82
+    lat: 18.96
+    domain: WAS-22
+    comment: >
+        Only one urban cell. Coastal
+        
+NewYork_REMO_sftimf:
     name: New York
     ktype: Cfa
     coastal: True
@@ -287,9 +1725,41 @@ NewYork:
     lon: -74.2261
     lat: 40.8858
     domain: NAM-22
-    min_city_size: 6
+    min_city_size: 2
 
-BuenosAires:
+NewYork_REMO_sfturf:
+    name: New York
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -74.2261
+    lat: 40.8858
+    domain: NAM-22
+    min_city_size: 2
+
+NewYork_RegCM_sftimf:
+    name: New York
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -74.2261
+    lat: 40.8858
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+
+NewYork_RegCM_sfturf:
+    name: New York
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -74.2261
+    lat: 40.8858
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+
+BuenosAires_REMO_sftimf:
     name: Buenos Aires
     ktype: Cfa
     coastal: True
@@ -297,8 +1767,53 @@ BuenosAires:
     lon: -58.416
     lat: -34.559
     domain: SAM-22
+    comment: >
+        only three urban cells
+        
+BuenosAires_REMO_sfturf:
+    name: Buenos Aires
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -58.416
+    lat: -34.559
+    domain: SAM-22
+    comment: >
+        only three urban cells
+        
+BuenosAires_RegCM_sftimf:
+    name: Buenos Aires
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -58.416
+    lat: -34.559
+    domain: SAM-22
+    comment: >
+        only two urban cells
 
-SaoPaulo:
+BuenosAires_RegCM_sfturf:
+    name: Buenos Aires
+    ktype: Cfa
+    coastal: True
+    mountain: False
+    lon: -58.416
+    lat: -34.559
+    domain: SAM-22
+    comment: >
+        only two urban cells
+
+SaoPaulo_REMO_sftimf:
+    name: "São Paulo"
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -46.633
+    lat: -23.550
+    domain: SAM-22    
+    min_city_size: 2
+    
+SaoPaulo_REMO_sfturf:
     name: "São Paulo"
     ktype: Cfb
     coastal: False
@@ -307,9 +1822,30 @@ SaoPaulo:
     lat: -23.550
     domain: SAM-22    
     min_city_size: 3
-    
 
-LosAngeles:
+SaoPaulo_RegCM_sftimf:
+    name: "São Paulo"
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -46.633
+    lat: -23.550
+    domain: SAM-22    
+    comment: >
+        No urban cells above 10%
+    
+SaoPaulo_RegCM_sfturf:
+    name: "São Paulo"
+    ktype: Cfb
+    coastal: False
+    mountain: False
+    lon: -46.633
+    lat: -23.550
+    domain: SAM-22    
+    comment: >
+        No urban cells above 10%
+        
+LosAngeles_REMO_sftimf:
     name: Los Angeles
     ktype: Csb
     coastal: True
@@ -317,9 +1853,39 @@ LosAngeles:
     lon: -118.24
     lat: 34.05
     domain: NAM-22
-    min_city_size: 2
+        
+LosAngeles_REMO_sfturf:
+    name: Los Angeles
+    ktype: Csb
+    coastal: True
+    mountain: False
+    lon: -118.24sfturf
+    lat: 34.05
+    domain: NAM-22
+    
+LosAngeles_RegCM_sftimf:
+    name: Los Angeles
+    ktype: Csb
+    coastal: True
+    mountain: False
+    lon: -118.24
+    lat: 34.05
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+        
+LosAngeles_RegCM_sfturf:
+    name: Los Angeles
+    ktype: Csb
+    coastal: True
+    mountain: False
+    lon: -118.24sfturf
+    lat: 34.05
+    domain: NAM-22
+    comment: >
+        no variables for this domain
 
-Singapore:
+Singapore_REMO_sftimf:
     name: Singapore
     ktype: Af
     coastal: True
@@ -327,8 +1893,43 @@ Singapore:
     lon: 103.85
     lat: 1.29
     domain: SEA-22
+    comment: >
+        urban cells above 10% are in the water.
 
-Bogota:
+Singapore_REMO_sfturf:
+    name: Singapore
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 103.85
+    lat: 1.29
+    domain: SEA-22
+    comment: >
+        urban cells above 10% are in the water.
+
+Singapore_RegCM_sftimf:
+    name: Singapore
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 103.85
+    lat: 1.29
+    domain: SEA-22
+    comment: >
+        no urban cells above 10%
+
+Singapore_RegCM_sfturf:
+    name: Singapore
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 103.85
+    lat: 1.29
+    domain: SEA-22
+    comment: >
+        no urban cells above 10%
+
+Bogota_REMO_sftimf:
     name: Bogota
     ktype: Cfb
     coastal: False
@@ -336,8 +1937,65 @@ Bogota:
     lon: -74.06
     lat: 4.62
     domain: SAM-22
+    comment: >
+        only 2 urban cells. Mountainous
 
-Jakarta:
+Bogota_REMO_sfturf:
+    name: Bogota
+    ktype: Cfb
+    coastal: False
+    mountain: True
+    lon: -74.06
+    lat: 4.62
+    domain: SAM-22
+    comment: >
+        only 2 urban cells. Mountainous
+
+Bogota_RegCM_sftimf:
+    name: Bogota
+    ktype: Cfb
+    coastal: False
+    mountain: True
+    lon: -74.06
+    lat: 4.62
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
+
+Bogota_RegCM_sfturf:
+    name: Bogota
+    ktype: Cfb
+    coastal: False
+    mountain: True
+    lon: -74.06
+    lat: 4.62
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
+
+Jakarta_REMO_sftimf:
+    name: Jakarta
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 106.83
+    lat: -6.18
+    domain: SEA-22
+    comment: >
+        Only one urban cells
+
+Jakarta_REMO_sfturf:
+    name: Jakarta
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 106.83
+    lat: -6.18
+    domain: SEA-22
+    comment: >
+        Only one urban cells
+
+Jakarta_RegCM_sftimf:
     name: Jakarta
     ktype: Af
     coastal: True
@@ -346,7 +2004,16 @@ Jakarta:
     lat: -6.18
     domain: SEA-22
 
-NewDelhi:
+Jakarta_RegCM_sfturf:
+    name: Jakarta
+    ktype: Af
+    coastal: True
+    mountain: False
+    lon: 106.83
+    lat: -6.18
+    domain: SEA-22
+
+NewDelhi_REMO_sftimf:
     name: "Delhi [New Delhi]"
     ktype: BSh
     coastal: False
@@ -354,8 +2021,43 @@ NewDelhi:
     lon: 77.22
     lat: 28.64
     domain: WAS-22
+    comment: >
+        Only two urban cells
+    
+NewDelhi_REMO_sfturf:
+    name: "Delhi [New Delhi]"
+    ktype: BSh
+    coastal: False
+    mountain: False
+    lon: 77.22
+    lat: 28.64
+    domain: WAS-22
+    comment: >
+        Only two urban cells
+    
+NewDelhi_RegCM_sftimf:
+    name: "Delhi [New Delhi]"
+    ktype: BSh
+    coastal: False
+    mountain: False
+    lon: 77.22
+    lat: 28.64
+    domain: WAS-22
+    comment: >
+        Only one urban cells
+    
+NewDelhi_RegCM_sfturf:
+    name: "Delhi [New Delhi]"
+    ktype: BSh
+    coastal: False
+    mountain: False
+    lon: 77.22
+    lat: 28.64
+    domain: WAS-22
+    comment: >
+        Only one urban cells
 
-Chicago:
+Chicago_REMO_sftimf:
     name: Chicago
     ktype: Dfa
     coastal: False
@@ -363,9 +2065,41 @@ Chicago:
     lon: -87.55
     lat: 41.73
     domain: NAM-22
-    min_city_size: 3
+    min_city_size: 2
     
-Montreal:
+Chicago_REMO_sfturf:
+    name: Chicago
+    ktype: Dfa
+    coastal: False
+    mountain: False
+    lon: -87.55
+    lat: 41.73
+    domain: NAM-22
+    min_city_size: 2
+    
+Chicago_RegCM_sftimf:
+    name: Chicago
+    ktype: Dfa
+    coastal: False
+    mountain: False
+    lon: -87.55
+    lat: 41.73
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+    
+Chicago_RegCM_sfturf:
+    name: Chicago
+    ktype: Dfa
+    coastal: False
+    mountain: False
+    lon: -87.55
+    lat: 41.73
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+    
+Montreal_REMO_sftimf:
     name: Montreal
     ktype: Dfb
     coastal: False
@@ -373,9 +2107,43 @@ Montreal:
     lon: -73.56
     lat: 45.50
     domain: NAM-22
-    min_city_size: 2
+    comment: >
+        Only two urban cells
+    
+Montreal_REMO_sfturf:
+    name: Montreal
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: -73.56
+    lat: 45.50
+    domain: NAM-22
+    comment: >
+        Only two urban cells
+        
+Montreal_RegCM_sftimf:
+    name: Montreal
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: -73.56
+    lat: 45.50
+    domain: NAM-22
+    comment: >
+        no variables for this domain
+    
+Montreal_RegCM_sfturf:
+    name: Montreal
+    ktype: Dfb
+    coastal: False
+    mountain: False
+    lon: -73.56
+    lat: 45.50
+    domain: NAM-22
+    comment: >
+        no variables for this domain
 
-Lima:
+Lima_REMO_sftimf:
     name: Lima
     ktype: ET
     coastal: True
@@ -383,8 +2151,43 @@ Lima:
     lon: -77.03
     lat: -12.04
     domain: SAM-22
+    comment: >
+        no non_urban cells close to the only urban cell
 
-SantiagoChile:
+Lima_REMO_sfturf:
+    name: Lima
+    ktype: ET
+    coastal: True
+    mountain: True
+    lon: -77.03
+    lat: -12.04
+    domain: SAM-22
+    comment: >
+        no non_urban cells close to the only urban cell
+
+Lima_RegCM_sftimf:
+    name: Lima
+    ktype: ET
+    coastal: True
+    mountain: True
+    lon: -77.03
+    lat: -12.04
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
+
+Lima_RegCM_sfturf:
+    name: Lima
+    ktype: ET
+    coastal: True
+    mountain: True
+    lon: -77.03
+    lat: -12.04
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
+
+SantiagoChile_REMO_sftimf:
     name: Santiago
     country: Chile
     ktype: Csb
@@ -393,8 +2196,46 @@ SantiagoChile:
     lon: -70.65
     lat: -33.46
     domain: SAM-22
+    comment: >
+        Only two urban cells
+    
+SantiagoChile_REMO_sfturf:
+    name: Santiago
+    country: Chile
+    ktype: Csb
+    coastal: True
+    mountain: True
+    lon: -70.65
+    lat: -33.46
+    domain: SAM-22
+    comment: >
+        Only two urban cells
+    
+SantiagoChile_RegCM_sftimf:
+    name: Santiago
+    country: Chile
+    ktype: Csb
+    coastal: True
+    mountain: True
+    lon: -70.65
+    lat: -33.46
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
+    
+SantiagoChile_RegCM_sfturf:
+    name: Santiago
+    country: Chile
+    ktype: Csb
+    coastal: True
+    mountain: True
+    lon: -70.65
+    lat: -33.46
+    domain: SAM-22
+    comment: >
+        no urban cells above 10%
 
-Riyadh:
+Riyadh_REMO_sftimf:
     name: Riyadh
     ktype: BWh
     coastal: False
@@ -402,8 +2243,44 @@ Riyadh:
     lon: 46.73300
     lat: 24.7000
     domain: WAS-22
+    comment: >
+        Only two urban cells
 
-Baghdad:
+Riyadh_REMO_sfturf:
+    name: Riyadh
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 46.73300
+    lat: 24.7000
+    domain: WAS-22
+    comment: >
+        Only two urban cells
+
+    
+Riyadh_RegCM_sftimf:
+    name: Riyadh
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 46.73300
+    lat: 24.7000
+    domain: WAS-22
+    comment: >
+        no urban cells above 10%
+
+Riyadh_RegCM_sfturf:
+    name: Riyadh
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 46.73300
+    lat: 24.7000
+    domain: WAS-22
+    comment: >
+        no urban cells above 10%
+
+Baghdad_REMO_sftimf:
     name: Baghdad
     ktype: BWh
     coastal: False
@@ -411,3 +2288,39 @@ Baghdad:
     lon: 44.40
     lat: 33.34
     domain: WAS-22
+    comment: >
+        only one urban cells
+
+Baghdad_REMO_sfturf:
+    name: Baghdad
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 44.40
+    lat: 33.34
+    domain: WAS-22
+    comment: >
+        only one urban cells
+
+
+Baghdad_RegCM_sftimf:
+    name: Baghdad
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 44.40
+    lat: 33.34
+    domain: WAS-22
+    comment: >
+        no urban cells above 10%
+
+Baghdad_RegCM_sfturf:
+    name: Baghdad
+    ktype: BWh
+    coastal: False
+    mountain: False
+    lon: 44.40
+    lat: 33.34
+    domain: WAS-22
+    comment: >
+        no urban cells above 10%
