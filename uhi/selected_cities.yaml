@@ -356,7 +356,7 @@ MexicoCity_RegCM_sfturf:
     comment: >
         No urban cells above 10%
     
-Moscow_EUR-11_REMO_sftimf:
+Moscow-EUR-11_REMO_sftimf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -368,7 +368,7 @@ Moscow_EUR-11_REMO_sftimf:
     domain: EUR-11
 
         
-Moscow_EUR-11_REMO_sfturf:
+Moscow-EUR-11_REMO_sfturf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -380,7 +380,7 @@ Moscow_EUR-11_REMO_sfturf:
     domain: EUR-11
 
     
-Moscow_EUR-11_RegCM_sftimf:
+Moscow-EUR-11_RegCM_sftimf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -392,7 +392,7 @@ Moscow_EUR-11_RegCM_sftimf:
     domain: EUR-11
 
         
-Moscow_EUR-11_RegCM_sfturf:
+Moscow-EUR-11_RegCM_sfturf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -404,7 +404,7 @@ Moscow_EUR-11_RegCM_sfturf:
     min_city_size : 2
     domain: EUR-11
 
-Moscow_EUR-22_REMO_sftimf:
+Moscow-EUR-22_REMO_sftimf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -416,7 +416,7 @@ Moscow_EUR-22_REMO_sftimf:
     domain: EUR-22
 
         
-Moscow_EUR-22_REMO_sfturf:
+Moscow-EUR-22_REMO_sfturf:
     name: Moscow
     ktype: Dfb
     coastal: False
@@ -426,34 +426,6 @@ Moscow_EUR-22_REMO_sfturf:
     urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
-
-    
-Moscow_EUR-22_RegCM_sftimf:
-    name: Moscow
-    ktype: Dfb
-    coastal: False
-    mountain: False
-    lon: 37.62
-    lat: 55.75
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
-
-        
-Moscow_EUR-22_RegCM_sfturf:
-    name: Moscow
-    ktype: Dfb
-    coastal: False
-    mountain: False
-    lon: 37.62
-    lat: 55.75
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
 
 Tashkent_REMO_sftimf:
     name: Tashkent
@@ -811,7 +783,7 @@ Shanghai_RegCM_sfturf:
     comment: >
        no variables for this domain
               
-Paris_EUR-11_REMO_sftimf:
+Paris-EUR-11_REMO_sftimf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -824,7 +796,7 @@ Paris_EUR-11_REMO_sftimf:
     comment: >
         FPS URB-RCC core city
               
-Paris_EUR-11_REMO_sfturf:
+Paris-EUR-11_REMO_sfturf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -837,7 +809,7 @@ Paris_EUR-11_REMO_sfturf:
     comment: >
         FPS URB-RCC core city
 
-Paris_EUR-11_RegCM_sftimf:
+Paris-EUR-11_RegCM_sftimf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -850,7 +822,7 @@ Paris_EUR-11_RegCM_sftimf:
     comment: >
         FPS URB-RCC core city
               
-Paris_EUR-11_RegCM_sfturf:
+Paris-EUR-11_RegCM_sfturf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -864,7 +836,7 @@ Paris_EUR-11_RegCM_sfturf:
     comment: >
         FPS URB-RCC core city
         
-Paris_EUR-22_REMO_sftimf:
+Paris-EUR-22_REMO_sftimf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -875,7 +847,7 @@ Paris_EUR-22_REMO_sftimf:
     urban_th : 10
     urban_sur_th : 10
 
-Paris_EUR-22_REMO_sfturf:
+Paris-EUR-22_REMO_sfturf:
     name: Paris
     ktype: Cfb
     coastal: False
@@ -885,34 +857,8 @@ Paris_EUR-22_REMO_sfturf:
     domain: EUR-22
     urban_th : 10
     urban_sur_th : 10
-
-Paris_EUR-22_RegCM_sftimf:
-    name: Paris
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 2.35
-    lat: 48.85
-    domain: EUR-22
-    urban_th : 10
-    urban_sur_th : 10
-    comment: >
-        no variables for this domain
-    
-Paris_EUR-22_RegCM_sfturf:
-    name: Paris
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 2.35
-    lat: 48.85
-    domain: EUR-22
-    urban_th : 10
-    urban_sur_th : 10
-    comment: >
-        no variables for this domain
               
-London_EUR-11_REMO_sftimf:
+London-EUR-11_REMO_sftimf:
     name: London
     ktype: Cfb
     coastal: False
@@ -923,7 +869,7 @@ London_EUR-11_REMO_sftimf:
     urban_sur_th : 10
     domain: EUR-11
 
-London_EUR-11_REMO_sfturf:
+London-EUR-11_REMO_sfturf:
     name: London
     ktype: Cfb
     coastal: False
@@ -934,7 +880,7 @@ London_EUR-11_REMO_sfturf:
     urban_sur_th : 10
     domain: EUR-11
               
-London_EUR-11_RegCM_sftimf:
+London-EUR-11_RegCM_sftimf:
     name: London
     ktype: Cfb
     coastal: False
@@ -945,7 +891,7 @@ London_EUR-11_RegCM_sftimf:
     urban_sur_th : 10
     domain: EUR-11
 
-London_EUR-11_RegCM_sfturf:
+London-EUR-11_RegCM_sfturf:
     name: London
     ktype: Cfb
     coastal: False
@@ -957,7 +903,7 @@ London_EUR-11_RegCM_sfturf:
     domain: EUR-11
     min_city_size : 3
               
-London_EUR-22_REMO_sftimf:
+London-EUR-22_REMO_sftimf:
     name: London
     ktype: Cfb
     coastal: False
@@ -969,7 +915,7 @@ London_EUR-22_REMO_sftimf:
     domain: EUR-22
     min_city_size : 2
 
-London_EUR-22_REMO_sfturf:
+London-EUR-22_REMO_sfturf:
     name: London
     ktype: Cfb
     coastal: False
@@ -980,34 +926,8 @@ London_EUR-22_REMO_sfturf:
     urban_sur_th : 10
     domain: EUR-22
     min_city_size : 2
-              
-London_EUR-22_RegCM_sftimf:
-    name: London
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: -103
-    lat: 51.50
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
-
-London_EUR-22_RegCM_sfturf:
-    name: London
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: -103
-    lat: 51.50
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
     
-Istanbul_EUR-11_REMO_sftimf:
+Istanbul-EUR-11_REMO_sftimf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1020,7 +940,7 @@ Istanbul_EUR-11_REMO_sftimf:
     comment: >
         No urban cells above 10%
 
-Istanbul_EUR-11_REMO_sfturf:
+Istanbul-EUR-11_REMO_sfturf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1033,7 +953,7 @@ Istanbul_EUR-11_REMO_sfturf:
     comment: >
         No urban cells above 10%
     
-Istanbul_EUR-11_RegCM_sftimf:
+Istanbul-EUR-11_RegCM_sftimf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1047,7 +967,7 @@ Istanbul_EUR-11_RegCM_sftimf:
     comment: >
         cells separated by water if we remove nuclei from only one cell only two urban cells remain
 
-Istanbul_EUR-11_RegCM_sfturf:
+Istanbul-EUR-11_RegCM_sfturf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1061,7 +981,7 @@ Istanbul_EUR-11_RegCM_sfturf:
     comment: >
         cells separated by water if we remove nuclei from only one cell only two urban cells remain
 
-Istanbul_EUR-22_REMO_sftimf:
+Istanbul-EUR-22_REMO_sftimf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1074,7 +994,7 @@ Istanbul_EUR-22_REMO_sftimf:
     comment: >
         One urban cell
 
-Istanbul_EUR-22_REMO_sfturf:
+Istanbul-EUR-22_REMO_sfturf:
     name: Istanbul
     ktype: Csa
     coastal: True
@@ -1086,34 +1006,8 @@ Istanbul_EUR-22_REMO_sfturf:
     domain: EUR-22
     comment: >
         One urban cell
-    
-Istanbul_EUR-22_RegCM_sftimf:
-    name: Istanbul
-    ktype: Csa
-    coastal: True
-    mountain: False
-    lon: 28.98
-    lat: 41.01
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain 
-
-Istanbul_EUR-22_RegCM_sfturf:
-    name: Istanbul
-    ktype: Csa
-    coastal: True
-    mountain: False
-    lon: 28.98
-    lat: 41.01
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain    
         
-Berlin_EUR-11_REMO_sftimf:
+Berlin-EUR-11_REMO_sftimf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1125,7 +1019,7 @@ Berlin_EUR-11_REMO_sftimf:
     domain: EUR-11
     min_city_size : 2
     
-Berlin_EUR-11_REMO_sfturf:
+Berlin-EUR-11_REMO_sfturf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1138,7 +1032,7 @@ Berlin_EUR-11_REMO_sfturf:
     min_city_size : 2
 
         
-Berlin_EUR-11_RegCM_sftimf:
+Berlin-EUR-11_RegCM_sftimf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1150,7 +1044,7 @@ Berlin_EUR-11_RegCM_sftimf:
     domain: EUR-11
     min_city_size : 2
     
-Berlin_EUR-11_RegCM_sfturf:
+Berlin-EUR-11_RegCM_sfturf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1162,7 +1056,7 @@ Berlin_EUR-11_RegCM_sfturf:
     domain: EUR-11
     min_city_size : 2
         
-Berlin_EUR-22_REMO_sftimf:
+Berlin-EUR-22_REMO_sftimf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1173,7 +1067,7 @@ Berlin_EUR-22_REMO_sftimf:
     urban_sur_th : 10
     domain: EUR-22
     
-Berlin_EUR-22_REMO_sfturf:
+Berlin-EUR-22_REMO_sfturf:
     name: Berlin
     ktype: Cfb
     coastal: False
@@ -1183,34 +1077,8 @@ Berlin_EUR-22_REMO_sfturf:
     urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
-
-Berlin_EUR-22_RegCM_sftimf:
-    name: Berlin
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 13.4039
-    lat: 52.4683
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain 
     
-Berlin_EUR-22_RegCM_sfturf:
-    name: Berlin
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 13.4039
-    lat: 52.4683
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain 
-    
-Naples_EUR-11_REMO_sftimf:
+Naples-EUR-11_REMO_sftimf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1223,7 +1091,7 @@ Naples_EUR-11_REMO_sftimf:
     comment: >
         No urban cells above 10%
         
-Naples_EUR-11_REMO_sfturf:
+Naples-EUR-11_REMO_sfturf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1236,7 +1104,7 @@ Naples_EUR-11_REMO_sfturf:
     comment: >
         No urban cells above 10%
         
-Naples_EUR-11_RegCM_sftimf:
+Naples-EUR-11_RegCM_sftimf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1249,7 +1117,7 @@ Naples_EUR-11_RegCM_sftimf:
     comment: >
         no variables for this domain 
  
-Naples_EUR-11_RegCM_sfturf:
+Naples-EUR-11_RegCM_sfturf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1262,7 +1130,7 @@ Naples_EUR-11_RegCM_sfturf:
     comment: >
         no variables for this domain 
 
-Naples_EUR-22_REMO_sftimf:
+Naples-EUR-22_REMO_sftimf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1275,7 +1143,7 @@ Naples_EUR-22_REMO_sftimf:
     comment: >
         No urban cells above 10%
         
-Naples_EUR-22_REMO_sfturf:
+Naples-EUR-22_REMO_sfturf:
     name: Naples
     ktype: CsB
     coastal: True
@@ -1287,34 +1155,8 @@ Naples_EUR-22_REMO_sfturf:
     domain: EUR-22
     comment: >
         No urban cells above 10%
-        
-Naples_EUR-22_RegCM_sftimf:
-    name: Naples
-    ktype: CsB
-    coastal: True
-    mountain: False
-    lon: 14.27
-    lat: 40.85
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-         no variables for this domain         
- 
-Naples_EUR-22_RegCM_sfturf:
-    name: Naples
-    ktype: CsB
-    coastal: True
-    mountain: False
-    lon: 14.27
-    lat: 40.85
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-         no variables for this domain
          
-Barcelona_EUR-11_REMO_sftimf:
+Barcelona-EUR-11_REMO_sftimf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1327,7 +1169,7 @@ Barcelona_EUR-11_REMO_sftimf:
     comment: >
         No urban cells above 40%
          
-Barcelona_EUR-11_REMO_sfturf:
+Barcelona-EUR-11_REMO_sfturf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1340,7 +1182,7 @@ Barcelona_EUR-11_REMO_sfturf:
     comment: >
         No urban cells above 40% 
          
-Barcelona_EUR-11_RegCM_sftimf:
+Barcelona-EUR-11_RegCM_sftimf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1353,7 +1195,7 @@ Barcelona_EUR-11_RegCM_sftimf:
     comment: >
         Onle one urban cell
          
-Barcelona_EUR-11_RegCM_sfturf:
+Barcelona-EUR-11_RegCM_sfturf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1366,7 +1208,7 @@ Barcelona_EUR-11_RegCM_sfturf:
     comment: >
         2 separate urban cores of 1 cell 
                   
-Barcelona_EUR-22_REMO_sftimf:
+Barcelona-EUR-22_REMO_sftimf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1379,7 +1221,7 @@ Barcelona_EUR-22_REMO_sftimf:
     comment: >
         No urban cells above 10%
          
-Barcelona_EUR-22_REMO_sfturf:
+Barcelona-EUR-22_REMO_sfturf:
     name: Barcelona
     ktype: Cfb
     coastal: True
@@ -1391,34 +1233,8 @@ Barcelona_EUR-22_REMO_sfturf:
     domain: EUR-22
     comment: >
         No urban cells above 10%
-         
-Barcelona_EUR-22_RegCM_sftimf:
-    name: Barcelona
-    ktype: Cfb
-    coastal: True
-    mountain: False
-    lon: 2.18
-    lat: 41.39
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-         no variables for this domain
-         
-Barcelona_EUR-22_RegCM_sfturf:
-    name: Barcelona
-    ktype: Cfb
-    coastal: True
-    mountain: False
-    lon: 2.18
-    lat: 41.39
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-         no variables for this domain
     
-Athens_EUR-11_REMO_sftimf:
+Athens-EUR-11_REMO_sftimf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1431,7 +1247,7 @@ Athens_EUR-11_REMO_sftimf:
     comment: >
         Only one urban cell. Coastal
 
-Athens_EUR-11_REMO_sfturf:
+Athens-EUR-11_REMO_sfturf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1444,7 +1260,7 @@ Athens_EUR-11_REMO_sfturf:
     comment: >
         Only one urban cell. Coastal
     
-Athens_EUR-11_RegCM_sftimf:
+Athens-EUR-11_RegCM_sftimf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1457,7 +1273,7 @@ Athens_EUR-11_RegCM_sftimf:
     comment: >
         Only one urban cell. Coastal
 
-Athens_EUR-11_RegCM_sfturf:
+Athens-EUR-11_RegCM_sfturf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1470,7 +1286,7 @@ Athens_EUR-11_RegCM_sfturf:
     comment: >
         Only two urban cell. Coastal
 
-Athens_EUR-22_REMO_sftimf:
+Athens-EUR-22_REMO_sftimf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1483,7 +1299,7 @@ Athens_EUR-22_REMO_sftimf:
     comment: >
         Only one urban cell. Coastal
 
-Athens_EUR-22_REMO_sfturf:
+Athens-EUR-22_REMO_sfturf:
     name: Athens
     ktype: Csa
     coastal: True
@@ -1495,34 +1311,8 @@ Athens_EUR-22_REMO_sfturf:
     domain: EUR-22
     comment: >
         Only one urban cell. Coastal
-    
-Athens_EUR-22_RegCM_sftimf:
-    name: Athens
-    ktype: Csa
-    coastal: True
-    mountain: False
-    lon: 23.72
-    lat: 37.98
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
 
-Athens_EUR-22_RegCM_sfturf:
-    name: Athens
-    ktype: Csa
-    coastal: True
-    mountain: False
-    lon: 23.72
-    lat: 37.98
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
-        
-Prague_EUR-11_REMO_sftimf:
+Prague-EUR-11_REMO_sftimf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1535,7 +1325,7 @@ Prague_EUR-11_REMO_sftimf:
     comment: >
         Only one urban cell. Mountainous
     
-Prague_EUR-11_REMO_sfturf:
+Prague-EUR-11_REMO_sfturf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1548,7 +1338,7 @@ Prague_EUR-11_REMO_sfturf:
     comment: >
         Only one urban cell. Mountainous
         
-Prague_EUR-11_RegCM_sftimf:
+Prague-EUR-11_RegCM_sftimf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1561,7 +1351,7 @@ Prague_EUR-11_RegCM_sftimf:
     comment: >
         Only two urban cell. Mountainous
         
-Prague_EUR-11_RegCM_sfturf:
+Prague-EUR-11_RegCM_sfturf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1576,7 +1366,7 @@ Prague_EUR-11_RegCM_sfturf:
         Only one urban cell. Mountainous
 
             
-Prague_EUR-22_REMO_sftimf:
+Prague-EUR-22_REMO_sftimf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1589,7 +1379,7 @@ Prague_EUR-22_REMO_sftimf:
     comment: >
         Only one urban cell. Mountainous
     
-Prague_EUR-22_REMO_sfturf:
+Prague-EUR-22_REMO_sfturf:
     name: Prague
     ktype: Cfb
     coastal: False
@@ -1601,32 +1391,7 @@ Prague_EUR-22_REMO_sfturf:
     domain: EUR-22
     comment: >
         Only one urban cell. Mountainous
-        
-Prague_EUR-22_RegCM_sftimf:
-    name: Prague
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 14.42
-    lat: 50.08
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
-        
-Prague_EUR-22_RegCM_sfturf:
-    name: Prague
-    ktype: Cfb
-    coastal: False
-    mountain: False
-    lon: 14.42
-    lat: 50.08
-    urban_th : 10
-    urban_sur_th : 10
-    domain: EUR-22
-    comment: >
-        no variables for this domain
+    
 
 Manila_REMO_sftimf:
     name: "Quezon City [Manila]"
