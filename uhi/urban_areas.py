@@ -396,7 +396,7 @@ class Urban_vicinity:
         urban_cells = np.sum(sftuf_mask).values
         non_urban_cells = 0
         counter = 0
-        while non_urban_cells <= urban_cells * scale:
+        while non_urban_cells <= urban_cells * scale and counter<=20:
             # Dilation (Try with kernel 1)
             dilated_data = xr.apply_ufunc(dilation, 
                                           data_array if counter == 0 else dilated_data, 
