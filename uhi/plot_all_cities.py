@@ -15,21 +15,25 @@ input_notebook = 'urban_area_selection.ipynb'
 output_notebook = 'urban_area_selection__papermill.ipynb'
 
 # Climate variable and expected output
-variable = 'tasmax'
+variable = 'tasmin'
 expected_figure_number = 7
 
 # Load cities configuration from YAML
 cities = YAMLconfig('selected_cities.yaml')
 
 # Default thresholds and limits
-default_urban_th = 10
-default_urban_sur_th = 10
-default_lon_lim = 1
-default_lat_lim = 1
-default_min_city_size = 0
+default_urban_th = cities['DEFAULT']['urban_th']
+default_urban_sur_th = cities['DEFAULT']['urban_sur_th']
+default_orog_diff = cities['DEFAULT']['orog_diff']
+default_sftlf_th= cities['DEFAULT']['sftlf_th']
+default_lon_lim = cities['DEFAULT']['lon_lim']
+default_lat_lim = cities['DEFAULT']['lat_lim']
+default_min_city_size = cities['DEFAULT']['min_city_size']
 
 # Iterate over cities and process data
 for city in cities:
+    if city == "DEFAULT":
+        continue
     abbr_city = city
     long_city = cities[city]['name']
     domain = cities[city]['domain']
@@ -45,6 +49,8 @@ for city in cities:
         'model': city.split('_')[1],
         'urban_th': cities[city].get('urban_th', default_urban_th),
         'urban_sur_th': cities[city].get('urban_sur_th', default_urban_sur_th),
+        'orog_diff': cities[city].get('orog_diff', default_orog_diff),
+        'sftlf_th': cities[city].get('sftlf_th', default_sftlf_th),
         'lon_lim': cities[city].get('lon_lim', default_lon_lim),
         'lat_lim': cities[city].get('lat_lim', default_lat_lim),
         'min_city_size': cities[city].get('min_city_size', default_min_city_size),

@@ -1,3 +1,12 @@
+DEFAULT:
+    urban_th: 40
+    urban_sur_th: 10
+    orog_diff: 100
+    sftlf_th : 70
+    lon_lim : 1
+    lat_lim : 1
+    min_city_size: 0
+
 Cairo_REMO_sftimf:
     name: Cairo
     ktype: Bwh
@@ -274,6 +283,7 @@ Melbourne_REMO_sftimf:
     lon: 144.96
     lat: -37.81
     domain: AUS-22
+    orog_diff : 200
     min_city_size: 2
     comment: >
         To replace Brisbane, as Melbourne is bigger & has flux tower. Coastal
@@ -286,6 +296,7 @@ Melbourne_REMO_sfturf:
     lon: 144.96
     lat: -37.81
     domain: AUS-22
+    orog_diff : 200
     min_city_size: 2
     comment: >
         To replace Brisbane, as Melbourne is bigger & has flux tower. Coastal
@@ -411,7 +422,6 @@ Moscow-EUR-22_REMO_sftimf:
     mountain: False
     lon: 37.62
     lat: 55.75
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
 
@@ -423,7 +433,6 @@ Moscow-EUR-22_REMO_sfturf:
     mountain: False
     lon: 37.62
     lat: 55.75
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
 
@@ -844,7 +853,6 @@ Paris-EUR-22_REMO_sftimf:
     lon: 2.35
     lat: 48.85
     domain: EUR-22
-    urban_th : 10
     urban_sur_th : 10
 
 Paris-EUR-22_REMO_sfturf:
@@ -855,7 +863,6 @@ Paris-EUR-22_REMO_sfturf:
     lon: 2.35
     lat: 48.85
     domain: EUR-22
-    urban_th : 10
     urban_sur_th : 10
               
 London-EUR-11_REMO_sftimf:
@@ -863,7 +870,7 @@ London-EUR-11_REMO_sftimf:
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -103
+    lon: -0.13
     lat: 51.50
     urban_th : 40
     urban_sur_th : 10
@@ -874,7 +881,7 @@ London-EUR-11_REMO_sfturf:
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -103
+    lon: -0.13
     lat: 51.50
     urban_th : 40
     urban_sur_th : 10
@@ -885,7 +892,7 @@ London-EUR-11_RegCM_sftimf:
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -103
+    lon: -0.13
     lat: 51.50
     urban_th : 40
     urban_sur_th : 10
@@ -896,7 +903,7 @@ London-EUR-11_RegCM_sfturf:
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -103
+    lon: -0.13
     lat: 51.50
     urban_th : 40
     urban_sur_th : 10
@@ -908,9 +915,8 @@ London-EUR-22_REMO_sftimf:
     ktype: Cfb
     coastal: False
     mountain: False
-    lon: -103
+    lon: -0.13
     lat: 51.50
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
     min_city_size : 2
@@ -919,10 +925,9 @@ London-EUR-22_REMO_sfturf:
     name: London
     ktype: Cfb
     coastal: False
-    mountain: False
-    lon: -103
+    mountain: False-0.13
+    lon: -0.13
     lat: 51.50
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
     min_city_size : 2
@@ -988,7 +993,6 @@ Istanbul-EUR-22_REMO_sftimf:
     mountain: False
     lon: 28.98
     lat: 41.01
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
     comment: >
@@ -1001,7 +1005,6 @@ Istanbul-EUR-22_REMO_sfturf:
     mountain: False
     lon: 28.98
     lat: 41.01
-    urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
     comment: >
@@ -1066,6 +1069,8 @@ Berlin-EUR-22_REMO_sftimf:
     urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
+    min_city_size : 2
+
     
 Berlin-EUR-22_REMO_sfturf:
     name: Berlin
@@ -1077,6 +1082,8 @@ Berlin-EUR-22_REMO_sfturf:
     urban_th : 10
     urban_sur_th : 10
     domain: EUR-22
+    min_city_size : 2
+
     
 Naples-EUR-11_REMO_sftimf:
     name: Naples
@@ -1243,6 +1250,7 @@ Athens-EUR-11_REMO_sftimf:
     lat: 37.98
     urban_th : 40
     urban_sur_th : 10
+    orog_diff : 150
     domain: EUR-11
     comment: >
         Only one urban cell. Coastal
@@ -1256,6 +1264,7 @@ Athens-EUR-11_REMO_sfturf:
     lat: 37.98
     urban_th : 40
     urban_sur_th : 10
+    orog_diff : 150
     domain: EUR-11
     comment: >
         Only one urban cell. Coastal
@@ -1295,7 +1304,7 @@ Athens-EUR-22_REMO_sftimf:
     lat: 37.98
     urban_th : 10
     urban_sur_th : 10
-    domain: EUR-11
+    domain: EUR-22
     comment: >
         Only one urban cell. Coastal
 
@@ -1457,6 +1466,7 @@ Mumbai_REMO_sfturf:
     lon: 72.82
     lat: 18.96
     domain: WAS-22
+    min_city_size : 2
     comment: >
         Only one urban cell. Coastal
         
@@ -1586,7 +1596,7 @@ SaoPaulo_REMO_sfturf:
     lon: -46.633
     lat: -23.550
     domain: SAM-22    
-    min_city_size: 3
+    min_city_size: 2
 
 SaoPaulo_RegCM_sftimf:
     name: "São Paulo"
@@ -1624,7 +1634,7 @@ LosAngeles_REMO_sfturf:
     ktype: Csb
     coastal: True
     mountain: False
-    lon: -118.24sfturf
+    lon: -118.24
     lat: 34.05
     domain: NAM-22
     
@@ -1644,7 +1654,7 @@ LosAngeles_RegCM_sfturf:
     ktype: Csb
     coastal: True
     mountain: False
-    lon: -118.24sfturf
+    lon: -118.24
     lat: 34.05
     domain: NAM-22
     comment: >
@@ -1658,8 +1668,9 @@ Singapore_REMO_sftimf:
     lon: 103.85
     lat: 1.29
     domain: SEA-22
+    sftlf_th : 50
     comment: >
-        urban cells above 10% are in the water.
+        sftlf_th is 50 because it is an island
 
 Singapore_REMO_sfturf:
     name: Singapore
@@ -1669,8 +1680,9 @@ Singapore_REMO_sfturf:
     lon: 103.85
     lat: 1.29
     domain: SEA-22
+    sftlf_th : 50
     comment: >
-        urban cells above 10% are in the water.
+        sftlf_th is 50 because it is an island
 
 Singapore_RegCM_sftimf:
     name: Singapore
