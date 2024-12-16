@@ -185,7 +185,7 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud, urban_var):
     """
     # find fixed files
     file_sftuf = glob.glob(
-            f"{root_nextcloud}{model}/{urban_var}/{urban_var}_{domain}*.nc" 
+            f"{root_nextcloud}/new/{model}/{urban_var}/{urban_var}_{domain}_*.nc" 
     )
     
     if domain in ["NAM-22"]: #nextcloud
