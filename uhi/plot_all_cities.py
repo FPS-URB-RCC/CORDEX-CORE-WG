@@ -11,7 +11,7 @@ from utils import RCM_DICT
 from utils import YAMLconfig
 
 # Notebook paths
-input_notebook = 'urban_area_selection.ipynb'
+input_notebook = 'urban_area_PARIS_surface_weather_data.ipynb'
 output_notebook = 'urban_area_selection__papermill.ipynb'
 
 # Climate variable and expected output
