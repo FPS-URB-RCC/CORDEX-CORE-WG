@@ -187,6 +187,7 @@ def load_fix_variables(domain, model, root_esgf, root_nextcloud, urban_var):
     file_sftuf = glob.glob(
             f"{root_nextcloud}/new/{model}/{urban_var}/{urban_var}_{domain}_*.nc" 
     )
+    print(f"{root_nextcloud}/new/{model}/{urban_var}/{urban_var}_{domain}_*.nc" )
     
     if domain in ["NAM-22"]: #nextcloud
     
@@ -405,6 +406,8 @@ class Urban_vicinity:
             dilated_data = (dilated_data * orog_mask * sftlf_mask).astype(int)
             
             if np.sum(dilated_data) - urban_cells == non_urban_cells:
+                
+
                 #Try with kernel2
                 dilated_data = xr.apply_ufunc(dilation, 
                                               data_array if counter == 0 else dilated_data, 
