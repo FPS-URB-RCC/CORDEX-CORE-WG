@@ -9,7 +9,7 @@ from icecream import ic
 from utils import YAMLconfig
 
 # Base directory and climate variable
-directory = 'results_new'
+directory = 'results_190225'
 variable = 'tasmax'
 urban_var = 'sftimf'  # sfturf/sftimf
 
@@ -77,37 +77,21 @@ def plot_heatmap(heatmap_data, out='heatmap.pdf', title='', height=16, **kwargs)
 # Load cities information from YAML file
 cities = YAMLconfig('selected_cities.yaml')
 
-# Filter directories containing the urban_var
-filtered_dirs = filter_directories_by_urban_var(directory, urban_var)
+filelist_acycle = glob.glob(f"{directory}/*/{variable}_*_acycle-ur.nc")
+filelist_urmask = glob.glob(f"{directory}/*/urmask_*_fx.nc")
+
+cachefile = f'{directory}/{variable}_uhi_heatmap.csv'
 
 # Create a cache to avoid reading data multiple times
 cachefile = f'{directory}/{variable}_{urban_var}_uhi_heatmap.csv'
 if os.path.exists(cachefile):
     df = pd.read_csv(cachefile)
 else:
-    data_frames = []
-    # Iterate over filtered directories
-    for folder in filtered_dirs:
-        folder_path = os.path.join(directory, folder)
-        filelist_acycle = glob.glob(f"{folder_path}/*{variable}_*_acycle-ur.nc")
-        filelist_urmask = glob.glob(f"{folder_path}/urmask_*_fx.nc")
-        
-        # Read data from acycle and urmask files
-        if filelist_acycle:
-            df1 = read_acycle_data(filelist_acycle)
-        if filelist_urmask:
-            df2 = read_urmask_data(filelist_urmask)
-        
-        if not filelist_acycle or not filelist_urmask:
-            continue
-        # Set index and merge the two datasets
-        df1.set_index(['City', 'Domain', 'Model'], inplace=True)
-        df2.set_index(['City', 'Domain', 'Model'], inplace=True)
-        df_combined = df1.join(df2)
-        data_frames.append(df_combined)
-
-    # Concatenate all the DataFrames into one
-    df = pd.concat(data_frames)
+    df1 = read_acycle_data(filelist_acycle)
+    df2 = read_urmask_data(filelist_urmask)
+    df1.set_index(['City', 'Domain', 'Model'], inplace=True)
+    df2.set_index(['City', 'Domain', 'Model'], inplace=True)
+    df = df1.join(df2)
     df.reset_index(inplace=True)
     df.to_csv(cachefile)
 

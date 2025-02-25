@@ -8,13 +8,13 @@ import matplotlib.pyplot as plt
 from icecream import ic
 from utils import YAMLconfig
 
-directory = 'results'
+directory = 'results_190225'
 variable = 'tasmax'
 
 def parse_filename(filename):
     parts = filename.split('/')[-1].split('_')
-    city = parts[1].split('-')[0]
-    domain = '-'.join(parts[1].split('-')[1:])
+    city = parts[2].split('-')[0]
+    domain = '-'.join(parts[2].split('-')[1:])
     return city, domain
 
 def read_acycle_data(filelist):
@@ -74,8 +74,10 @@ else:
     df.reset_index(inplace=True)
     df.to_csv(cachefile, index=False)
 
-is_coastal = {k: v['coastal'] for k, v in cities.items()}
-is_mountain = {k: v['mountain'] for k, v in cities.items()}
+cities = YAMLconfig('selected_cities_description.yaml')
+
+is_coastal = {k: 'Coastal' if v['coastal'] else 'InLand' for k, v in cities.items()}
+is_mountain = {k: 'Mountain' if v['mountain'] else 'NotMountain' for k, v in cities.items()}
 
 df['is_coastal'] = df['City'].map(is_coastal)
 df['is_mountain'] = df['City'].map(is_mountain)

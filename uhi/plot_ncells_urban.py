@@ -51,7 +51,7 @@ pivot_df = combined_df.pivot_table(
 ).reset_index()
 
 # Reorganize the DataFrame for plotting
-pivot_df = pivot_df[~pivot_df["City"].str.endswith("22")]
+pivot_df = pivot_df[~pivot_df["City"].str.endswith("11")]
 
 # Prepare a new DataFrame with thresholds and models
 new_df = pd.DataFrame()

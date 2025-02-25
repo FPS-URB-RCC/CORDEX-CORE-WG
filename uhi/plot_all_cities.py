@@ -11,7 +11,7 @@ from utils import RCM_DICT
 from utils import YAMLconfig
 
 # Notebook paths
-input_notebook = 'urban_area_PARIS_surface_weather_data.ipynb'
+input_notebook = 'urban_area_selection.ipynb'
 output_notebook = 'urban_area_selection__papermill.ipynb'
 
 # Climate variable and expected output
@@ -29,6 +29,10 @@ default_sftlf_th= cities['DEFAULT']['sftlf_th']
 default_lon_lim = cities['DEFAULT']['lon_lim']
 default_lat_lim = cities['DEFAULT']['lat_lim']
 default_min_city_size = cities['DEFAULT']['min_city_size']
+default_vmax = cities['DEFAULT']['vmax']
+default_xmin = cities['DEFAULT']['xmin']
+default_xmax = cities['DEFAULT']['xmax']
+
 
 # Iterate over cities and process data
 for city in cities:
@@ -54,6 +58,9 @@ for city in cities:
         'lon_lim': cities[city].get('lon_lim', default_lon_lim),
         'lat_lim': cities[city].get('lat_lim', default_lat_lim),
         'min_city_size': cities[city].get('min_city_size', default_min_city_size),
+        'vmax': cities[city].get('vmax', default_vmax),
+        'xmin': cities[city].get('xmin', default_xmin),
+        'xmax': cities[city].get('xmax', default_xmax),
     }
 
     model = parameters['model']

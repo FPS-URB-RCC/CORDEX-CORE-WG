@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 from icecream import ic
 from utils import YAMLconfig
 
-directory = 'results'
+directory = 'results_190225'
 variable = 'tasmax'
+urban_var = 'sftimf'  # sfturf/sftimf
+
 
 def swap_column_levels(df):
     df.columns = df.columns.swaplevel(0, 1)
@@ -33,7 +35,7 @@ cities = YAMLconfig('selected_cities.yaml')
 filelist_acycle = glob.glob(f"{directory}/*/{variable}_*_acycle-ur.nc")
 filelist_obs = glob.glob(f"{directory}/*/{variable}_*acycle-ur-obs.nc")
 
-cachefile = f'{directory}/{variable}_uhi_heatmap.csv'
+cachefile = f'{directory}/{variable}_{urban_var}_uhi_heatmap.csv'
 cachefile_obs = f'{directory}/{variable}_uhi_heatmap_obs.csv'
 
 df1 = pd.read_csv(cachefile)
@@ -42,8 +44,11 @@ df2['Model'] = 'observations'
 df = pd.concat([df1, df2], axis=0)
 df = df.replace(999999, np.nan)
 
-is_coastal = { k: v['coastal'] for k,v in cities.items()}
-is_mountain = { k: v['mountain'] for k,v in cities.items()}
+cities = YAMLconfig('selected_cities_description.yaml')
+
+is_coastal = {k: 'Coastal' if v['coastal'] else 'InLand' for k, v in cities.items()}
+is_mountain = {k: 'Mountain' if v['mountain'] else 'NotMountain' for k, v in cities.items()}
+
 df['is_coastal'] = df['City'].map(is_coastal)
 df['is_mountain'] = df['City'].map(is_mountain)
 

@@ -31,7 +31,7 @@ default_lon_lim = cities['DEFAULT']['lon_lim']
 default_lat_lim = cities['DEFAULT']['lat_lim']
 default_min_city_size = cities['DEFAULT']['min_city_size']
 
-ths =[10,20,30,40]
+ths =[10,20,30,40,50]
 # Iterate over cities and process data
 for city in cities:
     for th in ths:
